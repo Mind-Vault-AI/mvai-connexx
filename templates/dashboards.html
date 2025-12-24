@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVAI CONNEXX</title>
+<style>
+body{background:#121212;color:#eee;font-family:sans-serif;padding:20px}
+textarea{width:100%;height:150px;background:#333;color:#fff;border:1px solid #555;padding:10px;}
+.btn{background:#007bff;color:#fff;padding:15px;border:none;margin-top:10px;width:100%;font-weight:bold;}
+</style>
+</head>
+<body>
+<h1>MVAI INTELLIGENCE HUB</h1>
+<p>Status: <strong>ISO9001 SECURE</strong></p>
+<textarea id="inp" placeholder="Start log..."></textarea>
+<button class="btn" onclick="save()">BORG DATA (SAVE)</button>
+<script>
+const i=document.getElementById('inp');
+i.value=localStorage.getItem('draft')||'';
+i.oninput=()=>localStorage.setItem('draft',i.value);
+function save(){
+  fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({txt:i.value})})
+  .then(r=>alert('Opgeslagen op server')).catch(e=>alert('Offline: lokaal bewaard'));
+}
+</script>
+</body>
+</html>
