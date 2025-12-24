@@ -1,28 +1,114 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MVAI CONNEXX</title>
-<style>
-body{background:#121212;color:#eee;font-family:sans-serif;padding:20px}
-textarea{width:100%;height:150px;background:#333;color:#fff;border:1px solid #555;padding:10px;}
-.btn{background:#007bff;color:#fff;padding:15px;border:none;margin-top:10px;width:100%;font-weight:bold;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVAI | Global Intelligence Hub</title>
+    <style>
+        /* VMI / MILITARY GRADE DESIGN */
+        :root { --bg: #0f1115; --panel: #1a1d23; --accent: #00d4ff; --text: #cfd8dc; --green: #00c851; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; margin: 0; padding: 0; line-height: 1.6; }
+        
+        /* HEADER */
+        header { background: var(--panel); padding: 20px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: 2px; color: #fff; }
+        .status { font-size: 0.8rem; background: rgba(0, 200, 81, 0.2); color: var(--green); padding: 5px 10px; border: 1px solid var(--green); border-radius: 4px; }
+
+        /* HERO SECTION */
+        .hero { padding: 60px 20px; text-align: center; background: linear-gradient(180deg, var(--panel) 0%, var(--bg) 100%); }
+        .hero h2 { font-size: 2.5rem; color: #fff; margin-bottom: 10px; }
+        .hero p { max-width: 600px; margin: 0 auto 30px; color: #9aa0a6; }
+        .btn-main { background: var(--accent); color: #000; padding: 15px 30px; font-weight: bold; text-decoration: none; border-radius: 4px; display: inline-block; }
+
+        /* MODULES GRID (SHOP) */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--panel); border: 1px solid #333; padding: 25px; border-radius: 8px; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card h3 { color: #fff; margin-top: 0; }
+        .tag { font-size: 0.7rem; background: #333; padding: 2px 6px; border-radius: 3px; margin-right: 5px; }
+        .price { font-size: 1.2rem; font-weight: bold; color: var(--accent); display: block; margin: 15px 0; }
+        .btn-buy { width: 100%; display: block; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 10px; text-align: center; text-decoration: none; cursor: pointer; }
+        .btn-buy:hover { background: var(--accent); color: #000; }
+
+        /* LIVE TERMINAL DEMO */
+        .terminal-wrapper { padding: 40px 20px; border-top: 1px solid #333; }
+        .terminal { max-width: 800px; margin: 0 auto; background: #000; border: 1px solid #555; padding: 20px; font-family: monospace; border-radius: 5px; }
+        textarea { width: 100%; background: transparent; border: none; color: var(--green); outline: none; resize: none; height: 100px; font-family: monospace; }
+        .logs { font-size: 0.8rem; color: #666; margin-top: 10px; border-top: 1px solid #333; padding-top: 5px; }
+
+        /* FOOTER */
+        footer { text-align: center; padding: 40px; color: #555; font-size: 0.9rem; }
+    </style>
 </head>
 <body>
-<h1>MVAI INTELLIGENCE HUB</h1>
-<p>Status: <strong>ISO9001 SECURE</strong></p>
-<textarea id="inp" placeholder="Start log..."></textarea>
-<button class="btn" onclick="save()">BORG DATA (SAVE)</button>
+
+<header>
+    <div class="logo">MVAI <span style="color:var(--accent)">CONNEXX</span></div>
+    <div class="status">● SYSTEM ONLINE</div>
+</header>
+
+<div class="hero">
+    <h2>LOGISTIC INTELLIGENCE</h2>
+    <p>Operational Excellence voor de maakindustrie. Van Tier-1 Logistiek tot AI-gedreven borging. ISO9001 Compliant.</p>
+    <a href="#shop" class="btn-main">BEKIJK MODULES</a>
+</div>
+
+<div id="shop" class="grid">
+    <div class="card">
+        <span class="tag">DOCUMENTATIE</span>
+        <h3>Logistic Framework V1.0</h3>
+        <p>Compleet framework voor logistieke procesverbetering. Inclusief PDCA-cyclus templates.</p>
+        <span class="price">€ 49,00</span>
+        <a href="#" class="btn-buy">KOOP NU (Direct Download)</a>
+    </div>
+
+    <div class="card">
+        <span class="tag">E-BOOK</span>
+        <h3>De Lean Transformatie</h3>
+        <p>Praktijkhandboek voor logistiek managers. Ervaringen uit de Tier-1 industrie.</p>
+        <span class="price">€ 19,95</span>
+        <a href="#" class="btn-buy">KOOP NU (E-Book)</a>
+    </div>
+
+    <div class="card">
+        <span class="tag">SOFTWARE</span>
+        <h3>MVAI Secure Hub (SaaS)</h3>
+        <p>Toegang tot de beveiligde MVAI omgeving voor uw team. China/VPN proof.</p>
+        <span class="price">Op Aanvraag</span>
+        <a href="#" class="btn-buy">OFFERTE AANVRAGEN</a>
+    </div>
+</div>
+
+<div class="terminal-wrapper">
+    <h3 style="text-align:center; color:#555;">LIVE SYSTEM PREVIEW (Secure Vault)</h3>
+    <div class="terminal">
+        <div style="color:var(--accent); margin-bottom:10px;">root@mvai-connexx:~$ initiates_secure_session... OK</div>
+        <textarea id="inp" placeholder="Typ hier om de Poka Yoke data-borging te testen..."></textarea>
+        <div class="logs" id="log-display">Waiting for input... Local Storage Active.</div>
+    </div>
+</div>
+
+<footer>
+    &copy; 2025 Mind Vault AI. Epe, Netherlands.<br>
+    Tier-1 Logistic Solutions.
+</footer>
+
 <script>
-const i=document.getElementById('inp');
-i.value=localStorage.getItem('draft')||'';
-i.oninput=()=>localStorage.setItem('draft',i.value);
-function save(){
-  fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({txt:i.value})})
-  .then(r=>alert('Opgeslagen op server')).catch(e=>alert('Offline: lokaal bewaard'));
-}
+    // DEZE LOGICA BLIJFT HETZELFDE (Het werkt!)
+    const i=document.getElementById('inp');
+    const l=document.getElementById('log-display');
+    
+    i.value=localStorage.getItem('draft')||'';
+    
+    i.oninput=()=>{
+        localStorage.setItem('draft',i.value);
+        l.innerText = "Saving to Local Device: " + new Date().toLocaleTimeString();
+        
+        // Auto-save simulatie
+        fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({txt:i.value})})
+        .catch(e=>console.log('Offline mode'));
+    };
 </script>
+
 </body>
 </html>
