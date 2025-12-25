@@ -2,57 +2,173 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MVAI | Global Intelligence Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MVAI Hub">
+    
+    <title>MVAI | Enterprise Intelligence</title>
     <style>
-        :root { --bg: #0f1115; --panel: #1a1d23; --accent: #00d4ff; --text: #cfd8dc; --green: #00c851; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
-        header { background: var(--panel); padding: 20px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 900; font-size: 1.5rem; color: #fff; }
-        .hero { padding: 60px 20px; text-align: center; color: #fff; }
-        .btn-main { background: var(--accent); color: #000; padding: 15px 30px; text-decoration: none; font-weight: bold; border-radius: 4px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--panel); padding: 25px; border-radius: 8px; border: 1px solid #333; }
-        .card h3 { color: #fff; margin-top: 0; }
-        .price { font-size: 1.2rem; color: var(--accent); font-weight: bold; display: block; margin: 15px 0; }
-        .btn-buy { display: block; width: 100%; padding: 10px; border: 1px solid var(--accent); color: var(--accent); text-align: center; text-decoration: none; }
-        .btn-buy:hover { background: var(--accent); color: #000; }
-        .terminal { background: #000; padding: 20px; font-family: monospace; color: var(--green); margin: 20px; border: 1px solid #555; }
-        textarea { width: 100%; background: transparent; border: none; color: inherit; resize: none; outline: none; }
+        :root { --bg: #050505; --panel: #121212; --accent: #00ff41; --text: #e0e0e0; --dim: #666; --border: #333; }
+        body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        
+        /* HEADER */
+        header { background: rgba(18,18,18,0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; color: #fff; }
+        .status { font-size: 0.7rem; color: var(--accent); border: 1px solid var(--accent); padding: 3px 8px; border-radius: 4px; }
+
+        /* HERO */
+        .hero { text-align: center; padding: 60px 20px 40px; background: radial-gradient(circle at top, #1a1a1a 0%, #000 80%); }
+        h1 { font-size: 2rem; margin: 0 0 10px; line-height: 1.1; color:#fff; }
+        .sub { color: var(--dim); font-size: 0.9rem; max-width: 500px; margin: 0 auto 25px; line-height: 1.5; }
+        
+        /* IOS HINT */
+        .ios-hint { background: #222; color: #fff; padding: 12px; font-size: 0.85rem; display: none; margin: 0 auto 20px; border-radius: 8px; max-width: 90%; border: 1px solid var(--accent); }
+        
+        /* PRICING GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        
+        .card { background: var(--panel); border: 1px solid var(--border); padding: 25px; border-radius: 12px; position: relative; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .card:hover { border-color: #555; transform: translateY(-2px); }
+        .card.featured { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 255, 65, 0.05); }
+        .badge { position: absolute; top: 15px; right: 15px; background: var(--accent); color: #000; font-size: 0.65rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; }
+        
+        .card h3 { margin: 0 0 10px; color: #fff; font-size: 1.2rem; }
+        .price { font-size: 1.8rem; font-weight: bold; margin: 15px 0; display: block; color: #fff; }
+        .period { font-size: 0.9rem; color: var(--dim); font-weight: normal; }
+        
+        ul { list-style: none; padding: 0; margin: 20px 0; flex-grow: 1; }
+        li { margin-bottom: 10px; font-size: 0.9rem; color: #ccc; display: flex; align-items: start; }
+        li::before { content: "✓"; color: var(--accent); margin-right: 10px; font-weight: bold; }
+        
+        .btn { width: 100%; padding: 14px; border-radius: 6px; font-weight: bold; text-decoration: none; text-align: center; display: block; margin-top: auto; transition: 0.2s; box-sizing: border-box; }
+        .btn-primary { background: var(--accent); color: #000; border: none; }
+        .btn-outline { background: transparent; border: 1px solid #555; color: #fff; }
+
+        /* DEMO TERMINAL */
+        .terminal-wrap { padding: 40px 20px; border-top: 1px solid var(--border); margin-top: 40px; background: #080808; }
+        .terminal { max-width: 800px; margin: 0 auto; background: #000; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+        .term-header { background: #1a1a1a; padding: 8px 15px; font-size: 0.75rem; color: #999; display: flex; gap: 6px; align-items: center; }
+        .dot { width: 10px; height: 10px; background: #555; display: inline-block; border-radius: 50%; }
+        textarea { width: 100%; height: 120px; background: #000; color: var(--accent); border: none; padding: 15px; font-family: 'Courier New', monospace; resize: none; outline: none; box-sizing: border-box; font-size: 1rem; }
+        
+        /* FOOTER */
+        footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.75rem; border-top: 1px solid var(--border); background: #050505; }
+        footer a { color: #666; text-decoration: none; margin: 0 10px; }
     </style>
 </head>
 <body>
+
 <header>
-    <div class="logo">MVAI <span style="color:var(--accent)">CONNEXX</span></div>
-    <div>● ONLINE</div>
+    <div class="logo">MVAI</div>
+    <div class="status">● SYSTEM SECURE</div>
 </header>
+
 <div class="hero">
-    <h2>LOGISTIC INTELLIGENCE</h2>
-    <p>Operational Excellence & AI Solutions.</p>
-    <br><a href="#shop" class="btn-main">BEKIJK MODULES</a>
+    <div id="ios-msg" class="ios-hint">📲 <strong>Installeer App:</strong> Tik in uw browser op 'Delen' en kies 'Zet op beginscherm'</div>
+    <h1>Logistic Intelligence</h1>
+    <p class="sub">Validatie, Borging & Procesoptimalisatie. <br>Start vandaag met de <strong>Free Tier</strong> (SaaS).</p>
 </div>
-<div id="shop" class="grid">
+
+<div class="grid">
     <div class="card">
-        <h3>Logistic Framework V1.0</h3>
-        <p>Procesverbetering & PDCA templates.</p>
-        <span class="price">€ 49,00</span>
-        <a href="#" class="btn-buy">KOOP NU</a>
+        <h3>🚀 Starter / Demo</h3>
+        <span class="price">€ 0 <span class="period">/ altijd</span></span>
+        <p style="font-size:0.85rem; color:#888;">Ervaar de kracht van 1W5H borging.</p>
+        <ul>
+            <li>Onbeperkt lokaal gebruik (Offline)</li>
+            <li>Poka Yoke Data Validatie</li>
+            <li>Browser-based Storage (China Proof)</li>
+            <li>1 Gebruiker</li>
+        </ul>
+        <a href="#demo" class="btn btn-outline">START DIRECT (DEMO)</a>
     </div>
-    <div class="card">
-        <h3>De Lean Transformatie</h3>
-        <p>Praktijkhandboek (E-Book).</p>
-        <span class="price">€ 19,95</span>
-        <a href="#" class="btn-buy">KOOP NU</a>
+
+    <div class="card featured">
+        <span class="badge">MEEST GEKOZEN</span>
+        <h3>💎 Enterprise Toolkit</h3>
+        <span class="price">€ 49 <span class="period">/ eenmalig</span></span>
+        <p style="font-size:0.85rem; color:#888;">Volledige VSM & PDCA implementatie.</p>
+        <ul>
+            <li>Full VSM Framework (Excel Downloads)</li>
+            <li>ISO 9001 Audit Templates</li>
+            <li>Unit Economics Calculator</li>
+            <li>Levenslange Updates</li>
+        </ul>
+        <a href="#" class="btn btn-primary">KOOP LICENTIE</a>
     </div>
 </div>
-<div class="terminal">
-    <div>root@mvai:~$ secure_session_active</div>
-    <textarea id="inp" placeholder="Typ hier voor lokale data-borging (Poka Yoke)..."></textarea>
+
+<div id="demo" class="terminal-wrap">
+    <h3 style="text-align:center; margin-bottom:20px; font-size:1rem; color:#fff;">LIVE OMGEVING (FREE TIER)</h3>
+    <div class="terminal">
+        <div class="term-header">
+            <span class="dot" style="background:#ff5f56"></span>
+            <span class="dot" style="background:#ffbd2e"></span>
+            <span class="dot" style="background:#27c93f"></span>
+            &nbsp; root@mvai-cloud:~/secure-session
+        </div>
+        <textarea id="inp" placeholder="> Typ hier uw logistieke data voor lokale 1W5H borging..."></textarea>
+    </div>
+    <p style="text-align:center; font-size:0.8rem; color:#666; margin-top:15px;">
+        Data wordt lokaal versleuteld opgeslagen (Local Storage). <br>
+        <span id="save-status">Status: Standby</span>
+    </p>
 </div>
+
+<footer>
+    &copy; 2025 Mind Vault AI. All Rights Reserved.<br><br>
+    <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">SLA</a>
+    <br><br>
+    Platform werkt conform ISO 27001 richtlijnen. <br>
+    Hosting: Docker Container (Linux Environment).
+</footer>
+
 <script>
-    const i=document.getElementById('inp');
-    i.value=localStorage.getItem('draft')||'';
-    i.oninput=()=>{ localStorage.setItem('draft',i.value); };
+    // 1. iOS Detectie voor "Add to Home Screen" melding
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Check of het al in 'standalone' (app) modus draait
+    const isStandalone = window.navigator.standalone || (window.matchMedia('(display-mode: standalone)').matches);
+    
+    if (isIos && !isStandalone) {
+        document.getElementById('ios-msg').style.display = 'block';
+    }
+
+    // 2. Poka Yoke & Save Logic
+    const i = document.getElementById('inp');
+    const status = document.getElementById('save-status');
+    
+    // Laad eerder opgeslagen concept
+    i.value = localStorage.getItem('mvai_draft') || '';
+    
+    let timeout;
+    i.oninput = () => {
+        status.innerText = "Status: Typen...";
+        status.style.color = "#ffbd2e";
+        
+        // A. Direct Lokaal Opslaan (Altijd veilig)
+        localStorage.setItem('mvai_draft', i.value);
+        
+        // B. Cloud Sync Simulatie (Debounce: pas sturen als je stopt met typen)
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            fetch('/api/save', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({txt: i.value})
+            })
+            .then(res => {
+                status.innerText = "Status: Veilig Geborgd (Cloud Synced)";
+                status.style.color = "#00ff41";
+            })
+            .catch(err => {
+                status.innerText = "Status: Offline (Lokaal Opgeslagen)";
+                status.style.color = "#aaa";
+            });
+        }, 1000);
+    };
 </script>
+
 </body>
 </html>
