@@ -79,9 +79,9 @@ def load_data():
         with open(DATA_FILE, 'r') as f: return json.load(f)
     except: return {"logs": []}
 
-def save_data(data):
     except (OSError, IOError) as e:
         print(f"Warning: Could not write data to {DATA_FILE}: {e}")
+        raise
         raise
         raise
         raise
