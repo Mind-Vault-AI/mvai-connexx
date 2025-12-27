@@ -67,9 +67,9 @@ def load_data():
     except: return {"logs": []}
 
 def save_data(data):
-    try:
     except (OSError, IOError) as e:
         print(f"Warning: Could not write data to {DATA_FILE}: {e}")
+        raise
         raise
         raise
         raise
