@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alle Logs | {{ customer.name }}</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 30px; }
+
+        .logs-table {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logs-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .logs-table tr:hover td {
+            background: #0a0a0a;
+        }
+
+        .log-data {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">MVAI | {{ customer.name }}</span>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('customer_dashboard') }}" class="back-link">← Terug naar dashboard</a>
+
+        <h1>Alle Logs</h1>
+
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>IP Address</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.timestamp }}</td>
+                    <td style="font-family: monospace; color: var(--accent);">{{ log.ip_address }}</td>
+                    <td class="log-data">{{ log.data }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

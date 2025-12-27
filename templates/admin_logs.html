@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alle Logs | Admin</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 30px; }
+
+        .logs-table {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logs-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .logs-table tr:hover td {
+            background: #0a0a0a;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: #000;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">MVAI ADMIN</span>
+        <a href="{{ url_for('admin_export_all_csv') }}" class="export-btn">Exporteer CSV</a>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('admin_dashboard') }}" class="back-link">← Terug naar dashboard</a>
+
+        <h1>Alle Logs (Alle Klanten)</h1>
+
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Klant</th>
+                    <th>Timestamp</th>
+                    <th>IP</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td style="color: #fff; font-weight: 500;">{{ log.customer_name }}</td>
+                    <td>{{ log.timestamp }}</td>
+                    <td style="font-family: monospace; color: var(--accent);">{{ log.ip_address }}</td>
+                    <td style="font-family: 'Courier New', monospace; font-size: 0.85rem;">
+                        {{ log.data[:100] }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

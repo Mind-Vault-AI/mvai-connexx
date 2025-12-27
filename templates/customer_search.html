@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoeken | {{ customer.name }}</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 30px; }
+
+        .search-form {
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .results {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .result-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child { border-bottom: none; }
+
+        .result-time {
+            color: var(--dim);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .result-data {
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">MVAI | {{ customer.name }}</span>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('customer_dashboard') }}" class="back-link">← Terug naar dashboard</a>
+
+        <h1>Zoeken in Logs</h1>
+
+        <form class="search-form" method="GET">
+            <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Zoek in uw logs..."
+                value="{{ query }}"
+                autofocus
+            >
+        </form>
+
+        {% if query %}
+            <div class="results">
+                {% if logs %}
+                    {% for log in logs %}
+                    <div class="result-item">
+                        <div class="result-time">{{ log.timestamp }} | IP: {{ log.ip_address }}</div>
+                        <div class="result-data">{{ log.data }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="result-item" style="text-align: center; color: var(--dim);">
+                        Geen resultaten gevonden voor "{{ query }}"
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
