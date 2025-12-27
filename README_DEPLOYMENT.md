@@ -63,7 +63,7 @@ De CLI zal:
 - ❓ Vragen of je een PostgreSQL database wilt → **Nee** (wij gebruiken JSON files)
 - ❓ Vragen of je een Redis instance wilt → **Nee** (niet nodig)
 
-**Belangrijk:** Zeg **JA** als de CLI vraagt of je wilt deployen.
+**Belangrijk:** Zeg **NEE** als de CLI vraagt of je wilt deployen. We doen de eerste deploy pas nadat het volume is aangemaakt.
 
 ### Stap 4: Maak een Persistent Volume aan
 ```bash
