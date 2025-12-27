@@ -22,6 +22,6 @@ primary_region = "ams"
   timeout = "5s"
   path = "/health"
 
-[mounts]
+[[mounts]]
   source = "mvai_data"
   destination = "/app/data"
