@@ -38,7 +38,8 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 status TEXT DEFAULT 'active',
                 contact_email TEXT,
-                company_info TEXT
+                company_info TEXT,
+                ai_assistant_enabled BOOLEAN DEFAULT 0
             )
         ''')
 
@@ -145,6 +146,62 @@ def init_db():
             )
         ''')
 
+        # AI Assistant preferences per klant
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_assistant_preferences (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL UNIQUE,
+                language TEXT DEFAULT 'nl',
+                tone TEXT DEFAULT 'professional',
+                proactive_suggestions BOOLEAN DEFAULT 1,
+                auto_reports BOOLEAN DEFAULT 0,
+                notifications_enabled BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Learning data per klant (geïsoleerd)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_learning (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                command TEXT NOT NULL,
+                result_type TEXT,
+                success BOOLEAN DEFAULT 1,
+                feedback TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Generated reports
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_generated_reports (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Conversations (chat history)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_conversations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                user_message TEXT NOT NULL,
+                ai_response TEXT NOT NULL,
+                intent TEXT,
+                success BOOLEAN DEFAULT 1,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
         # Indices voor performance
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_customer ON logs(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)')
@@ -155,6 +212,9 @@ def init_db():
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_security_incidents_timestamp ON security_incidents(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip_whitelist_ip ON ip_whitelist(ip_address)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip_blacklist_ip ON ip_blacklist(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_learning_customer ON ai_learning(customer_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_conversations_customer ON ai_conversations(customer_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_reports_customer ON ai_generated_reports(customer_id)')
 
         conn.commit()
 

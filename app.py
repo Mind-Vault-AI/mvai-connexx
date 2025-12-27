@@ -349,6 +349,106 @@ def customer_revoke_api_key(key_id):
     return jsonify({"success": True}), 200
 
 # ═══════════════════════════════════════════════════════
+# AI ASSISTANT ROUTES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/customer/ai')
+@login_required
+def customer_ai_assistant():
+    """AI Assistant dashboard voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    ai_enabled = customer.get('ai_assistant_enabled', False)
+
+    suggestions = []
+    conversations = []
+
+    if ai_enabled:
+        from ai_assistant import get_assistant
+        assistant = get_assistant(customer_id)
+        suggestions = assistant.get_proactive_suggestions()
+
+        # Load recent conversations
+        with db.get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT user_message, ai_response, timestamp
+                FROM ai_conversations
+                WHERE customer_id = ?
+                ORDER BY timestamp DESC
+                LIMIT 10
+            ''', (customer_id,))
+            conversations = [dict(row) for row in cursor.fetchall()]
+            conversations.reverse()  # Show oldest first
+
+    return render_template('customer_ai_assistant.html',
+                         customer=customer,
+                         ai_enabled=ai_enabled,
+                         suggestions=suggestions,
+                         conversations=conversations)
+
+@app.route('/customer/ai/activate', methods=['POST'])
+@login_required
+def customer_ai_activate():
+    """Activeer AI Assistant voor klant"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin kan niet AI activeren"}), 403
+
+    customer_id = session['customer_id']
+
+    from ai_assistant import enable_assistant
+    enable_assistant(customer_id)
+
+    # Log actie
+    db.log_admin_action(
+        admin_username=f'customer_{customer_id}',
+        action='activate_ai_assistant',
+        target_type='customer',
+        target_id=customer_id,
+        details='Activated AI Assistant',
+        ip_address=get_client_ip()
+    )
+
+    return jsonify({"success": True}), 200
+
+@app.route('/customer/ai/chat', methods=['POST'])
+@login_required
+def customer_ai_chat():
+    """Verwerk AI chat commando"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin kan niet AI chat gebruiken"}), 403
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    if not customer.get('ai_assistant_enabled', False):
+        return jsonify({"error": "AI Assistant niet geactiveerd"}), 403
+
+    message = request.json.get('message', '').strip()
+
+    if not message:
+        return jsonify({"error": "Geen bericht"}), 400
+
+    from ai_assistant import get_assistant
+    assistant = get_assistant(customer_id)
+
+    # Process command
+    result = assistant.process_command(message)
+
+    # Save conversation
+    with db.get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO ai_conversations (customer_id, user_message, ai_response, intent)
+            VALUES (?, ?, ?, ?)
+        ''', (customer_id, message, result['message'], result.get('intent', 'unknown')))
+
+    return jsonify(result)
+
+# ═══════════════════════════════════════════════════════
 # ADMIN ROUTES
 # ═══════════════════════════════════════════════════════
 
