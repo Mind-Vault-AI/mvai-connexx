@@ -36,6 +36,14 @@ def ensure_data_dir():
     # Bestaat het pad al maar is het geen directory? -> harde fout.
     if os.path.exists(data_dir) and not os.path.isdir(data_dir):
         raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
+    data_dir = os.path.dirname(DATA_FILE)
+
+    if not data_dir:
+        return
+
+    # Bestaat het pad al maar is het geen directory? -> harde fout.
+    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
+        raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
 
     if not os.path.exists(data_dir):
         try:
@@ -43,6 +51,11 @@ def ensure_data_dir():
         except (PermissionError, OSError) as e:
             # Log waarschuwing maar laat app doordraaien (voor development)
             print(f"Warning: Could not create data directory {data_dir}: {e}")
+            return
+
+    # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
+    if not os.access(data_dir, os.W_OK):
+        raise RuntimeError(f"Data directory is not writable: {data_dir}")
             return
 
     # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
