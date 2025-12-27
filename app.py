@@ -55,7 +55,9 @@ def ensure_data_dir():
 
     # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
     if not os.access(data_dir, os.W_OK):
-        raise RuntimeError(f"Data directory is not writable: {data_dir}")
+        # Log waarschuwing maar laat app doordraaien (vergelijkbaar met create-fout en save_data)
+        print(f"Warning: Data directory is not writable: {data_dir}")
+        return
             return
 
     # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
