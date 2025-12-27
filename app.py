@@ -65,8 +65,5 @@ def save_entry():
     return jsonify({"status": "SECURE_COMMIT", "message": "Data Encrypted & Stored."})
 
 if __name__ == '__main__':
-    # Zorg dat data directory bestaat voor persistent storage
-    ensure_data_dir()
-    
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
