@@ -798,3 +798,13 @@ def server_error(e):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
+# ═══════════════════════════════════════════════════════
+# LEGAL & PUBLIC PAGES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/legal')
+def legal_pages():
+    """Legal pages: Terms, Privacy Policy, Disclaimer"""
+    return render_template('legal.html')
+

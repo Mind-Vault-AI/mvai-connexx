@@ -18,26 +18,53 @@ class PricingConfig:
 
     # PRICING TIERS (maandelijks in EUR)
     PRICING_TIERS = {
+        'demo': {
+            'price_per_month': 0.00,
+            'included_logs': 100,
+            'overage_per_1k_logs': 0.00,
+            'max_api_calls': 1000,
+            'features': ['basic_analytics', 'csv_export'],
+            'description': 'Free demo account - 14 dagen trial'
+        },
+        'particulier': {
+            'price_per_month': 19.00,
+            'included_logs': 500,
+            'overage_per_1k_logs': 3.00,
+            'max_api_calls': 5000,
+            'features': ['basic_analytics', 'csv_export', 'mobile_app'],
+            'description': 'Perfect voor particulieren en zelfstandigen'
+        },
+        'mkb': {
+            'price_per_month': 49.00,
+            'included_logs': 5000,
+            'overage_per_1k_logs': 2.50,
+            'max_api_calls': 50000,
+            'features': ['advanced_analytics', 'api_access', 'priority_support'],
+            'description': 'Ideaal voor MKB bedrijven (1-50 medewerkers)'
+        },
         'starter': {
             'price_per_month': 29.00,
             'included_logs': 1000,
             'overage_per_1k_logs': 5.00,
             'max_api_calls': 10000,
-            'features': ['basic_analytics', 'csv_export']
+            'features': ['basic_analytics', 'csv_export'],
+            'description': 'Starter pakket voor kleine bedrijven'
         },
         'professional': {
             'price_per_month': 99.00,
             'included_logs': 10000,
             'overage_per_1k_logs': 3.00,
             'max_api_calls': 100000,
-            'features': ['advanced_analytics', 'api_access', 'ai_assistant']
+            'features': ['advanced_analytics', 'api_access', 'ai_assistant'],
+            'description': 'Professional pakket voor groeiende bedrijven'
         },
         'enterprise': {
             'price_per_month': 299.00,
             'included_logs': 100000,
             'overage_per_1k_logs': 1.50,
             'max_api_calls': 1000000,
-            'features': ['all_features', 'dedicated_support', 'custom_integration']
+            'features': ['all_features', 'dedicated_support', 'custom_integration', 'sla_guarantee'],
+            'description': 'Enterprise pakket met 99.9% SLA garantie'
         }
     }
 

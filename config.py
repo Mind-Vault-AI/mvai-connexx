@@ -46,6 +46,49 @@ class Config:
     DEPLOYMENT_MODE = os.getenv('DEPLOYMENT_MODE', 'cloud')  # cloud, on-premise, hybrid
     INTERNAL_IP_RANGE = os.getenv('INTERNAL_IP_RANGE', '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16')
 
+    # Company Info
+    DOMAIN = os.getenv('DOMAIN', 'mindvault-ai.com')
+    COMPANY_NAME = 'Mind Vault AI'
+    COMPANY_EMAIL = 'info@mindvault-ai.com'
+    COMPANY_WEBSITE = 'https://mindvault-ai.com'
+
+    # Features
+    ENABLE_AI_ASSISTANT = os.getenv('ENABLE_AI_ASSISTANT', 'true').lower() == 'true'
+    ENABLE_DEMO_MODE = os.getenv('ENABLE_DEMO_MODE', 'true').lower() == 'true'
+    DEMO_ACCOUNT_EXPIRY_DAYS = int(os.getenv('DEMO_ACCOUNT_EXPIRY_DAYS', 14))
+
+    # Pricing
+    DEFAULT_PRICING_TIER = os.getenv('DEFAULT_PRICING_TIER', 'demo')
+    ALLOW_TIER_UPGRADE = True
+    ALLOW_TIER_DOWNGRADE = True
+
+    # SLA
+    TARGET_UPTIME_PCT = float(os.getenv('TARGET_UPTIME_PCT', 99.9))
+    TARGET_RESPONSE_TIME_MS = int(os.getenv('TARGET_RESPONSE_TIME_MS', 200))
+
+    # Email (TODO: Configure in production)
+    SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
+    SMTP_USERNAME = os.getenv('SMTP_USERNAME', '')
+    SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+    SMTP_FROM_EMAIL = os.getenv('SMTP_FROM_EMAIL', 'info@mindvault-ai.com')
+    SMTP_FROM_NAME = os.getenv('SMTP_FROM_NAME', 'MVAI Connexx')
+
+    # Payments (TODO: Configure)
+    PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'stripe')  # stripe, mollie
+    STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
+    STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
+    MOLLIE_API_KEY = os.getenv('MOLLIE_API_KEY', '')
+
+    # Monitoring
+    SENTRY_DSN = os.getenv('SENTRY_DSN', '')
+    ENABLE_SENTRY = bool(os.getenv('SENTRY_DSN', ''))
+
+    # Legal Pages
+    TERMS_OF_SERVICE_URL = '/legal#terms'
+    PRIVACY_POLICY_URL = '/legal#privacy'
+    DISCLAIMER_URL = '/legal#disclaimer'
+
 class DevelopmentConfig(Config):
     """Development configuratie"""
     DEBUG = True

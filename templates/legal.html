@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal | MVAI Connexx</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .logo { font-weight: 800; font-size: 1.2rem; color: #fff; }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav a {
+            color: var(--dim);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--accent);
+        }
+
+        .section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p, li {
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        .highlight {
+            background: rgba(0,255,65,0.1);
+            border-left: 3px solid var(--accent);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .contact-box {
+            background: rgba(0,255,65,0.05);
+            border: 1px solid var(--accent);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .contact-box strong {
+            color: var(--accent);
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .meta {
+            color: var(--dim);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">MVAI CONNEXX - Legal</div>
+    </header>
+
+    <div class="container">
+        <nav id="nav">
+            <a href="#terms" class="active">Terms of Service</a>
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#disclaimer">Disclaimer</a>
+            <a href="{{ url_for('login') }}">← Terug naar Login</a>
+        </nav>
+
+        <!-- ALGEMENE VOORWAARDEN -->
+        <div class="section" id="terms">
+            <h1>Algemene Voorwaarden (Terms of Service)</h1>
+            <p class="meta">Last Updated: December 27, 2025 | Version 1.0</p>
+
+            <div class="contact-box">
+                <strong>Service Provider:</strong> Mind Vault AI<br>
+                <strong>Contact:</strong> <a href="mailto:info@mindvault-ai.com">info@mindvault-ai.com</a><br>
+                <strong>Website:</strong> <a href="https://mindvault-ai.com" target="_blank">https://mindvault-ai.com</a>
+            </div>
+
+            <h2>1. Toepasselijkheid</h2>
+            <p>Deze algemene voorwaarden zijn van toepassing op alle diensten geleverd door Mind Vault AI via het MVAI Connexx platform.</p>
+
+            <h2>2. Dienstverlening</h2>
+            <p>Het MVAI Connexx platform biedt de volgende diensten:</p>
+            <ul>
+                <li>Data logging en opslag (multi-tenant geïsoleerd)</li>
+                <li>Analytics en rapportage</li>
+                <li>API toegang (afhankelijk van abonnement)</li>
+                <li>AI Assistant functionaliteit (opt-in)</li>
+                <li>Beveiligingsmonitoring</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>SLA Commitment:</strong> Wij streven naar <strong>99.9% uptime</strong> voor alle enterprise abonnementen.
+            </div>
+
+            <h2>3. Prijzen en Abonnementen</h2>
+            <p>Beschikbare abonnementen:</p>
+            <ul>
+                <li><strong>Demo:</strong> €0/maand - 14 dagen trial (100 logs)</li>
+                <li><strong>Particulier:</strong> €19/maand (500 logs included)</li>
+                <li><strong>MKB:</strong> €49/maand (5,000 logs included)</li>
+                <li><strong>Starter:</strong> €29/maand (1,000 logs included)</li>
+                <li><strong>Professional:</strong> €99/maand (10,000 logs included)</li>
+                <li><strong>Enterprise:</strong> €299/maand (100,000 logs included + SLA)</li>
+            </ul>
+
+            <p>Alle prijzen zijn exclusief BTW. Facturering vindt maandelijks plaats.</p>
+
+            <h2>4. Gebruik van het Platform</h2>
+            <p>Verboden gebruik omvat:</p>
+            <ul>
+                <li>Reverse engineering van de software</li>
+                <li>Uploaden van illegale content</li>
+                <li>Overmatig gebruik (DoS, flooding)</li>
+                <li>Delen van toegangscodes met derden</li>
+            </ul>
+
+            <p>Bij overtreding behoudt Mind Vault AI zich het recht voor het account direct op te schorten.</p>
+
+            <h2>5. Aansprakelijkheid</h2>
+            <p>De aansprakelijkheid is beperkt tot maximaal €10,000 per incident of het bedrag betaald in de afgelopen 12 maanden (wat het laagste is).</p>
+
+            <p>Mind Vault AI is NIET aansprakelijk voor:</p>
+            <ul>
+                <li>Indirecte schade (bedrijfsschade, winstderving)</li>
+                <li>Dataverlies (klant is verantwoordelijk voor eigen backups)</li>
+                <li>Schade door hackers of derden</li>
+                <li>Force majeure (natuurrampen, pandemieën, etc.)</li>
+            </ul>
+
+            <h2>6. Opzegging</h2>
+            <p>Abonnementen kunnen worden opgezegd tot 7 dagen voor het einde van de maand. Na opzegging heeft u 30 dagen toegang tot data export functionaliteit.</p>
+
+            <h2>7. Toepasselijk Recht</h2>
+            <p>Op deze voorwaarden is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de rechtbank Amsterdam.</p>
+        </div>
+
+        <!-- PRIVACY POLICY -->
+        <div class="section" id="privacy">
+            <h1>Privacy Policy (AVG Compliant)</h1>
+            <p class="meta">Last Updated: December 27, 2025 | Version 1.0</p>
+
+            <div class="contact-box">
+                <strong>Verantwoordelijke:</strong> Mind Vault AI<br>
+                <strong>Email:</strong> <a href="mailto:info@mindvault-ai.com">info@mindvault-ai.com</a><br>
+                <strong>AVG Verzoeken:</strong> Subject: "AVG Verzoek - [Uw Naam]"
+            </div>
+
+            <h2>1. Welke Gegevens Verzamelen We?</h2>
+            <p><strong>Account Informatie:</strong></p>
+            <ul>
+                <li>Bedrijfsnaam</li>
+                <li>Contactemail</li>
+                <li>Access codes (gehashed)</li>
+                <li>IP adressen (voor beveiliging)</li>
+            </ul>
+
+            <p><strong>Platform Data:</strong></p>
+            <ul>
+                <li>Door u geüploade logs</li>
+                <li>Usage metrics (aantal logs, API calls)</li>
+                <li>Analytics data</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>Privacy Garantie:</strong> Wij verkopen of verhuren uw data <strong>NOOIT</strong> aan derden!
+            </div>
+
+            <h2>2. Waarom Verzamelen We Deze Gegevens?</h2>
+            <ul>
+                <li><strong>Noodzakelijk:</strong> Account management, data opslag, facturering</li>
+                <li><strong>Beveiliging:</strong> Fraud preventie, threat detection, access control</li>
+                <li><strong>Verbetering:</strong> Performance monitoring, bug fixes</li>
+            </ul>
+
+            <h2>3. Met Wie Delen We Gegevens?</h2>
+            <p>Wij delen GEEN data met derden, behalve:</p>
+            <ul>
+                <li><strong>Hosting:</strong> Fly.io (EU datacenters, GDPR compliant)</li>
+                <li><strong>Wettelijk:</strong> Indien verplicht door wet</li>
+            </ul>
+
+            <h2>4. Beveiliging</h2>
+            <ul>
+                <li>Encryptie in transit (HTTPS/TLS)</li>
+                <li>Encryptie at rest (database encryption)</li>
+                <li>IP whitelisting & threat detection</li>
+                <li>Daily backups</li>
+                <li>Multi-factor authentication (admin)</li>
+            </ul>
+
+            <h2>5. Uw Rechten (AVG)</h2>
+            <p>U heeft de volgende rechten:</p>
+            <ul>
+                <li><strong>Recht op inzage:</strong> Opvragen welke data we hebben</li>
+                <li><strong>Recht op rectificatie:</strong> Correctie van onjuiste gegevens</li>
+                <li><strong>Recht op verwijdering:</strong> "Recht om vergeten te worden"</li>
+                <li><strong>Recht op dataportabiliteit:</strong> Export in machine-readable format (CSV)</li>
+                <li><strong>Recht op bezwaar:</strong> Bezwaar tegen verwerking</li>
+            </ul>
+
+            <p><strong>Uitoefening rechten:</strong> Email naar <a href="mailto:info@mindvault-ai.com">info@mindvault-ai.com</a>. We reageren binnen 30 dagen.</p>
+
+            <h2>6. Bewaarperiode</h2>
+            <ul>
+                <li><strong>Actieve accounts:</strong> Zolang abonnement loopt</li>
+                <li><strong>Na opzegging:</strong> 30 dagen (voor data export)</li>
+                <li><strong>Daarna:</strong> Permanent verwijderd</li>
+                <li><strong>Financiële data:</strong> 7 jaar (wettelijke verplichting)</li>
+            </ul>
+
+            <h2>7. Data Breaches</h2>
+            <p>Bij een data breach informeren we u binnen 72 uur conform AVG vereisten.</p>
+
+            <h2>8. Cookies</h2>
+            <p>Wij gebruiken minimale cookies:</p>
+            <ul>
+                <li><strong>Functioneel:</strong> Session cookies (login)</li>
+                <li><strong>Geen marketing cookies</strong></li>
+                <li><strong>Geen third-party trackers</strong></li>
+            </ul>
+        </div>
+
+        <!-- DISCLAIMER -->
+        <div class="section" id="disclaimer">
+            <h1>Disclaimer</h1>
+            <p class="meta">Last Updated: December 27, 2025 | Version 1.0</p>
+
+            <h2>1. Service "As Is"</h2>
+            <p>Het MVAI Connexx platform wordt aangeboden "as is" zonder garanties van welke aard dan ook.</p>
+
+            <h2>2. Geen Garantie op Uptime</h2>
+            <p>Hoewel we streven naar 99.9% uptime, kunnen we dit niet garanderen. Downtime kan voorkomen door:</p>
+            <ul>
+                <li>Gepland onderhoud</li>
+                <li>Technische storingen</li>
+                <li>DDoS aanvallen</li>
+                <li>Force majeure</li>
+            </ul>
+
+            <h2>3. Eigen Verantwoordelijkheid</h2>
+            <p>De klant is verantwoordelijk voor:</p>
+            <ul>
+                <li>Eigen backups van kritieke data</li>
+                <li>Validatie van opgeslagen data</li>
+                <li>Disaster recovery planning</li>
+                <li>Compliance met lokale wet- en regelgeving</li>
+            </ul>
+
+            <h2>4. AI Functionaliteit</h2>
+            <div class="highlight">
+                <strong>Belangrijk:</strong> De AI Assistant functionaliteit is experimenteel en kan fouten maken.
+                Deze geeft geen juridisch of financieel advies en vervangt geen menselijke expertise.
+                Gebruik op eigen risico.
+            </div>
+
+            <h2>5. Beveiligingsincidenten</h2>
+            <p>Ondanks uitgebreide beveiligingsmaatregelen kunnen security incidents voorkomen. We zijn niet aansprakelijk voor schade door hackers, zero-day vulnerabilities of social engineering, behalve indien veroorzaakt door grove nalatigheid.</p>
+
+            <h2>6. Maximale Aansprakelijkheid</h2>
+            <p>In alle gevallen is onze totale aansprakelijkheid beperkt tot:</p>
+            <ul>
+                <li>Maximum €10,000 per incident</li>
+                <li>Of het bedrag betaald in de afgelopen 12 maanden</li>
+                <li>Wat het laagste is</li>
+            </ul>
+
+            <h2>7. Indemnificatie</h2>
+            <p>De klant vrijwaart ons tegen claims van derden over klant data, misbruik van platform, of inbreuk op intellectueel eigendom.</p>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="section">
+            <h2>Contact & Support</h2>
+            <div class="contact-box">
+                <p><strong>Voor alle vragen, support of AVG verzoeken:</strong></p>
+                <p style="font-size: 1.2rem; margin: 15px 0;">
+                    <strong>Email:</strong> <a href="mailto:info@mindvault-ai.com">info@mindvault-ai.com</a>
+                </p>
+                <p><strong>Website:</strong> <a href="https://mindvault-ai.com" target="_blank">https://mindvault-ai.com</a></p>
+                <p style="margin-top: 20px; color: var(--dim);">
+                    Mind Vault AI<br>
+                    Nederland
+                </p>
+            </div>
+
+            <div class="highlight">
+                <strong>Acceptatie:</strong> Door gebruik te maken van het MVAI Connexx platform, accepteert u deze Algemene Voorwaarden, Privacy Policy en Disclaimer. Indien u niet akkoord gaat, dient u het platform niet te gebruiken.
+            </div>
+        </div>
+
+        <p style="text-align: center; color: var(--dim); margin: 40px 0; padding: 20px;">
+            <a href="{{ url_for('login') }}">← Terug naar Login</a>
+        </p>
+    </div>
+
+    <script>
+        // Smooth scroll to anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Update active nav
+                    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Highlight current section in nav on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section[id]');
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('nav a').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href') === `#${current}`) {
+                    a.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
