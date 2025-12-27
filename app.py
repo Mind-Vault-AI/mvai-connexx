@@ -7,7 +7,10 @@ import json
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import database as db
+import analytics
 import csv
 import io
 
@@ -15,9 +18,21 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
+# Rate limiting voor API protection
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
 # Initialiseer database bij startup
 with app.app_context():
     db.init_db()
+
+# Registreer API Blueprint
+from api import api_bp
+app.register_blueprint(api_bp)
 
 # ═══════════════════════════════════════════════════════
 # DECORATORS VOOR AUTHENTICATION
@@ -58,12 +73,15 @@ def get_client_ip():
 
 @app.route('/')
 def index():
-    """Landing page - redirect naar login of dashboard"""
+    """Professional landing page voor MVAI Connexx platform"""
+    # Redirect ingelogde gebruikers naar hun dashboard
     if 'customer_id' in session:
         return redirect(url_for('customer_dashboard'))
     elif 'admin' in session:
         return redirect(url_for('admin_dashboard'))
-    return redirect(url_for('login'))
+
+    # Toon luxury landing page voor nieuwe bezoekers
+    return render_template('landing.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -248,6 +266,191 @@ def customer_search():
                          logs=logs,
                          query=query)
 
+@app.route('/customer/analytics')
+@login_required
+def customer_analytics():
+    """Advanced analytics dashboard voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    # Haal analytics op
+    analytics_data = analytics.get_customer_analytics(customer_id, days=30)
+    predictions = analytics.get_customer_predictions(customer_id)
+
+    return render_template('customer_analytics.html',
+                         customer=customer,
+                         analytics=analytics_data,
+                         predictions=predictions)
+
+@app.route('/customer/api-keys')
+@login_required
+def customer_api_keys():
+    """API key management voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    api_keys = db.get_customer_api_keys(customer_id)
+
+    return render_template('customer_api_keys.html',
+                         customer=customer,
+                         api_keys=api_keys)
+
+@app.route('/customer/api-keys/create', methods=['POST'])
+@login_required
+def customer_create_api_key():
+    """Maak nieuwe API key aan"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin kan niet customer API keys aanmaken"}), 403
+
+    customer_id = session['customer_id']
+    name = request.form.get('name', 'Default API Key')
+
+    key_value = db.create_api_key(customer_id, name)
+
+    # Log actie
+    db.log_admin_action(
+        admin_username=f'customer_{customer_id}',
+        action='create_api_key',
+        target_type='api_key',
+        details=f'Created API key: {name}',
+        ip_address=get_client_ip()
+    )
+
+    flash(f'API Key aangemaakt: {key_value}', 'success')
+    return redirect(url_for('customer_api_keys'))
+
+@app.route('/customer/api-keys/<int:key_id>/revoke', methods=['POST'])
+@login_required
+def customer_revoke_api_key(key_id):
+    """Revoke API key"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin moet admin panel gebruiken"}), 403
+
+    customer_id = session['customer_id']
+
+    # Verifieer ownership
+    api_keys = db.get_customer_api_keys(customer_id)
+    if not any(k['id'] == key_id for k in api_keys):
+        return jsonify({"error": "API key niet gevonden"}), 404
+
+    db.revoke_api_key(key_id)
+
+    # Log actie
+    db.log_admin_action(
+        admin_username=f'customer_{customer_id}',
+        action='revoke_api_key',
+        target_type='api_key',
+        target_id=key_id,
+        ip_address=get_client_ip()
+    )
+
+    return jsonify({"success": True}), 200
+
+# ═══════════════════════════════════════════════════════
+# AI ASSISTANT ROUTES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/customer/ai')
+@login_required
+def customer_ai_assistant():
+    """AI Assistant dashboard voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    ai_enabled = customer.get('ai_assistant_enabled', False)
+
+    suggestions = []
+    conversations = []
+
+    if ai_enabled:
+        from ai_assistant import get_assistant
+        assistant = get_assistant(customer_id)
+        suggestions = assistant.get_proactive_suggestions()
+
+        # Load recent conversations
+        with db.get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT user_message, ai_response, timestamp
+                FROM ai_conversations
+                WHERE customer_id = ?
+                ORDER BY timestamp DESC
+                LIMIT 10
+            ''', (customer_id,))
+            conversations = [dict(row) for row in cursor.fetchall()]
+            conversations.reverse()  # Show oldest first
+
+    return render_template('customer_ai_assistant.html',
+                         customer=customer,
+                         ai_enabled=ai_enabled,
+                         suggestions=suggestions,
+                         conversations=conversations)
+
+@app.route('/customer/ai/activate', methods=['POST'])
+@login_required
+def customer_ai_activate():
+    """Activeer AI Assistant voor klant"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin kan niet AI activeren"}), 403
+
+    customer_id = session['customer_id']
+
+    from ai_assistant import enable_assistant
+    enable_assistant(customer_id)
+
+    # Log actie
+    db.log_admin_action(
+        admin_username=f'customer_{customer_id}',
+        action='activate_ai_assistant',
+        target_type='customer',
+        target_id=customer_id,
+        details='Activated AI Assistant',
+        ip_address=get_client_ip()
+    )
+
+    return jsonify({"success": True}), 200
+
+@app.route('/customer/ai/chat', methods=['POST'])
+@login_required
+def customer_ai_chat():
+    """Verwerk AI chat commando"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin kan niet AI chat gebruiken"}), 403
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    if not customer.get('ai_assistant_enabled', False):
+        return jsonify({"error": "AI Assistant niet geactiveerd"}), 403
+
+    message = request.json.get('message', '').strip()
+
+    if not message:
+        return jsonify({"error": "Geen bericht"}), 400
+
+    from ai_assistant import get_assistant
+    assistant = get_assistant(customer_id)
+
+    # Process command
+    result = assistant.process_command(message)
+
+    # Save conversation
+    with db.get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO ai_conversations (customer_id, user_message, ai_response, intent)
+            VALUES (?, ?, ?, ?)
+        ''', (customer_id, message, result['message'], result.get('intent', 'unknown')))
+
+    return jsonify(result)
+
 # ═══════════════════════════════════════════════════════
 # ADMIN ROUTES
 # ═══════════════════════════════════════════════════════
@@ -304,6 +507,17 @@ def admin_create_customer():
 
         try:
             customer = db.create_customer(name, contact_email, company_info)
+
+            # Log admin actie
+            db.log_admin_action(
+                admin_username=session.get('admin_username', 'admin'),
+                action='create_customer',
+                target_type='customer',
+                target_id=customer['id'],
+                details=f'Created customer: {name}',
+                ip_address=get_client_ip()
+            )
+
             flash(f'Klant {name} aangemaakt! Access code: {customer["access_code"]}', 'success')
             return redirect(url_for('admin_customer_detail', customer_id=customer['id']))
         except Exception as e:
@@ -321,6 +535,16 @@ def admin_toggle_customer_status(customer_id):
 
     new_status = 'inactive' if customer['status'] == 'active' else 'active'
     db.update_customer_status(customer_id, new_status)
+
+    # Log admin actie
+    db.log_admin_action(
+        admin_username=session.get('admin_username', 'admin'),
+        action='toggle_customer_status',
+        target_type='customer',
+        target_id=customer_id,
+        details=f'Changed status to {new_status} for {customer["name"]}',
+        ip_address=get_client_ip()
+    )
 
     return jsonify({
         "status": "success",
@@ -416,6 +640,149 @@ def api_stats():
     return jsonify(stats)
 
 # ═══════════════════════════════════════════════════════
+# ENTERPRISE ADMIN ROUTES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/admin/enterprise')
+@admin_required
+def admin_enterprise_dashboard():
+    """Enterprise-grade admin dashboard met ICT, Unit Economics, Lean Six Sigma & Marketing"""
+    from monitoring import health_monitor
+    from unit_economics import get_business_metrics, get_customer_grades
+    from lean_six_sigma import track_system_quality_metrics, get_improvement_recommendations, _calculate_sigma_belt
+    from marketing_intelligence import get_marketing_dashboard
+
+    # Get all metrics
+    health_status = health_monitor.get_overall_health()
+    business_metrics = get_business_metrics()
+    customer_grades = get_customer_grades()
+    quality_metrics = track_system_quality_metrics(30)
+    marketing_dashboard = get_marketing_dashboard()
+
+    # Get active alerts
+    from monitoring import get_active_alerts
+    active_alerts = get_active_alerts()
+
+    # Get improvement recommendations
+    improvement_recommendations = get_improvement_recommendations()
+
+    # Get growth strategies
+    growth_strategies = marketing_dashboard['growth_strategies']
+
+    return render_template('admin_enterprise_dashboard.html',
+                         health_status=health_status,
+                         business_metrics=business_metrics,
+                         customer_grades=customer_grades,
+                         quality_metrics=quality_metrics,
+                         marketing_summary=marketing_dashboard['summary'],
+                         active_alerts=active_alerts,
+                         improvement_recommendations=improvement_recommendations,
+                         growth_strategies=growth_strategies,
+                         sigma_belt=_calculate_sigma_belt(quality_metrics['sigma_level']))
+
+@app.route('/admin/ict-monitoring')
+@admin_required
+def admin_ict_monitoring():
+    """ICT Monitoring dashboard met errors, alerts en incidents"""
+    from monitoring import health_monitor, get_active_alerts, get_error_analytics, get_recent_errors
+    from incident_response import incident_manager
+
+    health_status = health_monitor.get_overall_health()
+    active_alerts = get_active_alerts()
+    error_analytics = get_error_analytics(30)
+    recent_errors = get_recent_errors(50)
+    active_incidents = incident_manager.get_active_incidents()
+
+    return render_template('admin_ict_monitoring.html',
+                         health_status=health_status,
+                         active_alerts=active_alerts,
+                         error_analytics=error_analytics,
+                         recent_errors=recent_errors,
+                         active_incidents=active_incidents)
+
+@app.route('/admin/unit-economics')
+@admin_required
+def admin_unit_economics():
+    """Unit Economics dashboard met MRR, LTV, CAC en profitability"""
+    from unit_economics import get_business_metrics, get_customer_grades, get_cohort_analysis
+
+    business_metrics = get_business_metrics()
+    customer_grades = get_customer_grades()
+    cohort_analysis = get_cohort_analysis(6)
+
+    return render_template('admin_unit_economics.html',
+                         business_metrics=business_metrics,
+                         customer_grades=customer_grades,
+                         cohort_analysis=cohort_analysis)
+
+@app.route('/admin/lean-six-sigma')
+@admin_required
+def admin_lean_six_sigma():
+    """Lean Six Sigma dashboard met quality metrics, DMAIC projects en improvements"""
+    from lean_six_sigma import track_system_quality_metrics, get_dmaic_dashboard, pareto_analysis_defects
+
+    quality_metrics = track_system_quality_metrics(30)
+    dmaic_dashboard = get_dmaic_dashboard()
+    pareto_analysis = pareto_analysis_defects(30)
+
+    return render_template('admin_lean_six_sigma.html',
+                         quality_metrics=quality_metrics,
+                         dmaic_dashboard=dmaic_dashboard,
+                         pareto_analysis=pareto_analysis)
+
+@app.route('/admin/marketing')
+@admin_required
+def admin_marketing():
+    """Marketing Intelligence dashboard met funnel, channels, segments en growth strategies"""
+    from marketing_intelligence import get_marketing_dashboard
+
+    marketing_dashboard = get_marketing_dashboard()
+
+    return render_template('admin_marketing.html',
+                         marketing_dashboard=marketing_dashboard)
+
+@app.route('/admin/incident-response/execute-exit-strategy', methods=['POST'])
+@admin_required
+def admin_execute_exit_strategy():
+    """Execute emergency exit strategy"""
+    from incident_response import execute_emergency_exit_strategy
+
+    reason = request.form.get('reason', 'Manual trigger by admin')
+
+    result = execute_emergency_exit_strategy(reason)
+
+    flash(f'Emergency exit strategy executed! Incident ID: {result["incident_id"]}', 'warning')
+    return redirect(url_for('admin_ict_monitoring'))
+
+@app.route('/admin/alert/<int:alert_id>/acknowledge', methods=['POST'])
+@admin_required
+def admin_acknowledge_alert(alert_id):
+    """Acknowledge an alert"""
+    from monitoring import acknowledge_alert
+
+    success = acknowledge_alert(alert_id, session.get('admin_username', 'admin'))
+
+    if success:
+        return jsonify({"success": True}), 200
+    return jsonify({"error": "Failed to acknowledge alert"}), 500
+
+@app.route('/admin/alert/<int:alert_id>/resolve', methods=['POST'])
+@admin_required
+def admin_resolve_alert(alert_id):
+    """Resolve an alert"""
+    from monitoring import resolve_alert
+
+    resolution_notes = request.form.get('notes', '')
+    success = resolve_alert(alert_id, session.get('admin_username', 'admin'), resolution_notes)
+
+    if success:
+        flash('Alert resolved successfully', 'success')
+        return redirect(url_for('admin_ict_monitoring'))
+
+    flash('Failed to resolve alert', 'error')
+    return redirect(url_for('admin_ict_monitoring'))
+
+# ═══════════════════════════════════════════════════════
 # ERROR HANDLERS
 # ═══════════════════════════════════════════════════════
 
@@ -434,3 +801,13 @@ def server_error(e):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
+# ═══════════════════════════════════════════════════════
+# LEGAL & PUBLIC PAGES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/legal')
+def legal_pages():
+    """Legal pages: Terms, Privacy Policy, Disclaimer"""
+    return render_template('legal.html')
+

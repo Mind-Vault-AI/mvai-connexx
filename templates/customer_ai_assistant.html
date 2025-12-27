@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Secretaresse | {{ customer.name }}</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+        .ai-badge {
+            background: linear-gradient(135deg, #00ff41, #00dd35);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--dim);
+            margin-bottom: 30px;
+        }
+
+        .activation-section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .activation-section h2 {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .btn-activate {
+            padding: 15px 30px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .chat-container {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+
+        .chat-header {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00ff41, #00dd35);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .message-user {
+            background: #1a1a1a;
+            align-self: flex-end;
+            border: 1px solid var(--border);
+        }
+
+        .message-ai {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            align-self: flex-start;
+        }
+
+        .message-ai .ai-icon {
+            color: var(--accent);
+            margin-right: 5px;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn-send {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .suggestions-section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .suggestion-item {
+            padding: 15px;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 3px solid var(--accent);
+            margin-bottom: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateX(5px);
+        }
+
+        .suggestion-item h4 {
+            color: var(--accent);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .suggestion-item p {
+            color: var(--text);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-action {
+            color: var(--dim);
+            font-size: 0.85rem;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .example-card {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .example-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 12px;
+            max-width: 100px;
+        }
+
+        .typing-indicator span {
+            animation: blink 1.4s infinite;
+            display: inline-block;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0%, 60%, 100% { opacity: 1; }
+            30% { opacity: 0.3; }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .disabled-overlay {
+            position: relative;
+        }
+
+        .disabled-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">MVAI</span>
+            <span class="ai-badge">🤖 AI SECRETARESSE</span>
+        </div>
+        <a href="{{ url_for('customer_dashboard') }}" style="color: var(--text); text-decoration: none;">← Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1>🤖 AI Secretaresse</h1>
+        <p class="subtitle">Uw persoonlijke AI assistent voor data analyse en rapportage</p>
+
+        {% if not ai_enabled %}
+        <!-- Activation Section -->
+        <div class="activation-section">
+            <div class="ai-avatar">🤖</div>
+            <h2>Activeer Uw AI Secretaresse</h2>
+            <p style="color: var(--dim); margin-bottom: 20px;">
+                Krijg een persoonlijke AI assistent die u helpt met:
+            </p>
+            <ul style="list-style: none; text-align: left; max-width: 500px; margin: 0 auto 20px;">
+                <li style="margin-bottom: 10px;">✅ Automatische rapporten genereren</li>
+                <li style="margin-bottom: 10px;">✅ Data trends analyseren</li>
+                <li style="margin-bottom: 10px;">✅ Proactieve inzichten en suggesties</li>
+                <li style="margin-bottom: 10px;">✅ Natuurlijke taal commando's</li>
+                <li style="margin-bottom: 10px;">✅ 100% privé (uw data blijft geïsoleerd)</li>
+            </ul>
+            <button class="btn-activate" onclick="activateAI()">🚀 Activeer AI Secretaresse</button>
+        </div>
+        {% else %}
+
+        <!-- Proactieve Suggesties -->
+        {% if suggestions %}
+        <div class="suggestions-section">
+            <h3 style="color: #fff; margin-bottom: 20px;">💡 Proactieve Suggesties</h3>
+            {% for suggestion in suggestions %}
+            <div class="suggestion-item" onclick="useSuggestion('{{ suggestion.action }}')">
+                <h4>{{ suggestion.title }}</h4>
+                <p>{{ suggestion.message }}</p>
+                <span class="suggestion-action">💬 {{ suggestion.action }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="ai-avatar">🤖</div>
+                <div>
+                    <div style="font-weight: 600; color: #fff;">AI Secretaresse</div>
+                    <div style="font-size: 0.8rem; color: var(--dim);">Altijd beschikbaar • Privé & Veilig</div>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="messages">
+                <div class="message message-ai">
+                    <span class="ai-icon">🤖</span>
+                    Hallo! Ik ben uw AI secretaresse. Vraag me om rapporten te maken, trends te analyseren, of data op te zoeken. Typ "help" voor voorbeelden!
+                </div>
+
+                {% if conversations %}
+                    {% for conv in conversations[-10:] %}
+                    <div class="message message-user">{{ conv.user_message }}</div>
+                    <div class="message message-ai">
+                        <span class="ai-icon">🤖</span>
+                        {{ conv.ai_response }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="typing-indicator" id="typing">
+                    <span>●</span><span>●</span><span>●</span>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="userInput"
+                    placeholder="Typ uw commando... bijv: 'Hoeveel logs vandaag?'"
+                    onkeypress="if(event.key === 'Enter') sendMessage()"
+                >
+                <button class="btn-send" onclick="sendMessage()">Verstuur</button>
+            </div>
+        </div>
+
+        <!-- Voorbeeld Commando's -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #fff; margin-bottom: 15px;">📚 Voorbeeld Commando's</h3>
+            <div class="examples-grid">
+                <div class="example-card" onclick="useExample('Hoeveel logs waren er vandaag?')">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">📊</div>
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">Statistieken</div>
+                    <div style="color: var(--dim); font-size: 0.85rem;">Hoeveel logs vandaag?</div>
+                </div>
+
+                <div class="example-card" onclick="useExample('Maak een rapport van deze week')">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">📝</div>
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">Rapporten</div>
+                    <div style="color: var(--dim); font-size: 0.85rem;">Maak rapport van deze week</div>
+                </div>
+
+                <div class="example-card" onclick="useExample('Laat trend zien van deze maand')">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">📈</div>
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">Trends</div>
+                    <div style="color: var(--dim); font-size: 0.85rem;">Laat trend zien</div>
+                </div>
+
+                <div class="example-card" onclick="useExample('Zoek naar container')">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🔍</div>
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 5px;">Zoeken</div>
+                    <div style="color: var(--dim); font-size: 0.85rem;">Zoek naar...</div>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+
+    <script>
+        function activateAI() {
+            fetch('/customer/ai/activate', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Toon user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Toon typing indicator
+            document.getElementById('typing').style.display = 'block';
+            scrollToBottom();
+
+            // Stuur naar API
+            fetch('/customer/ai/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message})
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Verberg typing
+                document.getElementById('typing').style.display = 'none';
+
+                // Toon AI response
+                let response = data.message || 'Error: Geen response';
+                if (data.report) {
+                    response += '\n\n' + JSON.stringify(data.report, null, 2);
+                }
+                if (data.stats) {
+                    response += '\n\n' + JSON.stringify(data.stats, null, 2);
+                }
+
+                addMessage(response, 'ai');
+                scrollToBottom();
+            })
+            .catch(err => {
+                document.getElementById('typing').style.display = 'none';
+                addMessage('Error: ' + err.message, 'ai');
+            });
+        }
+
+        function addMessage(text, type) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+
+            if (type === 'ai') {
+                messageDiv.innerHTML = '<span class="ai-icon">🤖</span>' + text.replace(/\n/g, '<br>');
+            } else {
+                messageDiv.textContent = text;
+            }
+
+            messagesDiv.insertBefore(messageDiv, document.getElementById('typing'));
+        }
+
+        function scrollToBottom() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function useExample(text) {
+            document.getElementById('userInput').value = text;
+            document.getElementById('userInput').focus();
+        }
+
+        function useSuggestion(action) {
+            document.getElementById('userInput').value = action;
+            sendMessage();
+        }
+    </script>
+</body>
+</html>

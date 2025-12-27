@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys | {{ customer.name }}</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+        .company-name { font-size: 0.9rem; color: var(--accent); margin-left: 15px; }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 10px; }
+        .subtitle { color: var(--dim); margin-bottom: 30px; }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .create-form {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .btn-create {
+            padding: 12px 20px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .keys-table {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .keys-table th,
+        .keys-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .keys-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .key-value {
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .btn-revoke {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-back {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .status-active { color: var(--accent); }
+        .status-inactive { color: #ff4444; }
+
+        .info-box {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h4 {
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .info-box p {
+            color: var(--dim);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">MVAI</span>
+            <span class="company-name">{{ customer.name }}</span>
+        </div>
+        <a href="{{ url_for('customer_dashboard') }}" class="btn-back">← Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1>🔑 API Key Management</h1>
+        <p class="subtitle">Beheer uw API keys voor programmatic access</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="info-box">
+            <h4>📚 API Documentatie</h4>
+            <p>
+                Gebruik uw API key voor toegang tot de MVAI Connexx REST API.
+                Endpoints: <strong>/api/v1/logs</strong>, <strong>/api/v1/analytics</strong>, en meer.
+                <br><br>
+                <strong>Authenticatie:</strong> Voeg uw API key toe als <code>X-API-Key</code> header of <code>api_key</code> parameter.
+                <br>
+                <strong>Voorbeeld:</strong> <code>curl -H "X-API-Key: mvai_xxx" https://your-app/api/v1/status</code>
+            </p>
+        </div>
+
+        <div class="create-form">
+            <h3 style="color: #fff; margin-bottom: 15px;">Nieuwe API Key Aanmaken</h3>
+            <form method="POST" action="{{ url_for('customer_create_api_key') }}">
+                <div class="form-group">
+                    <label for="name">Key Name (optioneel)</label>
+                    <input type="text" id="name" name="name" placeholder="bv. Production API Key">
+                </div>
+                <button type="submit" class="btn-create">🔑 Aanmaken</button>
+            </form>
+        </div>
+
+        <h2 style="color: #fff; margin-bottom: 15px;">Mijn API Keys</h2>
+
+        {% if api_keys %}
+            <table class="keys-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>API Key</th>
+                        <th>Status</th>
+                        <th>Aangemaakt</th>
+                        <th>Laatst Gebruikt</th>
+                        <th>Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in api_keys %}
+                    <tr>
+                        <td>{{ key.name or 'Unnamed' }}</td>
+                        <td class="key-value">{{ key.key_value[:20] }}...</td>
+                        <td>
+                            <span class="status-{{ 'active' if key.is_active else 'inactive' }}">
+                                {{ 'ACTIVE' if key.is_active else 'REVOKED' }}
+                            </span>
+                        </td>
+                        <td>{{ key.created_at[:10] }}</td>
+                        <td>{{ key.last_used_at[:16] if key.last_used_at else '-' }}</td>
+                        <td>
+                            {% if key.is_active %}
+                                <button class="btn-revoke" onclick="revokeKey({{ key.id }})">Revoke</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color: var(--dim); text-align: center; padding: 40px;">
+                Nog geen API keys. Maak er een aan om te beginnen!
+            </p>
+        {% endif %}
+    </div>
+
+    <script>
+        function revokeKey(keyId) {
+            if (!confirm('Weet je zeker dat je deze API key wilt revoken?')) return;
+
+            fetch(`/customer/api-keys/${keyId}/revoke`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Fout bij revoken: ' + data.error);
+                }
+            })
+            .catch(err => alert('Netwerkfout'));
+        }
+    </script>
+</body>
+</html>

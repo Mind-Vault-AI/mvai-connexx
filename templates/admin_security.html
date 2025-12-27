@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Dashboard | Admin</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+            --error: #ff4444;
+            --warning: #ffbd2e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+        .security-badge {
+            background: var(--warning);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 10px; }
+        .subtitle { color: var(--dim); margin-bottom: 30px; }
+
+        .status-banner {
+            background: {{ 'rgba(0, 255, 65, 0.1)' if security.status == 'secure' else 'rgba(255, 68, 68, 0.1)' }};
+            border-left: 4px solid {{ 'var(--accent)' if security.status == 'secure' else 'var(--error)' }};
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        .status-banner h2 {
+            color: {{ 'var(--accent)' if security.status == 'secure' else 'var(--error)' }};
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .stat-value.critical {
+            color: var(--error);
+        }
+
+        .incidents-table {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .incidents-table th,
+        .incidents-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .incidents-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .severity-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .severity-critical {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        .severity-high {
+            background: rgba(255, 189, 46, 0.2);
+            color: var(--warning);
+        }
+
+        .severity-medium {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--accent);
+        }
+
+        .severity-low {
+            background: rgba(102, 102, 102, 0.2);
+            color: var(--dim);
+        }
+
+        .section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .ip-list {
+            list-style: none;
+        }
+
+        .ip-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ip-item:last-child { border-bottom: none; }
+
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+        }
+
+        .btn-whitelist {
+            padding: 6px 12px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn-blacklist {
+            padding: 6px 12px;
+            background: var(--error);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .alert-box {
+            background: rgba(255, 189, 46, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-box h4 {
+            color: var(--warning);
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">MVAI ADMIN</span>
+            <span class="security-badge">🛡️ SECURITY</span>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" style="color: var(--text); text-decoration: none;">← Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1>🛡️ Security Dashboard</h1>
+        <p class="subtitle">Real-time threat monitoring en IP management</p>
+
+        <!-- Security Status Banner -->
+        <div class="status-banner">
+            <h2>
+                {% if security.status == 'secure' %}
+                    ✅ System Secure
+                {% else %}
+                    ⚠️ Security Alert
+                {% endif %}
+            </h2>
+            <p>
+                Threat Level: <strong>{{ security.threat_level.upper() }}</strong> |
+                Last checked: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}
+            </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Incidents (24h)</div>
+                <div class="stat-value {{ 'critical' if security.incidents_24h.get('critical', 0) > 0 else '' }}">
+                    {{ security.incidents_24h.values()|sum }}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Blacklisted IPs</div>
+                <div class="stat-value">{{ security.blacklisted_ips }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Whitelisted IPs</div>
+                <div class="stat-value">{{ security.whitelisted_ips }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Critical Threats</div>
+                <div class="stat-value critical">
+                    {{ security.incidents_24h.get('critical', 0) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Threats -->
+        <div class="section">
+            <h3>🚨 Recent Security Incidents (1 uur)</h3>
+
+            {% if security.recent_threats %}
+                <table class="incidents-table">
+                    <thead>
+                        <tr>
+                            <th>Tijd</th>
+                            <th>IP Address</th>
+                            <th>Type</th>
+                            <th>Severity</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for incident in security.recent_threats %}
+                        <tr>
+                            <td>{{ incident.timestamp[:16] }}</td>
+                            <td class="ip-address">{{ incident.ip_address }}</td>
+                            <td>{{ incident.incident_type }}</td>
+                            <td>
+                                <span class="severity-badge severity-{{ incident.severity }}">
+                                    {{ incident.severity.upper() }}
+                                </span>
+                            </td>
+                            <td style="font-size: 0.85rem;">{{ incident.details[:50] }}...</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--dim); text-align: center; padding: 20px;">
+                    ✅ Geen security incidents in het afgelopen uur
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- IP Management -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <!-- Whitelist -->
+            <div class="section">
+                <h3>✅ IP Whitelist</h3>
+                {% if whitelist %}
+                    <ul class="ip-list">
+                        {% for ip in whitelist %}
+                        <li class="ip-item">
+                            <div>
+                                <span class="ip-address">{{ ip.ip_address }}</span>
+                                <br>
+                                <span style="font-size: 0.85rem; color: var(--dim);">{{ ip.reason or 'No reason' }}</span>
+                            </div>
+                            <button class="btn-blacklist" onclick="removeFromWhitelist('{{ ip.id }}')">
+                                Remove
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: var(--dim); text-align: center; padding: 20px;">
+                        Geen whitelisted IPs
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Blacklist -->
+            <div class="section">
+                <h3>🚫 IP Blacklist</h3>
+                {% if blacklist %}
+                    <ul class="ip-list">
+                        {% for ip in blacklist %}
+                        <li class="ip-item">
+                            <div>
+                                <span class="ip-address">{{ ip.ip_address }}</span>
+                                <br>
+                                <span style="font-size: 0.85rem; color: var(--dim);">
+                                    {{ ip.reason or 'No reason' }}
+                                    {% if ip.expires_at %}
+                                        | Expires: {{ ip.expires_at[:16] }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <button class="btn-whitelist" onclick="removeFromBlacklist('{{ ip.id }}')">
+                                Unblock
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: var(--dim); text-align: center; padding: 20px;">
+                        Geen blacklisted IPs
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Security Configuration -->
+        <div class="alert-box">
+            <h4>🔒 Security Configuration</h4>
+            <p style="color: var(--text); font-size: 0.9rem;">
+                <strong>Network Mode:</strong> {{ config.PRIVATE_NETWORK_MODE }} |
+                <strong>IP Whitelist:</strong> {{ 'Enabled' if config.ENABLE_IP_WHITELIST else 'Disabled' }} |
+                <strong>Threat Detection:</strong> {{ 'Enabled' if config.ENABLE_THREAT_DETECTION else 'Disabled' }} |
+                <strong>Honeypot:</strong> {{ 'Enabled' if config.ENABLE_HONEYPOT else 'Disabled' }}
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function removeFromWhitelist(id) {
+            if (!confirm('Remove IP from whitelist?')) return;
+            fetch(`/admin/security/whitelist/${id}/remove`, { method: 'POST' })
+                .then(() => location.reload());
+        }
+
+        function removeFromBlacklist(id) {
+            if (!confirm('Unblock this IP?')) return;
+            fetch(`/admin/security/blacklist/${id}/remove`, { method: 'POST' })
+                .then(() => location.reload());
+        }
+
+        // Auto-refresh elke 30 seconden
+        setTimeout(() => location.reload(), 30000);
+    </script>
+</body>
+</html>

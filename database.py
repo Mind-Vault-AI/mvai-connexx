@@ -38,7 +38,8 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 status TEXT DEFAULT 'active',
                 contact_email TEXT,
-                company_info TEXT
+                company_info TEXT,
+                ai_assistant_enabled BOOLEAN DEFAULT 0
             )
         ''')
 
@@ -65,10 +66,331 @@ def init_db():
             )
         ''')
 
+        # Audit logs tabel voor admin acties
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                admin_username TEXT NOT NULL,
+                action TEXT NOT NULL,
+                target_type TEXT,
+                target_id INTEGER,
+                details TEXT,
+                ip_address TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # API keys tabel voor programmatic access
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS api_keys (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                key_value TEXT NOT NULL UNIQUE,
+                name TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_used_at TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # IP Whitelist tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ip_whitelist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL UNIQUE,
+                reason TEXT,
+                added_by TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # IP Blacklist tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ip_blacklist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL,
+                reason TEXT,
+                added_by TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                expires_at TIMESTAMP
+            )
+        ''')
+
+        # Security incidents tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS security_incidents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL,
+                incident_type TEXT NOT NULL,
+                details TEXT,
+                severity TEXT DEFAULT 'low',
+                user_agent TEXT,
+                request_path TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # Private network access tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS private_networks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                network_cidr TEXT NOT NULL UNIQUE,
+                customer_id INTEGER,
+                description TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Assistant preferences per klant
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_assistant_preferences (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL UNIQUE,
+                language TEXT DEFAULT 'nl',
+                tone TEXT DEFAULT 'professional',
+                proactive_suggestions BOOLEAN DEFAULT 1,
+                auto_reports BOOLEAN DEFAULT 0,
+                notifications_enabled BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Learning data per klant (geïsoleerd)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_learning (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                command TEXT NOT NULL,
+                result_type TEXT,
+                success BOOLEAN DEFAULT 1,
+                feedback TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Generated reports
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_generated_reports (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # AI Conversations (chat history)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_conversations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                user_message TEXT NOT NULL,
+                ai_response TEXT NOT NULL,
+                intent TEXT,
+                success BOOLEAN DEFAULT 1,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # ICT MONITORING & ERROR REPORTING TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # System errors tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS system_errors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                error_type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                component TEXT,
+                stack_trace TEXT,
+                customer_id INTEGER,
+                metadata TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # ICT Alerts tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ict_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                error_id INTEGER,
+                alert_type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                status TEXT DEFAULT 'open',
+                acknowledged_by TEXT,
+                acknowledged_at TIMESTAMP,
+                resolved_by TEXT,
+                resolved_at TIMESTAMP,
+                resolution_notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                expires_at TIMESTAMP,
+                FOREIGN KEY (error_id) REFERENCES system_errors(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # INCIDENT RESPONSE TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # Incidents tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS incidents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                incident_type TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                description TEXT NOT NULL,
+                metadata TEXT,
+                status TEXT DEFAULT 'open',
+                response_actions TEXT,
+                resolved_by TEXT,
+                resolved_at TIMESTAMP,
+                resolution_notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # LEAN SIX SIGMA TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # DMAIC Projects tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dmaic_projects (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                problem_statement TEXT NOT NULL,
+                goal TEXT NOT NULL,
+                current_phase TEXT DEFAULT 'define',
+                owner TEXT NOT NULL,
+                status TEXT DEFAULT 'active',
+                results_summary TEXT,
+                improvements_achieved TEXT,
+                target_completion_date TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP,
+                completed_at TIMESTAMP
+            )
+        ''')
+
+        # DMAIC Measurements tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dmaic_measurements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id INTEGER NOT NULL,
+                metric_name TEXT NOT NULL,
+                metric_value REAL NOT NULL,
+                notes TEXT,
+                measured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES dmaic_projects(id)
+            )
+        ''')
+
+        # DMAIC Phase Logs tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dmaic_phase_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id INTEGER NOT NULL,
+                phase TEXT NOT NULL,
+                notes TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES dmaic_projects(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # MARKETING INTELLIGENCE TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # Marketing Campaigns tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS marketing_campaigns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                channel TEXT NOT NULL,
+                cost REAL DEFAULT 0,
+                conversions INTEGER DEFAULT 0,
+                converted BOOLEAN DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # Marketing Funnel tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS marketing_funnel (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                funnel_stage TEXT NOT NULL,
+                customer_id INTEGER,
+                campaign_id INTEGER,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id),
+                FOREIGN KEY (campaign_id) REFERENCES marketing_campaigns(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # ADDITIONAL CUSTOMER FIELDS FOR UNIT ECONOMICS
+        # ═══════════════════════════════════════════════════════
+
+        # Add pricing_tier column if not exists (for unit economics)
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='pricing_tier'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN pricing_tier TEXT DEFAULT 'starter'")
+
+        # Add suspended_reason column if not exists
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='suspended_reason'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN suspended_reason TEXT")
+
+        # Add updated_at column if not exists
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='updated_at'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+
+        # Add usage_count to api_keys if not exists
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('api_keys') WHERE name='usage_count'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE api_keys ADD COLUMN usage_count INTEGER DEFAULT 0")
+
         # Indices voor performance
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_customer ON logs(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_customers_code ON customers(access_code)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_api_keys_value ON api_keys(key_value)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_security_incidents_ip ON security_incidents(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_security_incidents_timestamp ON security_incidents(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip_whitelist_ip ON ip_whitelist(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip_blacklist_ip ON ip_blacklist(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_learning_customer ON ai_learning(customer_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_conversations_customer ON ai_conversations(customer_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_reports_customer ON ai_generated_reports(customer_id)')
+
+        # Indices for new enterprise tables
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_system_errors_severity ON system_errors(severity)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_system_errors_component ON system_errors(component)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_system_errors_timestamp ON system_errors(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ict_alerts_status ON ict_alerts(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ict_alerts_severity ON ict_alerts(severity)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_incidents_status ON incidents(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_incidents_type ON incidents(incident_type)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_dmaic_status ON dmaic_projects(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_dmaic_phase ON dmaic_projects(current_phase)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_marketing_channel ON marketing_campaigns(channel)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_funnel_stage ON marketing_funnel(funnel_stage)')
 
         conn.commit()
 
@@ -301,6 +623,91 @@ def search_logs(query, customer_id=None):
                 LIMIT 50
             ''', (f'%{query}%',))
         return [dict(row) for row in cursor.fetchall()]
+
+# Audit logging functies
+def log_admin_action(admin_username, action, target_type=None, target_id=None, details=None, ip_address=None):
+    """Log admin actie voor audit trail"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO audit_logs (admin_username, action, target_type, target_id, details, ip_address)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (admin_username, action, target_type, target_id, details, ip_address))
+        return cursor.lastrowid
+
+def get_audit_logs(limit=50, admin_username=None):
+    """Haal audit logs op"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        if admin_username:
+            cursor.execute('''
+                SELECT * FROM audit_logs
+                WHERE admin_username = ?
+                ORDER BY timestamp DESC
+                LIMIT ?
+            ''', (admin_username, limit))
+        else:
+            cursor.execute('''
+                SELECT * FROM audit_logs
+                ORDER BY timestamp DESC
+                LIMIT ?
+            ''', (limit,))
+        return [dict(row) for row in cursor.fetchall()]
+
+# API Key functies
+def create_api_key(customer_id, name=None):
+    """Genereer API key voor klant"""
+    key_value = f"mvai_{secrets.token_urlsafe(32)}"
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO api_keys (customer_id, key_value, name)
+            VALUES (?, ?, ?)
+        ''', (customer_id, key_value, name))
+
+    return key_value
+
+def verify_api_key(key_value):
+    """Verifieer API key en return customer_id"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT customer_id FROM api_keys
+            WHERE key_value = ? AND is_active = 1
+        ''', (key_value,))
+        row = cursor.fetchone()
+
+        if row:
+            # Update last_used_at
+            cursor.execute('''
+                UPDATE api_keys
+                SET last_used_at = CURRENT_TIMESTAMP
+                WHERE key_value = ?
+            ''', (key_value,))
+            return row['customer_id']
+        return None
+
+def get_customer_api_keys(customer_id):
+    """Haal alle API keys voor klant op"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT * FROM api_keys
+            WHERE customer_id = ?
+            ORDER BY created_at DESC
+        ''', (customer_id,))
+        return [dict(row) for row in cursor.fetchall()]
+
+def revoke_api_key(key_id):
+    """Deactiveer API key"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE api_keys
+            SET is_active = 0
+            WHERE id = ?
+        ''', (key_id,))
 
 if __name__ == '__main__':
     # Test database setup

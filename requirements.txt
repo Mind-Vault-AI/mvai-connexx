@@ -1,2 +1,9 @@
 flask>=3.0.0
 gunicorn>=21.2.0
+flask-limiter>=3.5.0
+reportlab>=4.0.0
+apscheduler>=3.10.0
+flask-socketio>=5.3.0
+python-dotenv>=1.0.0
+cryptography>=41.0.0
+ipaddress>=1.0.23
