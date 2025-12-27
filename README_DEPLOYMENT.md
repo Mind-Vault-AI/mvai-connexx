@@ -339,7 +339,7 @@ Secrets zijn:
 De app logt IP adressen via `X-Forwarded-For` header:
 - Fly.io proxy voegt deze header automatisch toe
 - Werkt achter load balancers en CDN
-- Privacy compliant (GDPR compatible met opt-in)
+- Let op: IP-adressen worden automatisch gelogd; zorg zelf voor een passende GDPR-compliance (bijv. juiste grondslag, opt-in en privacyverklaring).
 
 ### 3. Volume Backups
 **Belangrijk:** Maak regelmatig backups van je volume:
