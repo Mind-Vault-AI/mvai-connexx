@@ -75,7 +75,11 @@ def save_data(data):
         raise
 
 # Zorg ervoor dat data directory bestaat bij opstarten (ook met gunicorn)
-ensure_data_dir()
+try:
+    ensure_data_dir()
+except RuntimeError as e:
+    # Log waarschuwing maar voorkom dat import faalt (belangrijk voor Gunicorn)
+    print(f"Warning: Data directory initialization failed: {e}")
 
 @app.route('/')
 def index():
