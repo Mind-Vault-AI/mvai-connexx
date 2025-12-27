@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klantenbeheer | Admin</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-size: 2rem; color: #fff; }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .customers-table {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .customers-table th,
+        .customers-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .customers-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .customers-table tr:hover td {
+            background: #0a0a0a;
+        }
+
+        .status-active { color: var(--accent); font-weight: 600; }
+        .status-inactive { color: #ff4444; font-weight: 600; }
+
+        .action-link {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">MVAI ADMIN</span>
+        <a href="{{ url_for('admin_dashboard') }}" style="color: var(--text); text-decoration: none;">← Dashboard</a>
+    </header>
+
+    <div class="container">
+        <div class="section-header">
+            <h1>Klantenbeheer</h1>
+            <a href="{{ url_for('admin_create_customer') }}" class="btn-primary">+ Nieuwe Klant</a>
+        </div>
+
+        <table class="customers-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Bedrijfsnaam</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Aangemaakt</th>
+                    <th>Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.id }}</td>
+                    <td style="color: #fff; font-weight: 500;">{{ customer.name }}</td>
+                    <td style="color: var(--dim);">{{ customer.contact_email or '-' }}</td>
+                    <td><span class="status-{{ customer.status }}">{{ customer.status.upper() }}</span></td>
+                    <td>{{ customer.created_at[:10] }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" class="action-link">
+                            Details →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

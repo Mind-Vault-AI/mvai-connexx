@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoeken | Admin</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 30px; }
+
+        .search-form {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        select {
+            padding: 15px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .results {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .result-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">MVAI ADMIN</span>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('admin_dashboard') }}" class="back-link">← Terug naar dashboard</a>
+
+        <h1>Zoeken</h1>
+
+        <form class="search-form" method="GET">
+            <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Zoek klanten of logs..."
+                value="{{ query }}"
+                autofocus
+            >
+            <select name="type">
+                <option value="customers" {% if search_type == 'customers' %}selected{% endif %}>Klanten</option>
+                <option value="logs" {% if search_type == 'logs' %}selected{% endif %}>Logs</option>
+            </select>
+        </form>
+
+        {% if query %}
+            <div class="results">
+                {% if results %}
+                    {% if search_type == 'customers' %}
+                        {% for customer in results %}
+                        <div class="result-item">
+                            <h3 style="color: #fff; margin-bottom: 5px;">{{ customer.name }}</h3>
+                            <p style="color: var(--dim); font-size: 0.9rem;">
+                                ID: {{ customer.id }} | Status: {{ customer.status }} | Aangemaakt: {{ customer.created_at[:10] }}
+                            </p>
+                            <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" style="color: var(--accent); text-decoration: none;">
+                                Details →
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        {% for log in results %}
+                        <div class="result-item">
+                            <div style="color: var(--dim); font-size: 0.85rem; margin-bottom: 5px;">
+                                {{ log.customer_name }} | {{ log.timestamp }} | {{ log.ip_address }}
+                            </div>
+                            <div style="font-family: 'Courier New', monospace; color: var(--text);">
+                                {{ log.data }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% else %}
+                    <div class="result-item" style="text-align: center; color: var(--dim);">
+                        Geen resultaten gevonden voor "{{ query }}"
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

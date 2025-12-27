@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard | {{ customer.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER */
+        header {
+            background: rgba(18,18,18,0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .company-name {
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-left: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-logout {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        /* TERMINAL */
+        .terminal-section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .terminal-header {
+            background: #1a1a1a;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            color: var(--dim);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background: #000;
+            color: var(--accent);
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .save-status {
+            padding: 12px 20px;
+            background: #0a0a0a;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--dim);
+        }
+
+        /* LOGS TABLE */
+        .logs-section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .btn-primary {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #00dd35;
+            transform: translateY(-1px);
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logs-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .logs-table td {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .logs-table tr:hover td {
+            background: #0a0a0a;
+        }
+
+        .log-data {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .ip-address {
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+        }
+
+        .timestamp {
+            color: var(--dim);
+            font-size: 0.85rem;
+        }
+
+        .no-logs {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--dim);
+        }
+
+        /* ACTION BUTTONS */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .logs-table {
+                font-size: 0.85rem;
+            }
+
+            .logs-table th,
+            .logs-table td {
+                padding: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">MVAI</span>
+            <span class="company-name">{{ customer.name }}</span>
+        </div>
+        <div class="header-right">
+            <a href="{{ url_for('logout') }}" class="btn-logout">Uitloggen</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Totaal Logs</div>
+                <div class="stat-value">{{ stats.total_logs }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Vandaag</div>
+                <div class="stat-value">{{ stats.logs_today }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Deze Week</div>
+                <div class="stat-value">{{ stats.logs_week }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Account Status</div>
+                <div class="stat-value" style="font-size: 1.2rem;">
+                    {% if customer.status == 'active' %}
+                        ✓ ACTIEF
+                    {% else %}
+                        ✗ INACTIEF
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('customer_logs') }}" class="btn-secondary">Alle Logs Bekijken</a>
+            <a href="{{ url_for('customer_export_csv') }}" class="btn-secondary">Exporteer CSV</a>
+            <a href="{{ url_for('customer_search') }}" class="btn-secondary">Zoeken</a>
+        </div>
+
+        <!-- Data Input Terminal -->
+        <div class="terminal-section">
+            <div class="terminal-header">
+                <div class="terminal-title">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span>root@mvai-cloud:~/{{ customer.name }}</span>
+                </div>
+            </div>
+            <textarea id="data-input" placeholder="> Typ hier uw logistieke data voor 1W5H borging..."></textarea>
+            <div class="save-status">
+                Status: <span id="save-status">Standby</span>
+            </div>
+        </div>
+
+        <!-- Recent Logs -->
+        <div class="logs-section">
+            <div class="section-header">
+                <h2>Recente Logs</h2>
+                <a href="{{ url_for('customer_logs') }}" class="btn-primary">Alles Bekijken</a>
+            </div>
+            {% if logs %}
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timestamp</th>
+                            <th>IP Address</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td class="timestamp">{{ log.timestamp }}</td>
+                            <td class="ip-address">{{ log.ip_address }}</td>
+                            <td class="log-data">{{ log.data }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-logs">
+                    Nog geen logs. Begin met typen in de terminal hierboven.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('data-input');
+        const status = document.getElementById('save-status');
+        let timeout;
+
+        input.oninput = () => {
+            status.innerText = "Typen...";
+            status.style.color = "#ffbd2e";
+
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                fetch('/api/save', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({txt: input.value})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    status.innerText = "✓ Veilig Geborgd (Cloud Synced)";
+                    status.style.color = "#00ff41";
+                })
+                .catch(err => {
+                    status.innerText = "✗ Fout bij opslaan";
+                    status.style.color = "#ff4444";
+                });
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ customer.name }} | Admin</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        h1 { font-size: 2rem; color: #fff; margin-bottom: 10px; }
+        .subtitle { color: var(--dim); margin-bottom: 30px; }
+
+        .info-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--dim);
+            width: 150px;
+        }
+
+        .info-value {
+            color: var(--text);
+        }
+
+        .access-code {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: var(--accent);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .logs-table {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logs-table th {
+            background: #0a0a0a;
+            font-size: 0.8rem;
+            color: var(--dim);
+            text-transform: uppercase;
+        }
+
+        .logs-table tr:hover td {
+            background: #0a0a0a;
+        }
+
+        .btn-toggle {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        h2 { font-size: 1.3rem; color: #fff; }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">MVAI ADMIN</span>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('admin_customers') }}" class="back-link">← Terug naar klanten</a>
+
+        <h1>{{ customer.name }}</h1>
+        <p class="subtitle">Klant ID: {{ customer.id }}</p>
+
+        <div class="info-card">
+            <div class="info-row">
+                <div class="info-label">Access Code:</div>
+                <div class="info-value">
+                    <code class="access-code">{{ customer.access_code }}</code>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Email:</div>
+                <div class="info-value">{{ customer.contact_email or '-' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Status:</div>
+                <div class="info-value">
+                    <span style="color: {% if customer.status == 'active' %}var(--accent){% else %}#ff4444{% endif %}; font-weight: 600;">
+                        {{ customer.status.upper() }}
+                    </span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Aangemaakt:</div>
+                <div class="info-value">{{ customer.created_at }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Bedrijfsinfo:</div>
+                <div class="info-value">{{ customer.company_info or '-' }}</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Totaal Logs</div>
+                <div class="stat-value">{{ stats.total_logs }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Logs Vandaag</div>
+                <div class="stat-value">{{ stats.logs_today }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Logs Deze Week</div>
+                <div class="stat-value">{{ stats.logs_week }}</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Recente Logs ({{ logs|length }})</h2>
+            <button class="btn-toggle" onclick="toggleStatus()">
+                {{ 'Deactiveer' if customer.status == 'active' else 'Activeer' }} Klant
+            </button>
+        </div>
+
+        <table class="logs-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>IP Address</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.timestamp }}</td>
+                    <td style="font-family: monospace; color: var(--accent);">{{ log.ip_address }}</td>
+                    <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis;">
+                        {{ log.data[:100] }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleStatus() {
+            fetch('{{ url_for("admin_toggle_customer_status", customer_id=customer.id) }}', {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                location.reload();
+            });
+        }
+    </script>
+</body>
+</html>
