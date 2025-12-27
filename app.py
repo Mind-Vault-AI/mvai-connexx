@@ -73,12 +73,15 @@ def get_client_ip():
 
 @app.route('/')
 def index():
-    """Landing page - redirect naar login of dashboard"""
+    """Professional landing page voor MVAI Connexx platform"""
+    # Redirect ingelogde gebruikers naar hun dashboard
     if 'customer_id' in session:
         return redirect(url_for('customer_dashboard'))
     elif 'admin' in session:
         return redirect(url_for('admin_dashboard'))
-    return redirect(url_for('login'))
+
+    # Toon luxury landing page voor nieuwe bezoekers
+    return render_template('landing.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

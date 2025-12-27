@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mind Vault AI - Enterprise-grade AI-powered data management platform. 99.9% SLA, ISO-certified security, trusted by 1000+ companies.">
+    <meta name="keywords" content="AI, data management, enterprise platform, logistics, analytics, security">
+    <title>Mind Vault AI - Enterprise AI-Powered Data Management Platform</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Mind Vault AI - Enterprise Data Platform">
+    <meta property="og:description" content="Transform your data management with AI. 99.9% uptime, enterprise security, trusted globally.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mindvault-ai.com">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00ff41;
+            --primary-dark: #00dd35;
+            --bg-dark: #000000;
+            --bg-darker: #050505;
+            --bg-card: #0a0a0a;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --text-dim: #666666;
+            --border: #1a1a1a;
+            --gradient-1: linear-gradient(135deg, #00ff41 0%, #00dd35 100%);
+            --gradient-2: linear-gradient(135deg, rgba(0,255,65,0.1) 0%, rgba(0,221,53,0.05) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-darker);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-white);
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,255,65,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-white);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(0,255,65,0.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(0,255,65,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0,255,65,0.1);
+            border: 1px solid rgba(0,255,65,0.3);
+            border-radius: 50px;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+        }
+
+        .hero .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 3rem;
+            margin-top: 5rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 5rem;
+        }
+
+        .section-label {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,255,65,0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-2);
+            border: 1px solid rgba(0,255,65,0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 8rem 2rem;
+            background: var(--bg-dark);
+        }
+
+        .product-showcase {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0,255,65,0.15);
+        }
+
+        .product-header {
+            padding: 2.5rem;
+            background: var(--gradient-2);
+            border-bottom: 1px solid rgba(0,255,65,0.2);
+        }
+
+        .product-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .product-tagline {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .product-body {
+            padding: 2.5rem;
+        }
+
+        .product-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .product-features li {
+            padding: 0.75rem 0;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-features li:before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 8rem 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(0,255,65,0.2);
+        }
+
+        .pricing-card.featured .badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-1);
+            color: #000;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .pricing-tier {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price span {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .pricing-description {
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            min-height: 3rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            color: var(--text-gray);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .pricing-features li:before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: 800;
+            margin-top: 0.2rem;
+        }
+
+        /* Video/Demo Section */
+        .demo {
+            padding: 8rem 2rem;
+            background: var(--bg-dark);
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-top: 3rem;
+            background: var(--bg-card);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2rem;
+            background: linear-gradient(135deg, rgba(0,255,65,0.05) 0%, transparent 100%);
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 40px rgba(0,255,65,0.4);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 8rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .contact-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .contact-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem 2rem;
+            background: var(--bg-dark);
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+
+            .features-grid,
+            .product-showcase,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .nav-cta {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">MIND VAULT AI</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Sign In</a>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Start Free Trial</a>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content animate-in">
+            <div class="hero-badge">🚀 Trusted by 1000+ Companies Worldwide</div>
+            <h1>
+                Enterprise AI-Powered<br>
+                <span class="gradient-text">Data Management</span><br>
+                Platform
+            </h1>
+            <p>
+                Transform your logistics and data operations with AI-driven intelligence.
+                99.9% uptime SLA, enterprise security, ISO-certified infrastructure.
+            </p>
+            <div class="hero-cta">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Start 14-Day Free Trial</a>
+                <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime SLA</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Active Customers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">10M+</div>
+                    <div class="stat-label">Data Points/Month</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Expert Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <div class="section-label">FEATURES</div>
+            <h2 class="section-title">Everything You Need for<br>Enterprise Data Management</h2>
+            <p class="section-description">
+                Powerful features designed for scale, security, and performance
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">AI-Powered Assistant</h3>
+                <p class="feature-description">
+                    Natural language processing voor Nederlands. Proactieve suggesties,
+                    learning systeem, en volledige data isolatie per klant.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-description">
+                    IP whitelisting, AI threat detection, honeypot systeem, en automated
+                    incident response. ISO-certified infrastructure.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Advanced Analytics</h3>
+                <p class="feature-description">
+                    Real-time dashboards, Chart.js visualizations, unit economics tracking,
+                    Lean Six Sigma metrics, en marketing intelligence.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Lightning Fast API</h3>
+                <p class="feature-description">
+                    REST API v1.0 met 15+ endpoints, rate limiting, API key management,
+                    en comprehensive documentation.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Multi-Tenant Isolation</h3>
+                <p class="feature-description">
+                    Complete data isolatie per customer, private database instances,
+                    AVG/GDPR compliant, en encrypted storage.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Business Intelligence</h3>
+                <p class="feature-description">
+                    Unit economics dashboard, LTV/CAC tracking, customer profitability grading,
+                    en marketing funnel optimization.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="products">
+        <div class="section-header">
+            <div class="section-label">PRODUCTS</div>
+            <h2 class="section-title">Our Product Suite</h2>
+            <p class="section-description">
+                Enterprise-grade tools for modern businesses
+            </p>
+        </div>
+        <div class="product-showcase">
+            <div class="product-card">
+                <div class="product-header">
+                    <h3 class="product-title">MVAI Connexx</h3>
+                    <p class="product-tagline">AI-Powered Data Management Platform</p>
+                </div>
+                <div class="product-body">
+                    <p class="section-description">
+                        Complete multi-tenant platform voor logistics en data management.
+                        AI Assistant, advanced analytics, en enterprise security.
+                    </p>
+                    <ul class="product-features">
+                        <li>Multi-tenant data isolation</li>
+                        <li>AI-powered insights</li>
+                        <li>Real-time analytics dashboards</li>
+                        <li>REST API access</li>
+                        <li>99.9% uptime SLA</li>
+                        <li>24/7 expert support</li>
+                    </ul>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary" style="width: 100%; text-align: center; display: block;">Start Free Trial</a>
+                </div>
+            </div>
+            <div class="product-card" style="opacity: 0.6;">
+                <div class="product-header">
+                    <h3 class="product-title">MVAI Analytics Pro</h3>
+                    <p class="product-tagline">Advanced Business Intelligence Suite</p>
+                </div>
+                <div class="product-body">
+                    <p class="section-description">
+                        Deep analytics met Lean Six Sigma metrics, unit economics tracking,
+                        en marketing intelligence. Coming Q2 2025.
+                    </p>
+                    <ul class="product-features">
+                        <li>Six Sigma quality metrics</li>
+                        <li>DMAIC project management</li>
+                        <li>Marketing funnel optimization</li>
+                        <li>Customer profitability grading</li>
+                        <li>Predictive analytics</li>
+                        <li>Custom reporting</li>
+                    </ul>
+                    <a href="mailto:info@mindvault-ai.com" class="btn btn-secondary" style="width: 100%; text-align: center; display: block;">Join Waitlist</a>
+                </div>
+            </div>
+            <div class="product-card" style="opacity: 0.6;">
+                <div class="product-header">
+                    <h3 class="product-title">MVAI AutoML</h3>
+                    <p class="product-tagline">Automated Machine Learning Platform</p>
+                </div>
+                <div class="product-body">
+                    <p class="section-description">
+                        No-code ML platform voor automated model training, deployment,
+                        en monitoring. Perfect voor data teams. Coming Q3 2025.
+                    </p>
+                    <ul class="product-features">
+                        <li>Automated model training</li>
+                        <li>One-click deployment</li>
+                        <li>Model monitoring & drift detection</li>
+                        <li>Feature engineering automation</li>
+                        <li>Explainable AI</li>
+                        <li>Custom model integration</li>
+                    </ul>
+                    <a href="mailto:info@mindvault-ai.com" class="btn btn-secondary" style="width: 100%; text-align: center; display: block;">Join Waitlist</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="section-header">
+            <div class="section-label">PRICING</div>
+            <h2 class="section-title">Transparent Pricing for Every Scale</h2>
+            <p class="section-description">
+                Start free, scale as you grow. All prices exclude VAT.
+            </p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="pricing-tier">Demo</div>
+                <div class="pricing-price">€0<span>/mo</span></div>
+                <p class="pricing-description">14-day free trial, no credit card required</p>
+                <ul class="pricing-features">
+                    <li>100 logs included</li>
+                    <li>Basic analytics</li>
+                    <li>CSV export</li>
+                    <li>Email support</li>
+                </ul>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary" style="width: 100%; text-align: center; display: block; margin-top: 2rem;">Start Free Trial</a>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-tier">Particulier</div>
+                <div class="pricing-price">€19<span>/mo</span></div>
+                <p class="pricing-description">Perfect voor zelfstandigen en freelancers</p>
+                <ul class="pricing-features">
+                    <li>500 logs included</li>
+                    <li>Basic analytics</li>
+                    <li>CSV export</li>
+                    <li>Mobile app access</li>
+                    <li>Priority email support</li>
+                </ul>
+                <a href="{{ url_for('login') }}" class="btn btn-primary" style="width: 100%; text-align: center; display: block; margin-top: 2rem;">Get Started</a>
+            </div>
+            <div class="pricing-card featured">
+                <div class="badge">MOST POPULAR</div>
+                <div class="pricing-tier">MKB</div>
+                <div class="pricing-price">€49<span>/mo</span></div>
+                <p class="pricing-description">Ideaal voor MKB bedrijven (1-50 medewerkers)</p>
+                <ul class="pricing-features">
+                    <li>5,000 logs included</li>
+                    <li>Advanced analytics</li>
+                    <li>API access</li>
+                    <li>Priority support</li>
+                    <li>Custom integrations</li>
+                    <li>Team collaboration</li>
+                </ul>
+                <a href="{{ url_for('login') }}" class="btn btn-primary" style="width: 100%; text-align: center; display: block; margin-top: 2rem;">Get Started</a>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-tier">Professional</div>
+                <div class="pricing-price">€99<span>/mo</span></div>
+                <p class="pricing-description">Voor groeiende bedrijven</p>
+                <ul class="pricing-features">
+                    <li>10,000 logs included</li>
+                    <li>Advanced analytics</li>
+                    <li>Full API access</li>
+                    <li>AI Assistant enabled</li>
+                    <li>Priority support</li>
+                    <li>White-label options</li>
+                </ul>
+                <a href="{{ url_for('login') }}" class="btn btn-primary" style="width: 100%; text-align: center; display: block; margin-top: 2rem;">Get Started</a>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-tier">Enterprise</div>
+                <div class="pricing-price">€299<span>/mo</span></div>
+                <p class="pricing-description">Enterprise pakket met 99.9% SLA</p>
+                <ul class="pricing-features">
+                    <li>100,000 logs included</li>
+                    <li>All features</li>
+                    <li>Dedicated support</li>
+                    <li>Custom integrations</li>
+                    <li>99.9% SLA guarantee</li>
+                    <li>On-premise option</li>
+                    <li>SSO & advanced security</li>
+                </ul>
+                <a href="mailto:info@mindvault-ai.com" class="btn btn-primary" style="width: 100%; text-align: center; display: block; margin-top: 2rem;">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo/Video Section -->
+    <section class="demo" id="demo">
+        <div class="demo-container">
+            <div class="section-header">
+                <div class="section-label">DEMO</div>
+                <h2 class="section-title">See MVAI Connexx in Action</h2>
+                <p class="section-description">
+                    Watch how enterprise teams transform their data operations with our platform
+                </p>
+            </div>
+            <div class="video-wrapper">
+                <div class="video-placeholder">
+                    <div class="play-button">▶</div>
+                    <p style="color: var(--text-gray); margin-top: 1rem;">Demo video coming soon</p>
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">Contact us for a personalized demo</p>
+                </div>
+                <!-- Replace with actual video embed when available -->
+                <!-- <iframe src="YOUR_VIDEO_URL" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Try Interactive Demo</a>
+                <a href="mailto:info@mindvault-ai.com" class="btn btn-secondary" style="margin-left: 1rem;">Schedule Live Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="section-header">
+            <div class="section-label">CONTACT</div>
+            <h2 class="section-title">Get in Touch</h2>
+            <p class="section-description">
+                Our team is ready to help you transform your data operations
+            </p>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">📧</div>
+                <h3 class="contact-title">Email</h3>
+                <a href="mailto:info@mindvault-ai.com" class="contact-link">info@mindvault-ai.com</a>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">💬</div>
+                <h3 class="contact-title">Support</h3>
+                <a href="mailto:info@mindvault-ai.com" class="contact-link">24/7 Live Chat</a>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <h3 class="contact-title">Sales</h3>
+                <a href="mailto:info@mindvault-ai.com" class="contact-link">Schedule a Call</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Mind Vault AI</h3>
+                <p style="color: var(--text-gray); margin-top: 1rem;">
+                    Enterprise-grade AI-powered data management platform.
+                    Trusted by 1000+ companies worldwide.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Products</h3>
+                <ul class="footer-links">
+                    <li><a href="#products">MVAI Connexx</a></li>
+                    <li><a href="#products">MVAI Analytics Pro</a></li>
+                    <li><a href="#products">MVAI AutoML</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{{ url_for('legal_pages') }}">Legal</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('legal_pages') }}#terms">Terms of Service</a></li>
+                    <li><a href="{{ url_for('legal_pages') }}#privacy">Privacy Policy</a></li>
+                    <li><a href="{{ url_for('legal_pages') }}#disclaimer">Disclaimer</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Mind Vault AI. All rights reserved. | 99.9% SLA Guarantee | ISO-Certified Infrastructure</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Animate on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .product-card, .pricing-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Mobile menu toggle (basic)
+        document.querySelector('.mobile-menu-btn')?.addEventListener('click', () => {
+            alert('Mobile menu - add implementation or use framework');
+        });
+    </script>
+</body>
+</html>
