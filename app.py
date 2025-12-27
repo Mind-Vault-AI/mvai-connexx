@@ -13,88 +13,25 @@ DATA_FILE = '/app/data/mvai_data.json'
 def ensure_data_dir():
     """Zorgt ervoor dat de data directory bestaat voor persistent storage"""
     data_dir = os.path.dirname(DATA_FILE)
-
-    if not data_dir:
-        return
-
-    # Bestaat het pad al maar is het geen directory? -> harde fout.
-    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
-        raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
-    data_dir = os.path.dirname(DATA_FILE)
-
-    if not data_dir:
-        return
-
-    # Bestaat het pad al maar is het geen directory? -> harde fout.
-    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
-        raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
-    data_dir = os.path.dirname(DATA_FILE)
-
-    if not data_dir:
-        return
-
-    # Bestaat het pad al maar is het geen directory? -> harde fout.
-    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
-        raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
-    data_dir = os.path.dirname(DATA_FILE)
-
-    if not data_dir:
-        return
-
-    # Bestaat het pad al maar is het geen directory? -> harde fout.
-    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
-        raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
-
-    if not os.path.exists(data_dir):
+    if data_dir and not os.path.exists(data_dir):
         try:
             os.makedirs(data_dir, mode=0o755, exist_ok=True)
         except (PermissionError, OSError) as e:
             # Log waarschuwing maar laat app doordraaien (voor development)
             print(f"Warning: Could not create data directory {data_dir}: {e}")
-            return
-
-    # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
-    if not os.access(data_dir, os.W_OK):
-        # Log waarschuwing maar laat app doordraaien (vergelijkbaar met create-fout en save_data)
-        print(f"Warning: Data directory is not writable: {data_dir}")
-        return
-            return
-
-    # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
-    if not os.access(data_dir, os.W_OK):
-        raise RuntimeError(f"Data directory is not writable: {data_dir}")
-            return
-
-    # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
-    if not os.access(data_dir, os.W_OK):
-        raise RuntimeError(f"Data directory is not writable: {data_dir}")
-            return
-
-    # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
-    if not os.access(data_dir, os.W_OK):
-        raise RuntimeError(f"Data directory is not writable: {data_dir}")
 
 def load_data():
     if not os.path.exists(DATA_FILE):
         return {"logs": []}
     try:
         with open(DATA_FILE, 'r') as f: return json.load(f)
-    except (OSError, IOError) as e:
-        print(f"Warning: Could not write data to {DATA_FILE}: {e}")
-        raise
-        raise
-        raise
-        raise
-        raise
-        raise
-        raise
+    except: return {"logs": []}
 
-# Zorg ervoor dat data directory bestaat bij opstarten (ook met gunicorn)
-try:
-    ensure_data_dir()
-except RuntimeError as e:
-    # Log waarschuwing maar voorkom dat import faalt (belangrijk voor Gunicorn)
-    print(f"Warning: Data directory initialization failed: {e}")
+def save_data(data):
+    with open(DATA_FILE, 'w') as f: json.dump(data, f, indent=4)
+
+# Zorg ervoor dat data directory bestaat bij opstarten (ook met Gunicorn)
+ensure_data_dir()
 
 @app.route('/')
 def index():
