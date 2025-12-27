@@ -637,6 +637,149 @@ def api_stats():
     return jsonify(stats)
 
 # ═══════════════════════════════════════════════════════
+# ENTERPRISE ADMIN ROUTES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/admin/enterprise')
+@admin_required
+def admin_enterprise_dashboard():
+    """Enterprise-grade admin dashboard met ICT, Unit Economics, Lean Six Sigma & Marketing"""
+    from monitoring import health_monitor
+    from unit_economics import get_business_metrics, get_customer_grades
+    from lean_six_sigma import track_system_quality_metrics, get_improvement_recommendations, _calculate_sigma_belt
+    from marketing_intelligence import get_marketing_dashboard
+
+    # Get all metrics
+    health_status = health_monitor.get_overall_health()
+    business_metrics = get_business_metrics()
+    customer_grades = get_customer_grades()
+    quality_metrics = track_system_quality_metrics(30)
+    marketing_dashboard = get_marketing_dashboard()
+
+    # Get active alerts
+    from monitoring import get_active_alerts
+    active_alerts = get_active_alerts()
+
+    # Get improvement recommendations
+    improvement_recommendations = get_improvement_recommendations()
+
+    # Get growth strategies
+    growth_strategies = marketing_dashboard['growth_strategies']
+
+    return render_template('admin_enterprise_dashboard.html',
+                         health_status=health_status,
+                         business_metrics=business_metrics,
+                         customer_grades=customer_grades,
+                         quality_metrics=quality_metrics,
+                         marketing_summary=marketing_dashboard['summary'],
+                         active_alerts=active_alerts,
+                         improvement_recommendations=improvement_recommendations,
+                         growth_strategies=growth_strategies,
+                         sigma_belt=_calculate_sigma_belt(quality_metrics['sigma_level']))
+
+@app.route('/admin/ict-monitoring')
+@admin_required
+def admin_ict_monitoring():
+    """ICT Monitoring dashboard met errors, alerts en incidents"""
+    from monitoring import health_monitor, get_active_alerts, get_error_analytics, get_recent_errors
+    from incident_response import incident_manager
+
+    health_status = health_monitor.get_overall_health()
+    active_alerts = get_active_alerts()
+    error_analytics = get_error_analytics(30)
+    recent_errors = get_recent_errors(50)
+    active_incidents = incident_manager.get_active_incidents()
+
+    return render_template('admin_ict_monitoring.html',
+                         health_status=health_status,
+                         active_alerts=active_alerts,
+                         error_analytics=error_analytics,
+                         recent_errors=recent_errors,
+                         active_incidents=active_incidents)
+
+@app.route('/admin/unit-economics')
+@admin_required
+def admin_unit_economics():
+    """Unit Economics dashboard met MRR, LTV, CAC en profitability"""
+    from unit_economics import get_business_metrics, get_customer_grades, get_cohort_analysis
+
+    business_metrics = get_business_metrics()
+    customer_grades = get_customer_grades()
+    cohort_analysis = get_cohort_analysis(6)
+
+    return render_template('admin_unit_economics.html',
+                         business_metrics=business_metrics,
+                         customer_grades=customer_grades,
+                         cohort_analysis=cohort_analysis)
+
+@app.route('/admin/lean-six-sigma')
+@admin_required
+def admin_lean_six_sigma():
+    """Lean Six Sigma dashboard met quality metrics, DMAIC projects en improvements"""
+    from lean_six_sigma import track_system_quality_metrics, get_dmaic_dashboard, pareto_analysis_defects
+
+    quality_metrics = track_system_quality_metrics(30)
+    dmaic_dashboard = get_dmaic_dashboard()
+    pareto_analysis = pareto_analysis_defects(30)
+
+    return render_template('admin_lean_six_sigma.html',
+                         quality_metrics=quality_metrics,
+                         dmaic_dashboard=dmaic_dashboard,
+                         pareto_analysis=pareto_analysis)
+
+@app.route('/admin/marketing')
+@admin_required
+def admin_marketing():
+    """Marketing Intelligence dashboard met funnel, channels, segments en growth strategies"""
+    from marketing_intelligence import get_marketing_dashboard
+
+    marketing_dashboard = get_marketing_dashboard()
+
+    return render_template('admin_marketing.html',
+                         marketing_dashboard=marketing_dashboard)
+
+@app.route('/admin/incident-response/execute-exit-strategy', methods=['POST'])
+@admin_required
+def admin_execute_exit_strategy():
+    """Execute emergency exit strategy"""
+    from incident_response import execute_emergency_exit_strategy
+
+    reason = request.form.get('reason', 'Manual trigger by admin')
+
+    result = execute_emergency_exit_strategy(reason)
+
+    flash(f'Emergency exit strategy executed! Incident ID: {result["incident_id"]}', 'warning')
+    return redirect(url_for('admin_ict_monitoring'))
+
+@app.route('/admin/alert/<int:alert_id>/acknowledge', methods=['POST'])
+@admin_required
+def admin_acknowledge_alert(alert_id):
+    """Acknowledge an alert"""
+    from monitoring import acknowledge_alert
+
+    success = acknowledge_alert(alert_id, session.get('admin_username', 'admin'))
+
+    if success:
+        return jsonify({"success": True}), 200
+    return jsonify({"error": "Failed to acknowledge alert"}), 500
+
+@app.route('/admin/alert/<int:alert_id>/resolve', methods=['POST'])
+@admin_required
+def admin_resolve_alert(alert_id):
+    """Resolve an alert"""
+    from monitoring import resolve_alert
+
+    resolution_notes = request.form.get('notes', '')
+    success = resolve_alert(alert_id, session.get('admin_username', 'admin'), resolution_notes)
+
+    if success:
+        flash('Alert resolved successfully', 'success')
+        return redirect(url_for('admin_ict_monitoring'))
+
+    flash('Failed to resolve alert', 'error')
+    return redirect(url_for('admin_ict_monitoring'))
+
+# ═══════════════════════════════════════════════════════
 # ERROR HANDLERS
 # ═══════════════════════════════════════════════════════
 

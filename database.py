@@ -202,6 +202,169 @@ def init_db():
             )
         ''')
 
+        # ═══════════════════════════════════════════════════════
+        # ICT MONITORING & ERROR REPORTING TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # System errors tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS system_errors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                error_type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                component TEXT,
+                stack_trace TEXT,
+                customer_id INTEGER,
+                metadata TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        # ICT Alerts tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ict_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                error_id INTEGER,
+                alert_type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                status TEXT DEFAULT 'open',
+                acknowledged_by TEXT,
+                acknowledged_at TIMESTAMP,
+                resolved_by TEXT,
+                resolved_at TIMESTAMP,
+                resolution_notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                expires_at TIMESTAMP,
+                FOREIGN KEY (error_id) REFERENCES system_errors(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # INCIDENT RESPONSE TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # Incidents tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS incidents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                incident_type TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                description TEXT NOT NULL,
+                metadata TEXT,
+                status TEXT DEFAULT 'open',
+                response_actions TEXT,
+                resolved_by TEXT,
+                resolved_at TIMESTAMP,
+                resolution_notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # LEAN SIX SIGMA TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # DMAIC Projects tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dmaic_projects (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                problem_statement TEXT NOT NULL,
+                goal TEXT NOT NULL,
+                current_phase TEXT DEFAULT 'define',
+                owner TEXT NOT NULL,
+                status TEXT DEFAULT 'active',
+                results_summary TEXT,
+                improvements_achieved TEXT,
+                target_completion_date TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP,
+                completed_at TIMESTAMP
+            )
+        ''')
+
+        # DMAIC Measurements tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dmaic_measurements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id INTEGER NOT NULL,
+                metric_name TEXT NOT NULL,
+                metric_value REAL NOT NULL,
+                notes TEXT,
+                measured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES dmaic_projects(id)
+            )
+        ''')
+
+        # DMAIC Phase Logs tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dmaic_phase_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id INTEGER NOT NULL,
+                phase TEXT NOT NULL,
+                notes TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (project_id) REFERENCES dmaic_projects(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # MARKETING INTELLIGENCE TABLES
+        # ═══════════════════════════════════════════════════════
+
+        # Marketing Campaigns tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS marketing_campaigns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                channel TEXT NOT NULL,
+                cost REAL DEFAULT 0,
+                conversions INTEGER DEFAULT 0,
+                converted BOOLEAN DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # Marketing Funnel tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS marketing_funnel (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                funnel_stage TEXT NOT NULL,
+                customer_id INTEGER,
+                campaign_id INTEGER,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id),
+                FOREIGN KEY (campaign_id) REFERENCES marketing_campaigns(id)
+            )
+        ''')
+
+        # ═══════════════════════════════════════════════════════
+        # ADDITIONAL CUSTOMER FIELDS FOR UNIT ECONOMICS
+        # ═══════════════════════════════════════════════════════
+
+        # Add pricing_tier column if not exists (for unit economics)
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='pricing_tier'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN pricing_tier TEXT DEFAULT 'starter'")
+
+        # Add suspended_reason column if not exists
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='suspended_reason'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN suspended_reason TEXT")
+
+        # Add updated_at column if not exists
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='updated_at'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+
+        # Add usage_count to api_keys if not exists
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('api_keys') WHERE name='usage_count'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE api_keys ADD COLUMN usage_count INTEGER DEFAULT 0")
+
         # Indices voor performance
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_customer ON logs(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)')
@@ -215,6 +378,19 @@ def init_db():
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_learning_customer ON ai_learning(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_conversations_customer ON ai_conversations(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_ai_reports_customer ON ai_generated_reports(customer_id)')
+
+        # Indices for new enterprise tables
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_system_errors_severity ON system_errors(severity)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_system_errors_component ON system_errors(component)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_system_errors_timestamp ON system_errors(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ict_alerts_status ON ict_alerts(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ict_alerts_severity ON ict_alerts(severity)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_incidents_status ON incidents(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_incidents_type ON incidents(incident_type)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_dmaic_status ON dmaic_projects(status)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_dmaic_phase ON dmaic_projects(current_phase)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_marketing_channel ON marketing_campaigns(channel)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_funnel_stage ON marketing_funnel(funnel_stage)')
 
         conn.commit()
 
