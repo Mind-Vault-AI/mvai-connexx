@@ -349,9 +349,11 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a href="{{ url_for('customer_logs') }}" class="btn-secondary">Alle Logs Bekijken</a>
-            <a href="{{ url_for('customer_export_csv') }}" class="btn-secondary">Exporteer CSV</a>
-            <a href="{{ url_for('customer_search') }}" class="btn-secondary">Zoeken</a>
+            <a href="{{ url_for('customer_analytics') }}" class="btn-secondary">📊 Analytics</a>
+            <a href="{{ url_for('customer_logs') }}" class="btn-secondary">📋 Alle Logs</a>
+            <a href="{{ url_for('customer_api_keys') }}" class="btn-secondary">🔑 API Keys</a>
+            <a href="{{ url_for('customer_export_csv') }}" class="btn-secondary">💾 Export CSV</a>
+            <a href="{{ url_for('customer_search') }}" class="btn-secondary">🔍 Zoeken</a>
         </div>
 
         <!-- Data Input Terminal -->

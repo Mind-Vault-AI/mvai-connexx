@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | {{ customer.name }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #00ff41;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .company-name {
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-left: 15px;
+        }
+
+        .btn-back {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--dim);
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .stat-change.positive { color: var(--accent); }
+        .stat-change.negative { color: #ff4444; }
+        .stat-change.neutral { color: var(--dim); }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+        }
+
+        .chart-card h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .insights-section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .insights-section h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .insight-item {
+            padding: 15px;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 3px solid var(--accent);
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .insight-item h4 {
+            color: var(--accent);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .insight-item p {
+            color: var(--text);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .top-ips-list {
+            list-style: none;
+        }
+
+        .top-ips-list li {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-ips-list li:last-child {
+            border-bottom: none;
+        }
+
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+        }
+
+        .ip-count {
+            color: var(--dim);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">MVAI</span>
+            <span class="company-name">{{ customer.name }}</span>
+        </div>
+        <a href="{{ url_for('customer_dashboard') }}" class="btn-back">← Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1>📊 Advanced Analytics</h1>
+        <p class="subtitle">Diepgaande inzichten in uw data patronen en trends</p>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Totaal Logs</div>
+                <div class="stat-value">{{ analytics.total_logs }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Deze Week</div>
+                <div class="stat-value">{{ analytics.current_week_logs }}</div>
+                <div class="stat-change {{ 'positive' if analytics.growth_rate > 0 else 'negative' if analytics.growth_rate < 0 else 'neutral' }}">
+                    {{ '+' if analytics.growth_rate > 0 else '' }}{{ analytics.growth_rate }}% vs vorige week
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Logs Vandaag</div>
+                <div class="stat-value">{{ analytics.logs_today }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Unieke IP's</div>
+                <div class="stat-value">{{ analytics.top_ips|length }}</div>
+            </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="insights-section">
+            <h2>🤖 AI Insights</h2>
+            <div class="insight-item">
+                <h4>📈 Groei Trend</h4>
+                <p>
+                    {% if predictions.trend == 'growing' %}
+                        Uw activiteit groeit! Verwacht <strong>{{ predictions.predicted_next_week }} logs</strong> volgende week.
+                    {% elif predictions.trend == 'declining' %}
+                        Activiteit neemt af. Verwacht <strong>{{ predictions.predicted_next_week }} logs</strong> volgende week.
+                    {% else %}
+                        Stabiele activiteit. Verwacht <strong>{{ predictions.predicted_next_week }} logs</strong> volgende week.
+                    {% endif %}
+                </p>
+            </div>
+            <div class="insight-item">
+                <h4>⏰ Piek Momenten</h4>
+                <p>
+                    {% set max_hour = analytics.hourly_distribution|selectattr('count')|max(attribute='count') %}
+                    {% set peak_hours = analytics.hourly_distribution|selectattr('count', 'equalto', max_hour.count)|list %}
+                    Meeste activiteit rond <strong>{{ peak_hours[0].hour }}:00 uur</strong>.
+                    Optimaal tijdstip voor systeem onderhoud: vroege ochtend (3-6 uur).
+                </p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <!-- Daily Activity Chart -->
+            <div class="chart-card">
+                <h3>📅 Dagelijkse Activiteit (30 dagen)</h3>
+                <div class="chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Weekly Trend Chart -->
+            <div class="chart-card">
+                <h3>📊 Week Trend (12 weken)</h3>
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Hourly Distribution Chart -->
+            <div class="chart-card">
+                <h3>🕐 Uurverdeling</h3>
+                <div class="chart-container">
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top IP Addresses -->
+            <div class="chart-card">
+                <h3>🌐 Top 10 IP Adressen</h3>
+                <ul class="top-ips-list">
+                    {% for ip in analytics.top_ips %}
+                    <li>
+                        <span class="ip-address">{{ ip.ip }}</span>
+                        <span class="ip-count">{{ ip.count }} logs</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: '#e0e0e0' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#666' },
+                    grid: { color: '#333' }
+                },
+                x: {
+                    ticks: { color: '#666' },
+                    grid: { color: '#333' }
+                }
+            }
+        };
+
+        // Daily Activity Chart
+        const dailyData = {{ analytics.daily_activity|tojson }};
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'line',
+            data: {
+                labels: dailyData.map(d => d.date),
+                datasets: [{
+                    label: 'Logs per dag',
+                    data: dailyData.map(d => d.count),
+                    borderColor: '#00ff41',
+                    backgroundColor: 'rgba(0, 255, 65, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartConfig
+        });
+
+        // Weekly Trend Chart
+        const weeklyData = {{ analytics.weekly_trend|tojson }};
+        new Chart(document.getElementById('weeklyChart'), {
+            type: 'bar',
+            data: {
+                labels: weeklyData.map(d => 'Week ' + d.week.split('-')[1]),
+                datasets: [{
+                    label: 'Logs per week',
+                    data: weeklyData.map(d => d.count),
+                    backgroundColor: '#00ff41',
+                    borderColor: '#00dd35',
+                    borderWidth: 1
+                }]
+            },
+            options: chartConfig
+        });
+
+        // Hourly Distribution Chart
+        const hourlyData = {{ analytics.hourly_distribution|tojson }};
+        new Chart(document.getElementById('hourlyChart'), {
+            type: 'doughnut',
+            data: {
+                labels: hourlyData.map(d => d.hour + ':00'),
+                datasets: [{
+                    label: 'Logs per uur',
+                    data: hourlyData.map(d => d.count),
+                    backgroundColor: [
+                        '#00ff41', '#00dd35', '#00bb2a', '#009920', '#007716',
+                        '#00550c', '#003308', '#001104', '#000000', '#111111',
+                        '#222222', '#333333', '#444444', '#555555', '#666666',
+                        '#777777', '#888888', '#999999', '#aaaaaa', '#bbbbbb',
+                        '#cccccc', '#dddddd', '#eeeeee', '#ffffff'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#e0e0e0', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

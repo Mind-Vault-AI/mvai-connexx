@@ -7,7 +7,10 @@ import json
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import database as db
+import analytics
 import csv
 import io
 
@@ -15,9 +18,21 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
+# Rate limiting voor API protection
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
 # Initialiseer database bij startup
 with app.app_context():
     db.init_db()
+
+# Registreer API Blueprint
+from api import api_bp
+app.register_blueprint(api_bp)
 
 # ═══════════════════════════════════════════════════════
 # DECORATORS VOOR AUTHENTICATION
@@ -248,6 +263,91 @@ def customer_search():
                          logs=logs,
                          query=query)
 
+@app.route('/customer/analytics')
+@login_required
+def customer_analytics():
+    """Advanced analytics dashboard voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    # Haal analytics op
+    analytics_data = analytics.get_customer_analytics(customer_id, days=30)
+    predictions = analytics.get_customer_predictions(customer_id)
+
+    return render_template('customer_analytics.html',
+                         customer=customer,
+                         analytics=analytics_data,
+                         predictions=predictions)
+
+@app.route('/customer/api-keys')
+@login_required
+def customer_api_keys():
+    """API key management voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    api_keys = db.get_customer_api_keys(customer_id)
+
+    return render_template('customer_api_keys.html',
+                         customer=customer,
+                         api_keys=api_keys)
+
+@app.route('/customer/api-keys/create', methods=['POST'])
+@login_required
+def customer_create_api_key():
+    """Maak nieuwe API key aan"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin kan niet customer API keys aanmaken"}), 403
+
+    customer_id = session['customer_id']
+    name = request.form.get('name', 'Default API Key')
+
+    key_value = db.create_api_key(customer_id, name)
+
+    # Log actie
+    db.log_admin_action(
+        admin_username=f'customer_{customer_id}',
+        action='create_api_key',
+        target_type='api_key',
+        details=f'Created API key: {name}',
+        ip_address=get_client_ip()
+    )
+
+    flash(f'API Key aangemaakt: {key_value}', 'success')
+    return redirect(url_for('customer_api_keys'))
+
+@app.route('/customer/api-keys/<int:key_id>/revoke', methods=['POST'])
+@login_required
+def customer_revoke_api_key(key_id):
+    """Revoke API key"""
+    if 'admin' in session:
+        return jsonify({"error": "Admin moet admin panel gebruiken"}), 403
+
+    customer_id = session['customer_id']
+
+    # Verifieer ownership
+    api_keys = db.get_customer_api_keys(customer_id)
+    if not any(k['id'] == key_id for k in api_keys):
+        return jsonify({"error": "API key niet gevonden"}), 404
+
+    db.revoke_api_key(key_id)
+
+    # Log actie
+    db.log_admin_action(
+        admin_username=f'customer_{customer_id}',
+        action='revoke_api_key',
+        target_type='api_key',
+        target_id=key_id,
+        ip_address=get_client_ip()
+    )
+
+    return jsonify({"success": True}), 200
+
 # ═══════════════════════════════════════════════════════
 # ADMIN ROUTES
 # ═══════════════════════════════════════════════════════
@@ -304,6 +404,17 @@ def admin_create_customer():
 
         try:
             customer = db.create_customer(name, contact_email, company_info)
+
+            # Log admin actie
+            db.log_admin_action(
+                admin_username=session.get('admin_username', 'admin'),
+                action='create_customer',
+                target_type='customer',
+                target_id=customer['id'],
+                details=f'Created customer: {name}',
+                ip_address=get_client_ip()
+            )
+
             flash(f'Klant {name} aangemaakt! Access code: {customer["access_code"]}', 'success')
             return redirect(url_for('admin_customer_detail', customer_id=customer['id']))
         except Exception as e:
@@ -321,6 +432,16 @@ def admin_toggle_customer_status(customer_id):
 
     new_status = 'inactive' if customer['status'] == 'active' else 'active'
     db.update_customer_status(customer_id, new_status)
+
+    # Log admin actie
+    db.log_admin_action(
+        admin_username=session.get('admin_username', 'admin'),
+        action='toggle_customer_status',
+        target_type='customer',
+        target_id=customer_id,
+        details=f'Changed status to {new_status} for {customer["name"]}',
+        ip_address=get_client_ip()
+    )
 
     return jsonify({
         "status": "success",

@@ -65,10 +65,40 @@ def init_db():
             )
         ''')
 
+        # Audit logs tabel voor admin acties
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                admin_username TEXT NOT NULL,
+                action TEXT NOT NULL,
+                target_type TEXT,
+                target_id INTEGER,
+                details TEXT,
+                ip_address TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # API keys tabel voor programmatic access
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS api_keys (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                key_value TEXT NOT NULL UNIQUE,
+                name TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_used_at TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
         # Indices voor performance
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_customer ON logs(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_customers_code ON customers(access_code)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_api_keys_value ON api_keys(key_value)')
 
         conn.commit()
 
@@ -301,6 +331,91 @@ def search_logs(query, customer_id=None):
                 LIMIT 50
             ''', (f'%{query}%',))
         return [dict(row) for row in cursor.fetchall()]
+
+# Audit logging functies
+def log_admin_action(admin_username, action, target_type=None, target_id=None, details=None, ip_address=None):
+    """Log admin actie voor audit trail"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO audit_logs (admin_username, action, target_type, target_id, details, ip_address)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (admin_username, action, target_type, target_id, details, ip_address))
+        return cursor.lastrowid
+
+def get_audit_logs(limit=50, admin_username=None):
+    """Haal audit logs op"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        if admin_username:
+            cursor.execute('''
+                SELECT * FROM audit_logs
+                WHERE admin_username = ?
+                ORDER BY timestamp DESC
+                LIMIT ?
+            ''', (admin_username, limit))
+        else:
+            cursor.execute('''
+                SELECT * FROM audit_logs
+                ORDER BY timestamp DESC
+                LIMIT ?
+            ''', (limit,))
+        return [dict(row) for row in cursor.fetchall()]
+
+# API Key functies
+def create_api_key(customer_id, name=None):
+    """Genereer API key voor klant"""
+    key_value = f"mvai_{secrets.token_urlsafe(32)}"
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO api_keys (customer_id, key_value, name)
+            VALUES (?, ?, ?)
+        ''', (customer_id, key_value, name))
+
+    return key_value
+
+def verify_api_key(key_value):
+    """Verifieer API key en return customer_id"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT customer_id FROM api_keys
+            WHERE key_value = ? AND is_active = 1
+        ''', (key_value,))
+        row = cursor.fetchone()
+
+        if row:
+            # Update last_used_at
+            cursor.execute('''
+                UPDATE api_keys
+                SET last_used_at = CURRENT_TIMESTAMP
+                WHERE key_value = ?
+            ''', (key_value,))
+            return row['customer_id']
+        return None
+
+def get_customer_api_keys(customer_id):
+    """Haal alle API keys voor klant op"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT * FROM api_keys
+            WHERE customer_id = ?
+            ORDER BY created_at DESC
+        ''', (customer_id,))
+        return [dict(row) for row in cursor.fetchall()]
+
+def revoke_api_key(key_id):
+    """Deactiveer API key"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE api_keys
+            SET is_active = 0
+            WHERE id = ?
+        ''', (key_id,))
 
 if __name__ == '__main__':
     # Test database setup
