@@ -230,10 +230,19 @@ ls -la /app/
    flyctl volumes list
    ```
 2. Zorg dat het volume de naam `mvai_data` heeft (exact zoals in `fly.toml`)
-3. Herstart de app:
+3. Check volume permissions via SSH:
+   ```bash
+   flyctl ssh console
+   ls -la /app/
+   touch /app/data/test.txt  # Test schrijfrechten
+   ```
+4. Als er permissie problemen zijn, is dit normaal bij eerste mount. Fly.io volumes krijgen automatisch de juiste permissions van de parent directory. De app heeft error handling ingebouwd.
+5. Herstart de app:
    ```bash
    flyctl apps restart
    ```
+
+**Note:** De app logt een waarschuwing bij permission errors maar blijft draaien. In productie (Docker) heeft de app altijd de juiste permissions.
 
 ### Probleem 3: Health Check Fails
 **Symptoom:** App blijft in "unhealthy" state.

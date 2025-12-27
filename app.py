@@ -14,7 +14,11 @@ def ensure_data_dir():
     """Zorgt ervoor dat de data directory bestaat voor persistent storage"""
     data_dir = os.path.dirname(DATA_FILE)
     if data_dir and not os.path.exists(data_dir):
-        os.makedirs(data_dir)
+        try:
+            os.makedirs(data_dir, mode=0o755, exist_ok=True)
+        except (PermissionError, OSError) as e:
+            # Log waarschuwing maar laat app doordraaien (voor development)
+            print(f"Warning: Could not create data directory {data_dir}: {e}")
 
 def load_data():
     if not os.path.exists(DATA_FILE):
@@ -25,6 +29,9 @@ def load_data():
 
 def save_data(data):
     with open(DATA_FILE, 'w') as f: json.dump(data, f, indent=4)
+
+# Zorg ervoor dat data directory bestaat bij opstarten (ook met Gunicorn)
+ensure_data_dir()
 
 @app.route('/')
 def index():
