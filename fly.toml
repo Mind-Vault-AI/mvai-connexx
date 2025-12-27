@@ -4,8 +4,6 @@
 app = "mvai-connexx"
 primary_region = "ams"
 
-[build]
-
 [env]
   PORT = "5000"
 
