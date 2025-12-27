@@ -28,7 +28,12 @@ def load_data():
     except: return {"logs": []}
 
 def save_data(data):
-    with open(DATA_FILE, 'w') as f: json.dump(data, f, indent=4)
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump(data, f, indent=4)
+    except (OSError, IOError) as e:
+        # Log waarschuwing maar laat app doordraaien (vergelijkbaar met ensure_data_dir)
+        print(f"Warning: Could not write data to {DATA_FILE}: {e}")
 
 # Zorg ervoor dat data directory bestaat bij opstarten (ook met Gunicorn)
 ensure_data_dir()
