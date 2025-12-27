@@ -80,9 +80,9 @@ def load_data():
     try:
         with open(DATA_FILE, 'r') as f: return json.load(f)
     except: return {"logs": []}
-
     except (OSError, IOError) as e:
         print(f"Warning: Could not write data to {DATA_FILE}: {e}")
+        raise
         raise
         raise
         raise
