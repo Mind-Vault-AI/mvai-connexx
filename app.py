@@ -35,7 +35,7 @@ def save_data(data):
         # Log waarschuwing maar laat app doordraaien (vergelijkbaar met ensure_data_dir)
         print(f"Warning: Could not write data to {DATA_FILE}: {e}")
 
-# Zorg ervoor dat data directory bestaat bij opstarten (ook met Gunicorn)
+# Zorg ervoor dat data directory bestaat bij opstarten (ook met gunicorn)
 ensure_data_dir()
 
 @app.route('/')
