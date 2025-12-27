@@ -93,12 +93,68 @@ def init_db():
             )
         ''')
 
+        # IP Whitelist tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ip_whitelist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL UNIQUE,
+                reason TEXT,
+                added_by TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # IP Blacklist tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ip_blacklist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL,
+                reason TEXT,
+                added_by TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                expires_at TIMESTAMP
+            )
+        ''')
+
+        # Security incidents tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS security_incidents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL,
+                incident_type TEXT NOT NULL,
+                details TEXT,
+                severity TEXT DEFAULT 'low',
+                user_agent TEXT,
+                request_path TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        # Private network access tabel
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS private_networks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                network_cidr TEXT NOT NULL UNIQUE,
+                customer_id INTEGER,
+                description TEXT,
+                is_active BOOLEAN DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
         # Indices voor performance
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_customer ON logs(customer_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_customers_code ON customers(access_code)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_api_keys_value ON api_keys(key_value)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_security_incidents_ip ON security_incidents(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_security_incidents_timestamp ON security_incidents(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip_whitelist_ip ON ip_whitelist(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip_blacklist_ip ON ip_blacklist(ip_address)')
 
         conn.commit()
 
