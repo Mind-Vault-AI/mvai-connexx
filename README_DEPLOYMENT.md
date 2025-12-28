@@ -84,7 +84,7 @@ flyctl deploy
 
 Dit proces:
 1. ✅ Bouwt je Docker image
-2. ✅ Upload de image naar Fly.io registry
+2. ✅ Uploadt de image naar Fly.io registry
 3. ✅ Creëert machines in de Amsterdam regio
 4. ✅ Mount het persistent volume op `/app/data`
 5. ✅ Start de applicatie met health checks
