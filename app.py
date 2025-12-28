@@ -26,6 +26,27 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
+# ═══════════════════════════════════════════════════════
+# DATA DIRECTORY INITIALIZATION
+# ═══════════════════════════════════════════════════════
+
+def ensure_data_dir():
+    """Zorg ervoor dat data directory bestaat voor persistent storage"""
+    db_path = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
+    data_dir = os.path.dirname(db_path)
+    
+    # Alleen maken als er een directory path is (niet bij relatief pad zoals '.' of '')
+    if data_dir and data_dir != '.' and not os.path.exists(data_dir):
+        try:
+            os.makedirs(data_dir, mode=0o755, exist_ok=True)
+            print(f"✓ Data directory aangemaakt: {data_dir}")
+        except Exception as e:
+            print(f"⚠ Kon data directory niet aanmaken: {e}")
+            print("  → Check of DATABASE_PATH environment variabele correct is ingesteld")
+
+# Zorg ervoor dat data directory bestaat (voor Gunicorn compatibiliteit)
+ensure_data_dir()
+
 # Initialiseer database bij startup
 with app.app_context():
     db.init_db()
@@ -66,6 +87,15 @@ def get_client_ip():
     if request.headers.getlist("X-Forwarded-For"):
         return request.headers.getlist("X-Forwarded-For")[0]
     return request.remote_addr
+
+# ═══════════════════════════════════════════════════════
+# HEALTH CHECK ENDPOINT (voor Fly.io monitoring)
+# ═══════════════════════════════════════════════════════
+
+@app.route('/health')
+def health():
+    """Health check endpoint voor Fly.io"""
+    return jsonify({"status": "healthy", "service": "mvai-connexx"}), 200
 
 # ═══════════════════════════════════════════════════════
 # PUBLIC ROUTES
