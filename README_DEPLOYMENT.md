@@ -86,7 +86,7 @@ Dit proces:
 1. ✅ Bouwt je Docker image
 2. ✅ Uploadt de image naar Fly.io registry
 3. ✅ Creëert machines in de Amsterdam regio
-4. ✅ Mount het persistent volume op `/app/data`
+4. ✅ Mountt het persistent volume op `/app/data`
 5. ✅ Start de applicatie met health checks
 
 **Deployment duurt ongeveer 2-5 minuten.**
