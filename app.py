@@ -35,8 +35,8 @@ def ensure_data_dir():
     db_path = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
     data_dir = os.path.dirname(db_path)
     
-    # Alleen maken als er een directory path is (niet bij relatief pad)
-    if data_dir and not os.path.exists(data_dir):
+    # Alleen maken als er een directory path is (niet bij relatief pad zoals '.' of '')
+    if data_dir and data_dir != '.' and not os.path.exists(data_dir):
         try:
             os.makedirs(data_dir, mode=0o755, exist_ok=True)
             print(f"✓ Data directory aangemaakt: {data_dir}")

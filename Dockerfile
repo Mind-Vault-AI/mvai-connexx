@@ -6,5 +6,11 @@ RUN groupadd -r mvai && useradd -r -g mvai mvai_user
 COPY . .
 RUN chown -R mvai_user:mvai /app
 USER mvai_user
+
+# Environment variables voor Fly.io deployment
+ENV DATABASE_PATH=/app/data/mvai_connexx.db
+ENV PORT=5000
+
 EXPOSE 5000
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+
