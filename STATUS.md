@@ -4,7 +4,7 @@
 🟡 DEVELOPMENT
 
 ## Laatst bijgewerkt
-2024-12-28 door Copilot
+2024-12-28 by Copilot
 
 ## Wat werkt
 - [x] Multi-tenant customer management
