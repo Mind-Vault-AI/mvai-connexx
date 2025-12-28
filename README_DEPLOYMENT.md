@@ -153,7 +153,7 @@ Zorg dat je project op GitHub staat met alle bestanden:
 ### Stap 6: Automatische Deployments Instellen
 1. Ga naar **Settings → GitHub** in je app dashboard
 2. Schakel **"Auto Deploy"** in
-3. Nu wordt je app automatisch gedeployed bij elke `git push` naar de main branch
+3. Nu wordt je app automatisch gedeployd bij elke `git push` naar de main branch
 
 ---
 
