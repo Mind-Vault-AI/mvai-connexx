@@ -4,6 +4,7 @@ Flask applicatie met authentication en customer management
 """
 import os
 import json
+import logging
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
@@ -13,9 +14,29 @@ import database as db
 import analytics
 import csv
 import io
+from config import Config
+
+# Configure structured logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('mvai-connexx')
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+
+# Secret key validation for production (before loading config)
+app.secret_key = os.environ.get('SECRET_KEY')
+if not app.secret_key:
+    if os.environ.get('FLASK_ENV') == 'development':
+        app.secret_key = 'dev-secret-key-ONLY-FOR-LOCAL-DEV'
+        logger.warning("⚠️ WARNING: Using development secret key - DO NOT USE IN PRODUCTION")
+    else:
+        raise RuntimeError("SECRET_KEY environment variable is required in production!")
+
+# Load other config settings from Config class
+app.config.from_object(Config)
+
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Rate limiting voor API protection
@@ -39,10 +60,10 @@ def ensure_data_dir():
     if data_dir and data_dir != '.' and not os.path.exists(data_dir):
         try:
             os.makedirs(data_dir, mode=0o755, exist_ok=True)
-            print(f"✓ Data directory aangemaakt: {data_dir}")
+            logger.info(f"✓ Data directory aangemaakt: {data_dir}")
         except Exception as e:
-            print(f"⚠ Kon data directory niet aanmaken: {e}")
-            print("  → Check of DATABASE_PATH environment variabele correct is ingesteld")
+            logger.error(f"⚠ Kon data directory niet aanmaken: {e}")
+            logger.error("  → Check of DATABASE_PATH environment variabele correct is ingesteld")
 
 # Zorg ervoor dat data directory bestaat (voor Gunicorn compatibiliteit)
 ensure_data_dir()
@@ -94,7 +115,7 @@ def get_client_ip():
 
 @app.route('/health')
 def health():
-    """Health check endpoint voor Fly.io"""
+    """Basic liveness probe voor Fly.io - geen database check"""
     return jsonify({"status": "healthy", "service": "mvai-connexx"}), 200
 
 # ═══════════════════════════════════════════════════════
