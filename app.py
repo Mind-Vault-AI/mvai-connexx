@@ -43,7 +43,7 @@ def load_data():
 def save_data(data):
     with open(DATA_FILE, 'w') as f: json.dump(data, f, indent=4)
 
-# Zorg ervoor dat data directory bestaat bij opstarten (ook met Gunicorn)
+# Zorg ervoor dat data directory bestaat bij opstarten (ook met gunicorn)
 ensure_data_dir()
 
 @app.route('/')
