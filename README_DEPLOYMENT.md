@@ -257,10 +257,10 @@ flyctl logs
    ```bash
    curl https://<jouw-app-naam>.fly.dev/health
    ```
-2. Verhoog de `grace_period` in `fly.toml` indien nodig:
+2. Controleer of de `grace_period` in `fly.toml` minimaal `20s` is:
    ```toml
    [[http_service.checks]]
-     grace_period = "20s"  # Was 10s
+     grace_period = "20s"
    ```
 3. Deploy opnieuw: `flyctl deploy`
 
