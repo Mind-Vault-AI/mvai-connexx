@@ -5,10 +5,14 @@ Multi-tenant SQLite database voor klantgegevens en logs
 import sqlite3
 import secrets
 import hashlib
+import os
 from datetime import datetime
 from contextlib import contextmanager
 
-DATABASE = 'mvai_connexx.db'
+# Database path: gebruik environment variabele of fallback naar lokale directory
+# In productie (Fly.io): DATABASE_PATH=/app/data/mvai_connexx.db
+# In development: mvai_connexx.db in current directory
+DATABASE = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
 
 @contextmanager
 def get_db():
