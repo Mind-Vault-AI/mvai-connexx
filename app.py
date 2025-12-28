@@ -13,12 +13,25 @@ DATA_FILE = '/app/data/mvai_data.json'
 def ensure_data_dir():
     """Zorgt ervoor dat de data directory bestaat voor persistent storage"""
     data_dir = os.path.dirname(DATA_FILE)
-    if data_dir and not os.path.exists(data_dir):
+
+    if not data_dir:
+        return
+
+    # Bestaat het pad al maar is het geen directory? -> harde fout.
+    if os.path.exists(data_dir) and not os.path.isdir(data_dir):
+        raise RuntimeError(f"Data path exists but is not a directory: {data_dir}")
+
+    if not os.path.exists(data_dir):
         try:
-            os.makedirs(data_dir, mode=0o755)
+            os.makedirs(data_dir, mode=0o755, exist_ok=True)
         except (PermissionError, OSError) as e:
             # Log waarschuwing maar laat app doordraaien (voor development)
             print(f"Warning: Could not create data directory {data_dir}: {e}")
+            return
+
+    # Als volume wel gemount is maar niet schrijfbaar, detecteer dit vroeg.
+    if not os.access(data_dir, os.W_OK):
+        raise RuntimeError(f"Data directory is not writable: {data_dir}")
 
 def load_data():
     if not os.path.exists(DATA_FILE):
