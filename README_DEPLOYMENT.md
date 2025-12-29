@@ -242,7 +242,7 @@ ls -la /app/
    flyctl apps restart
    ```
 
-**Note:** De app logt een waarschuwing bij permission errors maar blijft draaien. In productie (Docker) heeft de app altijd de juiste permissions.
+**Note:** De app logt een waarschuwing bij permission errors maar blijft draaien. In de standaard Docker-image worden directory’s eigendom van `mvai_user` gezet, maar bij Fly.io volume mounts kunnen permissieproblemen toch optreden als de volume-ownership niet overeenkomt. Controleer in dat geval de permissions/ownership van het gemounte volume.
 
 ### Probleem 3: Health Check Fails
 **Symptoom:** App blijft in "unhealthy" state.
