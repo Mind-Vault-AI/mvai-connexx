@@ -383,16 +383,30 @@
     </div>
 
     <script>
+        async function sendSecurePost(url) {
+            // Assumes CSRF token is available in a meta tag: <meta name="csrf-token" content="{{ csrf_token() }}">
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('An error occurred. Please try again.');
+            }
+        }
+
         function removeFromWhitelist(id) {
             if (!confirm('Remove IP from whitelist?')) return;
-            fetch(`/admin/security/whitelist/${id}/remove`, { method: 'POST' })
-                .then(() => location.reload());
+            sendSecurePost(`/admin/security/whitelist/${id}/remove`);
         }
 
         function removeFromBlacklist(id) {
             if (!confirm('Unblock this IP?')) return;
-            fetch(`/admin/security/blacklist/${id}/remove`, { method: 'POST' })
-                .then(() => location.reload());
+            sendSecurePost(`/admin/security/blacklist/${id}/remove`);
         }
 
         // Auto-refresh elke 30 seconden
