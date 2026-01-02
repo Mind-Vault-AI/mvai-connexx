@@ -15,17 +15,15 @@ Alle API endpoints vereisen een geldige API key. Je kunt API keys aanmaken via h
 curl -H "X-API-Key: mvai_xxx..." https://your-app.fly.dev/api/v1/status
 ```
 
-**Methode 2: Query parameter**
-```bash
-curl https://your-app.fly.dev/api/v1/status?api_key=mvai_xxx...
-```
-
 ---
 
 ## 📚 API ENDPOINTS
 
 ### Health & Status
 
+## 📚 API ENDPOINTS
+
+### Health & Status
 #### `GET /api/v1/health`
 Health check endpoint (geen authenticatie vereist)
 
