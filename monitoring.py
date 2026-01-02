@@ -4,7 +4,7 @@ Enterprise-grade monitoring voor error tracking, alerting en exit strategies
 """
 import traceback
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 import database as db
