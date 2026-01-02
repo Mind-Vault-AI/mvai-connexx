@@ -2,7 +2,6 @@
 MVAI Connexx - ICT Monitoring & Error Reporting Module
 Enterprise-grade monitoring voor error tracking, alerting en exit strategies
 """
-import os
 import sys
 import traceback
 import json
