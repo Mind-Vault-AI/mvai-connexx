@@ -5,7 +5,7 @@ Emergency response procedures voor security breaches en system failures
 import os
 import json
 import shutil
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 import database as db
