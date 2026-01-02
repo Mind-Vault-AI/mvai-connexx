@@ -468,7 +468,9 @@ def check_maintenance_mode() -> bool:
             with open('/tmp/mvai_maintenance_mode', 'r') as f:
                 data = json.load(f)
                 return data.get('enabled', False)
-    except:
+    except Exception:
+        # Fail-safe: on any error while reading/parsing the maintenance file,
+        # treat maintenance mode as disabled and return False below.
         pass
     return False
 
