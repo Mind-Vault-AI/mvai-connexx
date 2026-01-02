@@ -24,12 +24,13 @@
 ## 📋 Inhoudsopgave
 
 1. [Lokale Deployment](#lokale-deployment)
-2. [Fly.io Deployment](#flyio-deployment)
-3. [Docker Deployment](#docker-deployment)
-4. [Database Setup](#database-setup)
-5. [Productie Configuratie](#productie-configuratie)
-6. [Enterprise Features Setup](#enterprise-features-setup)
-7. [Troubleshooting](#troubleshooting)
+2. [Render Deployment](#render-deployment) ⭐ **LIVE PRODUCTION**
+3. [Fly.io Deployment](#flyio-deployment)
+4. [Docker Deployment](#docker-deployment)
+5. [Database Setup](#database-setup)
+6. [Productie Configuratie](#productie-configuratie)
+7. [Enterprise Features Setup](#enterprise-features-setup)
+8. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -77,6 +78,296 @@ gunicorn --bind 0.0.0.0:5000 --workers 4 app:app
 ### Stap 5: Open in Browser
 
 Ga naar: `http://localhost:5000`
+
+---
+
+## 🌐 Render Deployment
+
+### ⭐ CURRENT PRODUCTION DEPLOYMENT
+
+**Live URL:** https://mvai-connexx.onrender.com/
+
+MVAI Connexx is momenteel LIVE op Render met volledige functionaliteit. Deze sectie beschrijft hoe je Render gebruikt voor deployment.
+
+### Vereisten
+
+- Render account (gratis tier beschikbaar)
+- GitHub account (voor auto-deploy)
+- Repository toegang
+
+### Deployment Methode 1: Via render.yaml (Aanbevolen)
+
+De repository bevat een `render.yaml` configuration file voor infrastructure-as-code.
+
+**Stap 1: Connect GitHub Repository**
+
+1. Ga naar https://dashboard.render.com/
+2. Klik "New" → "Blueprint"
+3. Connect je GitHub account
+4. Selecteer repository: `Mind-Vault-AI/mvai-connexx`
+5. Selecteer branch: `claude/mvai-connexx-multi-tenant-upgrade-8eDvw`
+
+**Stap 2: Review Configuration**
+
+Render leest automatisch `render.yaml`:
+```yaml
+- Service: mvai-connexx
+- Type: Web Service (Docker)
+- Region: Frankfurt (EU - GDPR compliant)
+- Plan: Free
+- Auto-deploy: Enabled
+```
+
+**Stap 3: Configure Environment Variables**
+
+Optionele secrets (configureer in Render dashboard):
+```bash
+# Email (voor notificaties)
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+
+# Payments (optioneel)
+STRIPE_PUBLIC_KEY=pk_live_...
+STRIPE_SECRET_KEY=sk_live_...
+
+# Monitoring (optioneel)
+SENTRY_DSN=https://...@sentry.io/...
+```
+
+**Note:** `SECRET_KEY` wordt automatisch gegenereerd door Render.
+
+**Stap 4: Deploy**
+
+Klik "Apply" en Render zal:
+1. Build Docker image
+2. Deploy service
+3. Assign URL: `mvai-connexx.onrender.com`
+4. Enable SSL (automatisch via Let's Encrypt)
+
+### Deployment Methode 2: Manual (Huidig)
+
+Als je service al draait (zoals nu het geval is):
+
+**Stap 1: Service Instellingen**
+
+In Render dashboard:
+- Service: mvai-connexx
+- Environment: Docker
+- Branch: claude/mvai-connexx-multi-tenant-upgrade-8eDvw
+- Auto-Deploy: ON
+
+**Stap 2: Build Command**
+
+Docker build (automatisch via Dockerfile):
+```dockerfile
+FROM python:3.9-slim
+RUN pip install -r requirements.txt
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+```
+
+**Stap 3: Health Check**
+
+```
+Path: /login
+Expected Status: 200
+```
+
+### Database Setup op Render
+
+**Optie A: SQLite (Huidige Setup)**
+
+SQLite database draait in-memory. Data is **NIET persistent** bij redeploy.
+
+**Voor persistentie:**
+1. Render Dashboard → Service → "Disks"
+2. Add Disk:
+   - Name: `mvai_data`
+   - Mount Path: `/app/data`
+   - Size: 1GB (free tier)
+
+3. Update `database.py` om database path te wijzigen:
+```python
+DATABASE_PATH = os.getenv('DATABASE_PATH', '/app/data/mvai_connexx.db')
+```
+
+**Optie B: PostgreSQL (Productie)**
+
+Voor >10K customers, migreer naar PostgreSQL:
+
+1. Render Dashboard → "New" → "PostgreSQL"
+2. Create database: `mvai-connexx-db`
+3. Copy connection string
+4. Add environment variable:
+   ```
+   DATABASE_URL=postgres://user:pass@host/db
+   ```
+5. Update `database.py` voor PostgreSQL support
+
+### Seed Demo Data op Render
+
+**Via Render Shell:**
+
+1. Render Dashboard → Service → "Shell"
+2. Run commands:
+```bash
+python seed_demo.py
+# Prints admin credentials - save these!
+```
+
+**Of via GitHub Actions (automatisch):**
+
+Create `.github/workflows/seed.yml` voor auto-seeding bij eerste deploy.
+
+### Custom Domain Setup
+
+**Stap 1: Voeg Custom Domain toe**
+
+1. Render Dashboard → Service → "Settings"
+2. Scroll naar "Custom Domains"
+3. Add domain: `mindvault-ai.com`
+
+**Stap 2: Configure DNS**
+
+Bij je domain registrar (TransIP, Cloudflare, etc.):
+
+```
+Type: CNAME
+Name: @  (of subdomain zoals 'app')
+Value: mvai-connexx.onrender.com
+TTL: 3600
+```
+
+**Voor apex domain (mindvault-ai.com):**
+```
+Type: A
+Name: @
+Value: [Render IP - zie dashboard]
+```
+
+**Stap 3: SSL Certificate**
+
+Render configureert automatisch Let's Encrypt SSL (gratis).
+HTTPS is within 5 minuten actief.
+
+### Auto-Deploy van GitHub
+
+**Currently Active:**
+
+Elke push naar branch `claude/mvai-connexx-multi-tenant-upgrade-8eDvw` triggert automatisch:
+1. Docker build
+2. Deployment naar Render
+3. Health check
+4. Live switch (zero-downtime)
+
+**Disable auto-deploy:**
+```bash
+# In render.yaml:
+autoDeploy: false
+```
+
+### Monitoring & Logs
+
+**Real-time Logs:**
+
+1. Render Dashboard → Service → "Logs"
+2. Of via Render CLI:
+```bash
+# Install Render CLI
+npm install -g @render/cli
+
+# View logs
+render logs --service mvai-connexx --tail
+```
+
+**Metrics:**
+
+Render Dashboard toont:
+- CPU usage
+- Memory usage
+- Request count
+- Response times
+- Error rates
+
+### Scaling op Render
+
+**Vertical Scaling (More Resources):**
+
+Render Dashboard → Service → "Settings" → "Instance Type":
+- Free: 512MB RAM, shared CPU
+- Starter ($7/mo): 1GB RAM, 0.5 CPU
+- Standard ($25/mo): 2GB RAM, 1 CPU
+- Pro ($85/mo): 4GB RAM, 2 CPU
+
+**Horizontal Scaling (More Instances):**
+
+Render Dashboard → Service → "Settings" → "Scaling":
+- Free tier: 1 instance only
+- Paid plans: 2-10 instances (load balanced)
+
+### Render Free Tier Limitations
+
+⚠️ **Important Free Tier Limits:**
+
+1. **Spin Down:** Service sleeps na 15 min inactivity
+   - Cold start: ~30 seconden
+   - Oplossing: Upgrade naar Starter plan ($7/mo)
+
+2. **Build Minutes:** 500 min/month gratis
+   - Gemiddelde build: ~3 minuten
+   - ~150 deploys/month mogelijk
+
+3. **Bandwidth:** 100GB/month gratis
+   - Ruim voldoende voor 10K+ page views
+
+4. **Database:** Niet persistent zonder disk
+   - Oplossing: Add persistent disk (gratis 1GB)
+
+### Render vs Fly.io
+
+| Feature | Render | Fly.io |
+|---------|--------|--------|
+| **Deployment** | Docker + Git | Docker + CLI |
+| **Free Tier** | 512MB, sleeps | 256MB, 3 VMs |
+| **EU Region** | ✅ Frankfurt | ✅ Amsterdam |
+| **Auto-Deploy** | ✅ GitHub | ❌ Manual |
+| **SSL** | ✅ Auto | ✅ Auto |
+| **Database** | PostgreSQL addon | Persistent volumes |
+| **Cold Start** | ~30s | <1s |
+| **Dashboard** | ✅ Excellent | Basic |
+| **CLI** | Basic | ✅ Excellent |
+
+**Aanbeveling:**
+- **Render:** Best voor snel deployment, GitHub integratie, teams
+- **Fly.io:** Best voor performance, global edge, developers
+
+### Troubleshooting Render
+
+**Service won't start:**
+```bash
+# Check logs in dashboard
+# Common issues:
+# 1. Missing PORT environment variable (should be 5000)
+# 2. Gunicorn not in requirements.txt
+# 3. Database connection errors
+```
+
+**Database niet persistent:**
+```bash
+# Add persistent disk in dashboard
+# Update database path in code to /app/data/mvai_connexx.db
+```
+
+**Cold starts te traag:**
+```bash
+# Upgrade to Starter plan ($7/mo) - no sleep
+# Of: Use cron-job.org to ping elke 10 min
+```
+
+**Out of memory:**
+```bash
+# Free tier: 512MB RAM
+# Oplossing: Optimize code or upgrade to Starter (1GB)
+```
 
 ---
 
