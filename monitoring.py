@@ -317,7 +317,7 @@ class SystemHealthMonitor:
                 uptime_percentage = (uptime_minutes / total_minutes) * 100
 
                 return max(0, min(100, round(uptime_percentage, 2)))
-        except:
+        except Exception:
             return 99.9  # Default
 
 # Global health monitor
