@@ -177,7 +177,8 @@ class SystemHealthMonitor:
         """Check beschikbare disk space"""
         try:
             import shutil
-            stats = shutil.disk_usage('/home/user/mvai-connexx')
+            disk_path = os.environ.get('MVAI_MONITOR_DISK_PATH', '/home/user/mvai-connexx')
+            stats = shutil.disk_usage(disk_path)
 
             total_gb = stats.total / (1024**3)
             used_gb = stats.used / (1024**3)
