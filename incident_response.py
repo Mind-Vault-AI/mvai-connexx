@@ -268,14 +268,21 @@ class IncidentResponseManager:
         """Create emergency database backup"""
         try:
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            backup_path = f'/home/user/mvai-connexx/backups/emergency_backup_{timestamp}.db'
+
+            # Determine database path from environment or fall back to default
+            db_path = os.getenv('DATABASE_PATH', '/home/user/mvai-connexx/mvai_connexx.db')
+            db_dir = os.path.dirname(db_path) or '.'
+
+            # Backups directory relative to database location
+            backups_dir = os.path.join(db_dir, 'backups')
+            backup_path = os.path.join(backups_dir, f'emergency_backup_{timestamp}.db')
 
             # Ensure backups directory exists
-            os.makedirs('/home/user/mvai-connexx/backups', exist_ok=True)
+            os.makedirs(backups_dir, exist_ok=True)
 
             # Copy database file
             shutil.copy2(
-                '/home/user/mvai-connexx/mvai_connexx.db',
+                db_path,
                 backup_path
             )
             return True
