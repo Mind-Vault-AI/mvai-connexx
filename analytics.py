@@ -2,7 +2,6 @@
 MVAI Connexx - Advanced Analytics Module
 Real-time metrics, trends en advanced reporting
 """
-from datetime import datetime, timedelta
 import database as db
 from collections import defaultdict
 
