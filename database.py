@@ -6,19 +6,62 @@ import sqlite3
 import secrets
 import hashlib
 import os
+import time
 from datetime import datetime
 from contextlib import contextmanager
+from functools import wraps
 
 # Database path: gebruik environment variabele of fallback naar lokale directory
 # In productie (Fly.io): DATABASE_PATH=/app/data/mvai_connexx.db
 # In development: mvai_connexx.db in current directory
 DATABASE = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
 
+def retry_on_locked(max_retries=3, delay=0.5):
+    """
+    Decorator to retry database operations when encountering OperationalError: database is locked
+    
+    Args:
+        max_retries: Maximum number of retry attempts (default: 3)
+        delay: Delay in seconds between retries (default: 0.5)
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except sqlite3.OperationalError as e:
+                    if "database is locked" in str(e):
+                        last_exception = e
+                        if attempt < max_retries - 1:
+                            time.sleep(delay * (attempt + 1))  # Exponential backoff
+                            continue
+                    raise
+            if last_exception:
+                raise last_exception
+        return wrapper
+    return decorator
+
 @contextmanager
 def get_db():
     """Context manager voor database connecties"""
-    conn = sqlite3.connect(DATABASE)
+    # Add timeout to prevent infinite hangs
+    conn = sqlite3.connect(DATABASE, timeout=30)
     conn.row_factory = sqlite3.Row
+    
+    # Enable WAL mode for better concurrent read/write performance
+    conn.execute('PRAGMA journal_mode=WAL')
+    
+    # Set busy timeout to handle database contention gracefully
+    conn.execute('PRAGMA busy_timeout=30000')  # 30 seconds in milliseconds
+    
+    # Set synchronous mode to NORMAL for better performance
+    conn.execute('PRAGMA synchronous=NORMAL')
+    
+    # Enable foreign keys
+    conn.execute('PRAGMA foreign_keys=ON')
+    
     try:
         yield conn
         conn.commit()
@@ -32,6 +75,9 @@ def init_db():
     """Initialiseer database met multi-tenant schema"""
     with get_db() as conn:
         cursor = conn.cursor()
+        
+        # Ensure WAL mode is enabled at database creation
+        cursor.execute('PRAGMA journal_mode=WAL')
 
         # Customers tabel
         cursor.execute('''
@@ -407,6 +453,7 @@ def hash_access_code(code):
     return hashlib.sha256(code.encode()).hexdigest()
 
 # Customer functies
+@retry_on_locked(max_retries=3, delay=0.5)
 def create_customer(name, contact_email=None, company_info=None):
     """Maak nieuwe klant aan met unieke access code"""
     access_code = generate_access_code()
@@ -426,6 +473,7 @@ def create_customer(name, contact_email=None, company_info=None):
         'contact_email': contact_email
     }
 
+@retry_on_locked(max_retries=3, delay=0.5)
 def get_customer_by_code(access_code):
     """Haal klant op via access code"""
     with get_db() as conn:
@@ -456,6 +504,7 @@ def update_customer_status(customer_id, status):
         cursor.execute('UPDATE customers SET status = ? WHERE id = ?', (status, customer_id))
 
 # Log functies
+@retry_on_locked(max_retries=3, delay=0.5)
 def create_log(customer_id, ip_address, data, metadata=None):
     """Maak nieuwe log entry voor klant"""
     with get_db() as conn:
@@ -587,6 +636,7 @@ def create_admin(username, password=None):
         'access_code': access_code
     }
 
+@retry_on_locked(max_retries=3, delay=0.5)
 def verify_admin(access_code):
     """Verifieer admin access code"""
     with get_db() as conn:
@@ -672,6 +722,7 @@ def create_api_key(customer_id, name=None):
 
     return key_value
 
+@retry_on_locked(max_retries=3, delay=0.5)
 def verify_api_key(key_value):
     """Verifieer API key en return customer_id"""
     with get_db() as conn:
