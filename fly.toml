@@ -1,15 +1,15 @@
-# fly.toml app configuration file generated for mvai-connexx-1udloq on 2026-01-03T12:04:54Z
+# fly.toml app configuration file generated for mvai-connexx-zu1arw on 2026-01-03T13:04:25Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'mvai-connexx-1udloq'
-primary_region = 'fra'
+app = 'mvai-connexx-zu1arw'
+primary_region = 'ams'
 
 [build]
 
 [http_service]
-  internal_port = 5000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
