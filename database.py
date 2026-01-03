@@ -5,16 +5,48 @@ Multi-tenant SQLite database voor klantgegevens en logs
 import sqlite3
 import secrets
 import hashlib
+import time
+import functools
 from datetime import datetime
 from contextlib import contextmanager
 
 DATABASE = 'mvai_connexx.db'
 
+def retry_on_locked(max_retries=5, initial_delay=0.1):
+    """
+    Decorator to retry database operations on SQLITE_BUSY errors.
+    Uses exponential backoff to handle concurrent access gracefully.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            delay = initial_delay
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except sqlite3.OperationalError as e:
+                    if 'database is locked' in str(e) and attempt < max_retries - 1:
+                        time.sleep(delay)
+                        delay *= 2  # Exponential backoff
+                    else:
+                        raise
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 @contextmanager
 def get_db():
-    """Context manager voor database connecties"""
-    conn = sqlite3.connect(DATABASE)
+    """Context manager voor database connecties met WAL mode en timeouts"""
+    conn = sqlite3.connect(DATABASE, timeout=30)
     conn.row_factory = sqlite3.Row
+    
+    # Enable WAL mode for better concurrency
+    conn.execute('PRAGMA journal_mode=WAL')
+    # Set busy timeout to 5 seconds
+    conn.execute('PRAGMA busy_timeout=5000')
+    # Use NORMAL synchronous mode for better performance
+    conn.execute('PRAGMA synchronous=NORMAL')
+    
     try:
         yield conn
         conn.commit()
@@ -403,6 +435,7 @@ def hash_access_code(code):
     return hashlib.sha256(code.encode()).hexdigest()
 
 # Customer functies
+@retry_on_locked()
 def create_customer(name, contact_email=None, company_info=None):
     """Maak nieuwe klant aan met unieke access code"""
     access_code = generate_access_code()
@@ -445,6 +478,7 @@ def get_all_customers():
         cursor.execute('SELECT * FROM customers ORDER BY created_at DESC')
         return [dict(row) for row in cursor.fetchall()]
 
+@retry_on_locked()
 def update_customer_status(customer_id, status):
     """Update klant status"""
     with get_db() as conn:
@@ -452,6 +486,7 @@ def update_customer_status(customer_id, status):
         cursor.execute('UPDATE customers SET status = ? WHERE id = ?', (status, customer_id))
 
 # Log functies
+@retry_on_locked()
 def create_log(customer_id, ip_address, data, metadata=None):
     """Maak nieuwe log entry voor klant"""
     with get_db() as conn:
@@ -567,6 +602,7 @@ def get_admin_stats():
         }
 
 # Admin functies
+@retry_on_locked()
 def create_admin(username, password=None):
     """Maak admin gebruiker aan"""
     access_code = password if password else generate_access_code(24)
@@ -625,6 +661,7 @@ def search_logs(query, customer_id=None):
         return [dict(row) for row in cursor.fetchall()]
 
 # Audit logging functies
+@retry_on_locked()
 def log_admin_action(admin_username, action, target_type=None, target_id=None, details=None, ip_address=None):
     """Log admin actie voor audit trail"""
     with get_db() as conn:
@@ -655,6 +692,7 @@ def get_audit_logs(limit=50, admin_username=None):
         return [dict(row) for row in cursor.fetchall()]
 
 # API Key functies
+@retry_on_locked()
 def create_api_key(customer_id, name=None):
     """Genereer API key voor klant"""
     key_value = f"mvai_{secrets.token_urlsafe(32)}"
@@ -668,6 +706,7 @@ def create_api_key(customer_id, name=None):
 
     return key_value
 
+@retry_on_locked()
 def verify_api_key(key_value):
     """Verifieer API key en return customer_id"""
     with get_db() as conn:
@@ -699,6 +738,7 @@ def get_customer_api_keys(customer_id):
         ''', (customer_id,))
         return [dict(row) for row in cursor.fetchall()]
 
+@retry_on_locked()
 def revoke_api_key(key_id):
     """Deactiveer API key"""
     with get_db() as conn:
