@@ -4,7 +4,6 @@ Flask applicatie met authentication en customer management
 """
 import os
 import json
-import logging
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
@@ -14,29 +13,9 @@ import database as db
 import analytics
 import csv
 import io
-from config import Config
-
-# Configure structured logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('mvai-connexx')
 
 app = Flask(__name__)
-
-# Secret key validation for production (before loading config)
-app.secret_key = os.environ.get('SECRET_KEY')
-if not app.secret_key:
-    if os.environ.get('FLASK_ENV') == 'development':
-        app.secret_key = 'dev-secret-key-ONLY-FOR-LOCAL-DEV'
-        logger.warning("⚠️ WARNING: Using development secret key - DO NOT USE IN PRODUCTION")
-    else:
-        raise RuntimeError("SECRET_KEY environment variable is required in production!")
-
-# Load other config settings from Config class
-app.config.from_object(Config)
-
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Rate limiting voor API protection
@@ -46,27 +25,6 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
 )
-
-# ═══════════════════════════════════════════════════════
-# DATA DIRECTORY INITIALIZATION
-# ═══════════════════════════════════════════════════════
-
-def ensure_data_dir():
-    """Zorg ervoor dat data directory bestaat voor persistent storage"""
-    db_path = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
-    data_dir = os.path.dirname(db_path)
-    
-    # Alleen maken als er een directory path is (niet bij relatief pad zoals '.' of '')
-    if data_dir and data_dir != '.' and not os.path.exists(data_dir):
-        try:
-            os.makedirs(data_dir, mode=0o755, exist_ok=True)
-            logger.info(f"✓ Data directory aangemaakt: {data_dir}")
-        except Exception as e:
-            logger.error(f"⚠ Kon data directory niet aanmaken: {e}")
-            logger.error("  → Check of DATABASE_PATH environment variabele correct is ingesteld")
-
-# Zorg ervoor dat data directory bestaat (voor Gunicorn compatibiliteit)
-ensure_data_dir()
 
 # Initialiseer database bij startup
 with app.app_context():
@@ -108,15 +66,6 @@ def get_client_ip():
     if request.headers.getlist("X-Forwarded-For"):
         return request.headers.getlist("X-Forwarded-For")[0]
     return request.remote_addr
-
-# ═══════════════════════════════════════════════════════
-# HEALTH CHECK ENDPOINT (voor Fly.io monitoring)
-# ═══════════════════════════════════════════════════════
-
-@app.route('/health')
-def health():
-    """Basic liveness probe voor Fly.io - geen database check"""
-    return jsonify({"status": "healthy", "service": "mvai-connexx"}), 200
 
 # ═══════════════════════════════════════════════════════
 # PUBLIC ROUTES

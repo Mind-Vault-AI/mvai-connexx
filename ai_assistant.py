@@ -248,7 +248,7 @@ class AIAssistant:
                 data = json.loads(log['data'])
                 for key in data.keys():
                     data_patterns[key] += 1
-            except:
+            except (json.JSONDecodeError, TypeError, KeyError):
                 pass
 
         summary = {

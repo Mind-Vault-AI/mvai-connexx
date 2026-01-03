@@ -20,22 +20,23 @@ wheels/
 .installed.cfg
 *.egg
 
-# Database
-*.db
-*.db-journal
-*.sqlite
-*.sqlite3
-mvai_connexx.db
-mvai_data.json
-*.backup.*
-
-# Environment
-.env
-.env.local
-*.env
+# Virtual Environment
 venv/
 ENV/
 env/
+.venv
+
+# Environment Variables
+.env
+.env.local
+.env.production
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+mvai_connexx.db
+backups/
 
 # IDE
 .vscode/
@@ -43,20 +44,34 @@ env/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-Thumbs.db
-.directory
 
 # Logs
 *.log
 logs/
+access.log
+error.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Flask
+instance/
+.webassets-cache
 
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
+.tox/
 
-# Documentation builds
-docs/_build/
+# Docker
+.dockerignore
+
+# Fly.io
+.fly/
+
+# OS
+Thumbs.db
