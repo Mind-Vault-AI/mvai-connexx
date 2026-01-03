@@ -796,9 +796,9 @@ def admin_marketing():
 @admin_required
 def admin_security():
     """Security monitoring dashboard with threat detection and audit logs"""
-    from security import get_security_dashboard
+    from security import get_security_status
     
-    security_dashboard = get_security_dashboard()
+    security_dashboard = get_security_status()
     
     return render_template('admin_security.html',
                          security_dashboard=security_dashboard)
