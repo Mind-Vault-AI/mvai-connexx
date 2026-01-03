@@ -26,12 +26,11 @@ def retry_on_locked(max_retries=5, initial_delay=0.1):
                     return func(*args, **kwargs)
                 except sqlite3.OperationalError as e:
                     error_msg = str(e).lower()
-                    # Check for various SQLite lock-related errors
+                    # Check for specific SQLite lock-related errors
                     is_locked = any(phrase in error_msg for phrase in [
                         'database is locked',
-                        'database table is locked',
-                        'locked',
-                        'busy'
+                        'table is locked',
+                        'database table is locked'
                     ])
                     
                     if is_locked and attempt < max_retries - 1:
