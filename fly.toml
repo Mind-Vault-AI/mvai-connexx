@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for mvai-connexx-zu1arw on 2026-01-03T13:04:25Z
+# fly.toml app configuration file generated for mvai-connexx-zynfvg on 2026-01-03T14:10:16Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'mvai-connexx-zu1arw'
+app = 'mvai-connexx-zynfvg'
 primary_region = 'ams'
 
 [build]
