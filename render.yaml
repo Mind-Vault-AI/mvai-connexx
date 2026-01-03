@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: mvai-connexx
+    env: python
+    region: frankfurt
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/mvai_connexx.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true
+    disk:
+      name: mvai-data
+      mountPath: /opt/render/project/src
+      sizeGB: 1
