@@ -21,15 +21,21 @@ def retry_on_locked(max_retries=5, initial_delay=0.1):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             delay = initial_delay
+            last_exception = None
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
                 except sqlite3.OperationalError as e:
-                    if 'database is locked' in str(e) and attempt < max_retries - 1:
+                    last_exception = e
+                    # Check for database locked errors
+                    if 'database is locked' in str(e).lower() and attempt < max_retries - 1:
                         time.sleep(delay)
                         delay *= 2  # Exponential backoff
                     else:
                         raise
+            # This should never be reached, but if it is, raise the last exception
+            if last_exception:
+                raise last_exception
         return wrapper
     return decorator
 
