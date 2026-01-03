@@ -30,7 +30,6 @@ def retry_on_locked(max_retries=5, initial_delay=0.1):
                         delay *= 2  # Exponential backoff
                     else:
                         raise
-            return func(*args, **kwargs)
         return wrapper
     return decorator
 
@@ -708,7 +707,10 @@ def create_api_key(customer_id, name=None):
 
 @retry_on_locked()
 def verify_api_key(key_value):
-    """Verifieer API key en return customer_id"""
+    """
+    Verifieer API key en return customer_id
+    Note: Updates last_used_at timestamp, so requires write access
+    """
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute('''
