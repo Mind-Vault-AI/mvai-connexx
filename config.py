@@ -74,11 +74,23 @@ class Config:
     SMTP_FROM_EMAIL = os.getenv('SMTP_FROM_EMAIL', 'info@mindvault-ai.com')
     SMTP_FROM_NAME = os.getenv('SMTP_FROM_NAME', 'MVAI Connexx')
 
-    # Payments (TODO: Configure)
-    PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'stripe')  # stripe, mollie
+    # Payments - ACTIEF: Gumroad (PayPal backend)
+    PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'gumroad')  # gumroad, stripe, mollie
+
+    # Gumroad (ACTIEF - eerst $100, dan PayPal)
+    GUMROAD_USERNAME = os.getenv('GUMROAD_USERNAME', 'mindvault-ai')
+    GUMROAD_PARTICULIER_URL = os.getenv('GUMROAD_PARTICULIER_URL', 'https://mindvault-ai.gumroad.com/l/mvai-particulier')
+    GUMROAD_MKB_URL = os.getenv('GUMROAD_MKB_URL', 'https://mindvault-ai.gumroad.com/l/mvai-mkb')
+    GUMROAD_STARTER_URL = os.getenv('GUMROAD_STARTER_URL', 'https://mindvault-ai.gumroad.com/l/mvai-starter')
+    GUMROAD_PROFESSIONAL_URL = os.getenv('GUMROAD_PROFESSIONAL_URL', 'https://mindvault-ai.gumroad.com/l/mvai-professional')
+    GUMROAD_ENTERPRISE_URL = os.getenv('GUMROAD_ENTERPRISE_URL', 'https://mindvault-ai.gumroad.com/l/mvai-enterprise')
+
+    # Stripe (DISABLED - wacht op KVK)
     STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
     STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
     STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
+
+    # Mollie (alternatief)
     MOLLIE_API_KEY = os.getenv('MOLLIE_API_KEY', '')
 
     # Monitoring

@@ -531,28 +531,22 @@ def customer_upgrade(tier):
         flash('Dit is geen upgrade. Gebruik downgrade voor een lager tier.', 'error')
         return redirect(url_for('customer_subscription'))
 
-    # Create Stripe checkout session
+    # Redirect to Gumroad checkout (PayPal backend na $100)
     try:
-        from stripe_integration import create_checkout_session
+        from gumroad_integration import get_checkout_url
 
-        # Build success/cancel URLs
-        success_url = request.host_url.rstrip('/') + '/customer/subscription?upgrade_success=true'
-        cancel_url = request.host_url.rstrip('/') + '/customer/subscription?upgrade_canceled=true'
-
-        checkout_session = create_checkout_session(
-            customer_id=customer_id,
-            customer_email=customer.get('contact_email', 'noreply@mindvault-ai.com'),
-            customer_name=customer['name'],
+        # Get Gumroad checkout URL met customer info
+        checkout_url = get_checkout_url(
             tier=tier,
-            success_url=success_url,
-            cancel_url=cancel_url
+            customer_id=customer_id,
+            customer_email=customer.get('contact_email')
         )
 
-        # Redirect to Stripe Checkout
-        return redirect(checkout_session['checkout_url'])
+        # Redirect to Gumroad (→ PayPal after $100)
+        return redirect(checkout_url)
 
     except Exception as e:
-        print(f"❌ Stripe checkout error: {e}")
+        print(f"❌ Gumroad checkout error: {e}")
         flash(f'Fout bij betalingsverwerking: {str(e)}', 'error')
         return redirect(url_for('customer_subscription'))
 
@@ -597,9 +591,73 @@ def customer_downgrade(tier):
     flash(f'Downgrade naar {tier.upper()} gepland voor einde van de billing cycle', 'success')
     return redirect(url_for('customer_subscription'))
 
+@app.route('/webhooks/gumroad', methods=['POST'])
+def gumroad_webhook():
+    """Handle Gumroad webhook events (payment confirmation)"""
+    payload = request.form.to_dict()  # Gumroad sends form data
+
+    from gumroad_integration import verify_gumroad_webhook
+
+    try:
+        # Verify and process webhook
+        result = verify_gumroad_webhook(payload)
+
+        if not result.get('valid'):
+            print(f"⚠️ Invalid Gumroad webhook: {payload}")
+            return jsonify({'error': 'Invalid webhook data'}), 400
+
+        # Payment successful - upgrade customer tier
+        customer_id = result.get('customer_id')
+        tier = result.get('tier')
+        email = result.get('email')
+        sale_id = result.get('sale_id')
+
+        if customer_id and tier:
+            # Update customer tier in database
+            with db.get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE customers
+                    SET pricing_tier = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ''', (tier, int(customer_id)))
+
+            # Send upgrade confirmation email
+            try:
+                customer = db.get_customer_by_id(int(customer_id))
+                from email_notifications import send_tier_upgrade_email
+                from unit_economics import PricingConfig
+
+                old_tier = customer.get('pricing_tier', 'demo')
+                new_price = PricingConfig.PRICING_TIERS[tier]['price_per_month']
+
+                send_tier_upgrade_email(
+                    customer['name'],
+                    customer.get('contact_email'),
+                    old_tier,
+                    tier,
+                    new_price
+                )
+            except Exception as e:
+                print(f"⚠️ Upgrade email failed: {e}")
+
+            print(f"✅ Gumroad sale {sale_id}: Customer {customer_id} upgraded to {tier}")
+
+        return jsonify({'success': True}), 200
+
+    except Exception as e:
+        print(f"❌ Gumroad webhook processing error: {e}")
+        return jsonify({'error': str(e)}), 400
+
+# Stripe webhook (DISABLED - wacht op KVK voor activatie)
 @app.route('/webhooks/stripe', methods=['POST'])
 def stripe_webhook():
-    """Handle Stripe webhook events"""
+    """Handle Stripe webhook events (DISABLED TOT KVK)"""
+    # TODO: Activeer zodra KVK nummer er is
+    return jsonify({'error': 'Stripe disabled - waiting for KVK'}), 503
+
+    # Originele Stripe code (behouden voor later):
     payload = request.get_data(as_text=True)
     signature = request.headers.get('Stripe-Signature')
 
