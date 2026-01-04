@@ -11,19 +11,14 @@ RUN groupadd -r mvai && useradd -r -g mvai mvai_user
 # Copy application code
 COPY . .
 
-# Make startup script executable
-RUN chmod +x start.sh
-
 # Fix permissions
 RUN chown -R mvai_user:mvai /app
 
 # Switch to non-root user
 USER mvai_user
 
-# Environment variables voor Fly.io deployment
-ENV DATABASE_PATH=/app/data/mvai_connexx.db
-ENV PORT=5000
-
 EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+
+# Start app directly with gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "app:app"]
 
