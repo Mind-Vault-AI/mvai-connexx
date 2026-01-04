@@ -1,15 +1,24 @@
 """
 MVAI Connexx - Stripe Payment Integration
 Production-ready subscription management via Stripe
+
+DISABLED: Waiting for KVK - Use Gumroad for now
 """
-import stripe
 import os
 from typing import Dict, Optional
 import config
 from unit_economics import PricingConfig
 
-# Initialize Stripe
-stripe.api_key = config.Config.STRIPE_SECRET_KEY
+# Optional Stripe import (disabled until KVK)
+try:
+    import stripe
+    # Initialize Stripe only if configured
+    if config.Config.STRIPE_SECRET_KEY:
+        stripe.api_key = config.Config.STRIPE_SECRET_KEY
+    STRIPE_AVAILABLE = True
+except ImportError:
+    STRIPE_AVAILABLE = False
+    stripe = None  # Prevent errors if stripe not installed
 
 class StripePaymentService:
     """Handle Stripe payments and subscriptions"""
