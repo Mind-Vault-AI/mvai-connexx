@@ -15,8 +15,12 @@ class Config:
     SESSION_LIFETIME_HOURS = int(os.getenv('SESSION_LIFETIME_HOURS', 24))
 
     # Database
-    DATABASE_PATH = os.getenv('DATABASE_PATH', 'mvai_connexx.db')
-    BACKUP_DIR = os.getenv('BACKUP_DIR', 'backups')
+    # Fly.io uses /app/data volume, local uses current directory
+    _default_db_path = '/app/data/mvai_connexx.db' if os.path.exists('/app/data') else 'mvai_connexx.db'
+    DATABASE_PATH = os.getenv('DATABASE_PATH', _default_db_path)
+
+    _default_backup_dir = '/app/data/backups' if os.path.exists('/app/data') else 'backups'
+    BACKUP_DIR = os.getenv('BACKUP_DIR', _default_backup_dir)
     BACKUP_RETENTION_DAYS = int(os.getenv('BACKUP_RETENTION_DAYS', 30))
 
     # Security
