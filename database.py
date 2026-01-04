@@ -2,6 +2,7 @@
 MVAI Connexx - Database Module
 Multi-tenant SQLite database voor klantgegevens en logs
 """
+import os
 import sqlite3
 import secrets
 import hashlib
