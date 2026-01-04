@@ -47,27 +47,6 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# ═══════════════════════════════════════════════════════
-# DATA DIRECTORY INITIALIZATION
-# ═══════════════════════════════════════════════════════
-
-def ensure_data_dir():
-    """Zorg ervoor dat data directory bestaat voor persistent storage"""
-    db_path = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
-    data_dir = os.path.dirname(db_path)
-    
-    # Alleen maken als er een directory path is (niet bij relatief pad zoals '.' of '')
-    if data_dir and data_dir != '.' and not os.path.exists(data_dir):
-        try:
-            os.makedirs(data_dir, mode=0o755, exist_ok=True)
-            logger.info(f"✓ Data directory aangemaakt: {data_dir}")
-        except Exception as e:
-            logger.error(f"⚠ Kon data directory niet aanmaken: {e}")
-            logger.error("  → Check of DATABASE_PATH environment variabele correct is ingesteld")
-
-# Zorg ervoor dat data directory bestaat (voor Gunicorn compatibiliteit)
-ensure_data_dir()
-
 # Initialiseer database bij startup
 with app.app_context():
     db.init_db()
@@ -501,6 +480,300 @@ def customer_ai_chat():
         ''', (customer_id, message, result['message'], result.get('intent', 'unknown')))
 
     return jsonify(result)
+
+# ═══════════════════════════════════════════════════════
+# SUBSCRIPTION & BILLING ROUTES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/customer/subscription')
+@login_required
+def customer_subscription():
+    """Subscription management pagina voor klanten"""
+    if 'admin' in session:
+        flash('Admin heeft geen subscription', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    # Import pricing tiers
+    from unit_economics import PricingConfig
+    pricing_tiers = PricingConfig.PRICING_TIERS
+
+    # Get current tier details
+    current_tier = customer.get('pricing_tier', 'demo')
+    tier_details = pricing_tiers.get(current_tier, pricing_tiers['demo'])
+
+    # Get current usage
+    with db.get_db() as conn:
+        cursor = conn.cursor()
+        # Get logs count for current month
+        cursor.execute('''
+            SELECT COUNT(*) as count
+            FROM logs
+            WHERE customer_id = ?
+              AND timestamp >= date('now', 'start of month')
+        ''', (customer_id,))
+        current_usage = cursor.fetchone()['count']
+
+    # Calculate usage percentage
+    included_logs = tier_details['included_logs']
+    usage_percentage = min(100, (current_usage / included_logs * 100) if included_logs > 0 else 0)
+
+    usage = {
+        'current': current_usage,
+        'limit': included_logs,
+        'percentage': round(usage_percentage, 1)
+    }
+
+    return render_template('customer_subscription.html',
+                         current_tier=current_tier,
+                         tier_details=tier_details,
+                         pricing_tiers=pricing_tiers,
+                         usage=usage,
+                         customer=customer)
+
+@app.route('/customer/upgrade/<tier>')
+@login_required
+def customer_upgrade(tier):
+    """Upgrade customer tier via Stripe checkout"""
+    if 'admin' in session:
+        flash('Admin heeft geen subscription', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    from unit_economics import PricingConfig
+    pricing_tiers = PricingConfig.PRICING_TIERS
+
+    # Validate tier
+    if tier not in pricing_tiers:
+        flash('Ongeldige tier geselecteerd', 'error')
+        return redirect(url_for('customer_subscription'))
+
+    current_tier = customer.get('pricing_tier', 'demo')
+    current_price = pricing_tiers[current_tier]['price_per_month']
+    new_price = pricing_tiers[tier]['price_per_month']
+
+    # Check if this is actually an upgrade
+    if new_price <= current_price:
+        flash('Dit is geen upgrade. Gebruik downgrade voor een lager tier.', 'error')
+        return redirect(url_for('customer_subscription'))
+
+    # Redirect to Gumroad checkout (PayPal backend na $100)
+    try:
+        from gumroad_integration import get_checkout_url
+
+        # Get Gumroad checkout URL met customer info
+        checkout_url = get_checkout_url(
+            tier=tier,
+            customer_id=customer_id,
+            customer_email=customer.get('contact_email')
+        )
+
+        # Redirect to Gumroad (→ PayPal after $100)
+        return redirect(checkout_url)
+
+    except Exception as e:
+        print(f"❌ Gumroad checkout error: {e}")
+        flash(f'Fout bij betalingsverwerking: {str(e)}', 'error')
+        return redirect(url_for('customer_subscription'))
+
+@app.route('/customer/downgrade/<tier>')
+@login_required
+def customer_downgrade(tier):
+    """Downgrade customer tier"""
+    if 'admin' in session:
+        flash('Admin heeft geen subscription', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+
+    from unit_economics import PricingConfig
+    pricing_tiers = PricingConfig.PRICING_TIERS
+
+    # Validate tier
+    if tier not in pricing_tiers:
+        flash('Ongeldige tier geselecteerd', 'error')
+        return redirect(url_for('customer_subscription'))
+
+    current_tier = customer.get('pricing_tier', 'demo')
+    current_price = pricing_tiers[current_tier]['price_per_month']
+    new_price = pricing_tiers[tier]['price_per_month']
+
+    # Check if this is actually a downgrade
+    if new_price >= current_price:
+        flash('Dit is geen downgrade. Gebruik upgrade voor een hoger tier.', 'error')
+        return redirect(url_for('customer_subscription'))
+
+    # Update tier
+    with db.get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE customers
+            SET pricing_tier = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ''', (tier, customer_id))
+
+    flash(f'Downgrade naar {tier.upper()} gepland voor einde van de billing cycle', 'success')
+    return redirect(url_for('customer_subscription'))
+
+@app.route('/webhooks/gumroad', methods=['POST'])
+def gumroad_webhook():
+    """Handle Gumroad webhook events (payment confirmation)"""
+    payload = request.form.to_dict()  # Gumroad sends form data
+
+    from gumroad_integration import verify_gumroad_webhook
+
+    try:
+        # Verify and process webhook
+        result = verify_gumroad_webhook(payload)
+
+        if not result.get('valid'):
+            print(f"⚠️ Invalid Gumroad webhook: {payload}")
+            return jsonify({'error': 'Invalid webhook data'}), 400
+
+        # Payment successful - upgrade customer tier
+        customer_id = result.get('customer_id')
+        tier = result.get('tier')
+        email = result.get('email')
+        sale_id = result.get('sale_id')
+
+        if customer_id and tier:
+            # Update customer tier in database
+            with db.get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE customers
+                    SET pricing_tier = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ''', (tier, int(customer_id)))
+
+            # Send upgrade confirmation email
+            try:
+                customer = db.get_customer_by_id(int(customer_id))
+                from email_notifications import send_tier_upgrade_email
+                from unit_economics import PricingConfig
+
+                old_tier = customer.get('pricing_tier', 'demo')
+                new_price = PricingConfig.PRICING_TIERS[tier]['price_per_month']
+
+                send_tier_upgrade_email(
+                    customer['name'],
+                    customer.get('contact_email'),
+                    old_tier,
+                    tier,
+                    new_price
+                )
+            except Exception as e:
+                print(f"⚠️ Upgrade email failed: {e}")
+
+            print(f"✅ Gumroad sale {sale_id}: Customer {customer_id} upgraded to {tier}")
+
+        return jsonify({'success': True}), 200
+
+    except Exception as e:
+        print(f"❌ Gumroad webhook processing error: {e}")
+        return jsonify({'error': str(e)}), 400
+
+# Stripe webhook (DISABLED - wacht op KVK voor activatie)
+@app.route('/webhooks/stripe', methods=['POST'])
+def stripe_webhook():
+    """Handle Stripe webhook events (DISABLED TOT KVK)"""
+    # TODO: Activeer zodra KVK nummer er is
+    return jsonify({'error': 'Stripe disabled - waiting for KVK'}), 503
+
+    # Originele Stripe code (behouden voor later):
+    payload = request.get_data(as_text=True)
+    signature = request.headers.get('Stripe-Signature')
+
+    from stripe_integration import handle_webhook
+
+    try:
+        # Verify and process webhook
+        result = handle_webhook(payload, signature)
+
+        if not result:
+            return jsonify({'error': 'Invalid signature'}), 400
+
+        # Handle different webhook events
+        if result['action'] == 'activate_subscription':
+            # Payment successful - upgrade customer tier
+            customer_id = int(result['customer_id'])
+            tier = result['tier']
+            stripe_customer_id = result.get('stripe_customer_id')
+
+            # Update customer tier in database
+            with db.get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE customers
+                    SET pricing_tier = ?,
+                        stripe_customer_id = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ''', (tier, stripe_customer_id, customer_id))
+
+            # Send upgrade confirmation email
+            try:
+                customer = db.get_customer_by_id(customer_id)
+                from email_notifications import send_tier_upgrade_email
+                from unit_economics import PricingConfig
+
+                old_tier = customer.get('pricing_tier', 'demo')
+                new_price = PricingConfig.PRICING_TIERS[tier]['price_per_month']
+
+                send_tier_upgrade_email(
+                    customer['name'],
+                    customer.get('contact_email'),
+                    old_tier,
+                    tier,
+                    new_price
+                )
+            except Exception as e:
+                print(f"⚠️ Upgrade email failed: {e}")
+
+            print(f"✅ Subscription activated for customer {customer_id} -> {tier}")
+
+        elif result['action'] == 'cancel_subscription':
+            # Subscription canceled - downgrade to demo
+            customer_id = int(result['customer_id'])
+
+            with db.get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE customers
+                    SET pricing_tier = 'demo',
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ''', (customer_id,))
+
+            print(f"⚠️ Subscription canceled for customer {customer_id}")
+
+        elif result['action'] == 'payment_failed':
+            # Payment failed - send warning email
+            customer_id = int(result['customer_id'])
+            customer = db.get_customer_by_id(customer_id)
+
+            try:
+                from email_notifications import send_admin_alert
+                send_admin_alert(
+                    'Payment Failed',
+                    f"Customer {customer['name']} (ID: {customer_id}) payment failed",
+                    severity='HIGH'
+                )
+            except Exception as e:
+                print(f"⚠️ Alert email failed: {e}")
+
+        return jsonify({'success': True}), 200
+
+    except Exception as e:
+        print(f"❌ Webhook processing error: {e}")
+        return jsonify({'error': str(e)}), 400
 
 # ═══════════════════════════════════════════════════════
 # ADMIN ROUTES

@@ -5,8 +5,8 @@ Multi-tenant SQLite database voor klantgegevens en logs
 import sqlite3
 import secrets
 import hashlib
-import os
 import time
+import functools
 from datetime import datetime
 from contextlib import contextmanager
 from functools import wraps
@@ -43,24 +43,47 @@ def retry_on_locked(max_retries=3, delay=0.5):
         return wrapper
     return decorator
 
+def retry_on_locked(max_retries=5, initial_delay=0.1):
+    """
+    Decorator to retry database operations on SQLITE_BUSY errors.
+    Uses exponential backoff to handle concurrent access gracefully.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            delay = initial_delay
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except sqlite3.OperationalError as e:
+                    error_msg = str(e).lower()
+                    # Check for specific SQLite lock-related errors
+                    is_locked = any(phrase in error_msg for phrase in [
+                        'database is locked',
+                        'table is locked',
+                        'database table is locked'
+                    ])
+                    
+                    if is_locked and attempt < max_retries - 1:
+                        time.sleep(delay)
+                        delay *= 2  # Exponential backoff
+                    else:
+                        raise
+        return wrapper
+    return decorator
+
 @contextmanager
 def get_db():
-    """Context manager voor database connecties"""
-    # Add timeout to prevent infinite hangs
+    """Context manager voor database connecties met WAL mode en timeouts"""
     conn = sqlite3.connect(DATABASE, timeout=30)
     conn.row_factory = sqlite3.Row
     
-    # Enable WAL mode for better concurrent read/write performance
+    # Enable WAL mode for better concurrency
     conn.execute('PRAGMA journal_mode=WAL')
-    
-    # Set busy timeout to handle database contention gracefully
-    conn.execute('PRAGMA busy_timeout=30000')  # 30 seconds in milliseconds
-    
-    # Set synchronous mode to NORMAL for better performance
+    # Set busy timeout to 5 seconds
+    conn.execute('PRAGMA busy_timeout=5000')
+    # Use NORMAL synchronous mode for better performance
     conn.execute('PRAGMA synchronous=NORMAL')
-    
-    # Enable foreign keys
-    conn.execute('PRAGMA foreign_keys=ON')
     
     try:
         yield conn
@@ -410,6 +433,11 @@ def init_db():
         if cursor.fetchone()[0] == 0:
             cursor.execute("ALTER TABLE customers ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 
+        # Add stripe_customer_id column if not exists (for payment integration)
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='stripe_customer_id'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN stripe_customer_id TEXT")
+
         # Add usage_count to api_keys if not exists
         cursor.execute("SELECT COUNT(*) FROM pragma_table_info('api_keys') WHERE name='usage_count'")
         if cursor.fetchone()[0] == 0:
@@ -453,7 +481,7 @@ def hash_access_code(code):
     return hashlib.sha256(code.encode()).hexdigest()
 
 # Customer functies
-@retry_on_locked(max_retries=3, delay=0.5)
+@retry_on_locked()
 def create_customer(name, contact_email=None, company_info=None):
     """Maak nieuwe klant aan met unieke access code"""
     access_code = generate_access_code()
@@ -465,6 +493,14 @@ def create_customer(name, contact_email=None, company_info=None):
             VALUES (?, ?, ?, ?)
         ''', (name, access_code, contact_email, company_info))
         customer_id = cursor.lastrowid
+
+    # Send welcome email (non-blocking - fails gracefully)
+    if contact_email:
+        try:
+            from email_notifications import send_welcome_email
+            send_welcome_email(name, contact_email, access_code)
+        except Exception as e:
+            print(f"⚠️ Welcome email failed (non-critical): {e}")
 
     return {
         'id': customer_id,
@@ -497,6 +533,7 @@ def get_all_customers():
         cursor.execute('SELECT * FROM customers ORDER BY created_at DESC')
         return [dict(row) for row in cursor.fetchall()]
 
+@retry_on_locked()
 def update_customer_status(customer_id, status):
     """Update klant status"""
     with get_db() as conn:
@@ -504,7 +541,7 @@ def update_customer_status(customer_id, status):
         cursor.execute('UPDATE customers SET status = ? WHERE id = ?', (status, customer_id))
 
 # Log functies
-@retry_on_locked(max_retries=3, delay=0.5)
+@retry_on_locked()
 def create_log(customer_id, ip_address, data, metadata=None):
     """Maak nieuwe log entry voor klant"""
     with get_db() as conn:
@@ -620,6 +657,7 @@ def get_admin_stats():
         }
 
 # Admin functies
+@retry_on_locked()
 def create_admin(username, password=None):
     """Maak admin gebruiker aan"""
     access_code = password if password else generate_access_code(24)
@@ -679,6 +717,7 @@ def search_logs(query, customer_id=None):
         return [dict(row) for row in cursor.fetchall()]
 
 # Audit logging functies
+@retry_on_locked()
 def log_admin_action(admin_username, action, target_type=None, target_id=None, details=None, ip_address=None):
     """Log admin actie voor audit trail"""
     with get_db() as conn:
@@ -709,6 +748,7 @@ def get_audit_logs(limit=50, admin_username=None):
         return [dict(row) for row in cursor.fetchall()]
 
 # API Key functies
+@retry_on_locked()
 def create_api_key(customer_id, name=None):
     """Genereer API key voor klant"""
     key_value = f"mvai_{secrets.token_urlsafe(32)}"
@@ -722,9 +762,12 @@ def create_api_key(customer_id, name=None):
 
     return key_value
 
-@retry_on_locked(max_retries=3, delay=0.5)
+@retry_on_locked()
 def verify_api_key(key_value):
-    """Verifieer API key en return customer_id"""
+    """
+    Verifieer API key en return customer_id
+    Note: Updates last_used_at timestamp, so requires write access
+    """
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute('''
@@ -754,6 +797,7 @@ def get_customer_api_keys(customer_id):
         ''', (customer_id,))
         return [dict(row) for row in cursor.fetchall()]
 
+@retry_on_locked()
 def revoke_api_key(key_id):
     """Deactiveer API key"""
     with get_db() as conn:

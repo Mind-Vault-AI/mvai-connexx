@@ -9,7 +9,7 @@ import sqlite3
 from datetime import datetime, timedelta
 import glob
 
-DATABASE = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
+DATABASE = 'mvai_connexx.db'
 BACKUP_DIR = 'backups'
 RETENTION_DAYS = 30  # Bewaar backups voor 30 dagen
 

@@ -1,17 +1,66 @@
-app = 'mvai-connexx'
-primary_region = 'ams'
+# MVAI Connexx - Fly.io Deployment Configuration
+# Enterprise-grade multi-tenant platform
+# Contact: info@mindvault-ai.com
+
+app = "mvai-connexx"
+primary_region = "ams"  # Amsterdam - optimal for Netherlands & EU
+
+# Kill signal (SIGINT for graceful shutdown)
+kill_signal = "SIGINT"
+kill_timeout = 30
 
 [build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "5000"
+  FLASK_ENV = "production"
+  DOMAIN = "mindvault-ai.com"
+  COMPANY_EMAIL = "info@mindvault-ai.com"
+  ENABLE_THREAT_DETECTION = "true"
+  ENABLE_HONEYPOT = "true"
+  ENABLE_AI_ASSISTANT = "true"
+  ENABLE_DEMO_MODE = "true"
+  TARGET_UPTIME_PCT = "99.9"
+  TARGET_RESPONSE_TIME_MS = "200"
 
 [http_service]
   internal_port = 5000
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
-  processes = ['app']
+  processes = ["app"]
 
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/login"
+    protocol = "http"
+    
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  cpu_kind = "shared"
   cpus = 1
+  memory_mb = 512
+
+# Persistent storage for SQLite database
+[[mounts]]
+  source = "mvai_data"
+  destination = "/app/data"
+
+# Health checks
+[[services.tcp_checks]]
+  interval = "15s"
+  timeout = "2s"
+  grace_period = "5s"
+
+# Secrets to configure via: fly secrets set SECRET_KEY="your-key-here"
+# Required secrets:
+# - SECRET_KEY (Flask session encryption)
+# - SMTP_USERNAME (email notifications)
+# - SMTP_PASSWORD (email notifications)
+# - STRIPE_SECRET_KEY (payments - optional)
+# - MOLLIE_API_KEY (payments - optional)
+# - SENTRY_DSN (monitoring - optional)

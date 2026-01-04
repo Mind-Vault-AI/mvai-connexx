@@ -3,7 +3,6 @@ MVAI Connexx - Lean Six Sigma DMAIC Framework
 Process optimization en continuous improvement methodologie
 """
 import json
-from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from enum import Enum
 import database as db

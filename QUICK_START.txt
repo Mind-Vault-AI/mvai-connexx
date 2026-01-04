@@ -1,0 +1,38 @@
+╔══════════════════════════════════════════════════════════════╗
+║  🚀 MVAI CONNEXX - QUICK START DEPLOYMENT                   ║
+║  Ready to deploy in 15 minuten!                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ PRE-DEPLOYMENT CHECK: PASSED
+   - All files ready
+   - Git clean
+   - Database migrated
+   - Configuration correct
+
+📋 DEPLOYMENT COMMANDS (copy-paste in je terminal):
+
+fly auth login
+fly launch --config fly.toml --name mvai-connexx --region ams --no-deploy
+fly volumes create mvai_data --region ams --size 1
+fly secrets set SECRET_KEY="49ca92d84587b28e907fd32b80f31c693de4b64cfb59b033c779a50251c12bea"
+fly secrets set PAYMENT_PROVIDER="gumroad"
+fly deploy
+fly ssh console
+python seed_demo.py
+exit
+fly open
+
+⚠️  BELANGRIJK NA DEPLOYMENT:
+1. Save admin access code van seed_demo.py!
+2. Configureer Gumroad webhook: https://mvai-connexx.fly.dev/webhooks/gumroad
+3. Maak Gumroad producten aan (zie GUMROAD_SETUP.md)
+
+💰 KOSTEN: ~$2/maand (gratis eerste 3 maanden)
+
+📖 VOLLEDIGE GUIDE: DEPLOYMENT_READY.md
+🎯 GUMROAD SETUP: GUMROAD_SETUP.md
+🛠️  FLY.IO GUIDE: FLY_DEPLOY.md
+
+═══════════════════════════════════════════════════════════════
+
+STATUS: ✅ READY TO DEPLOY!

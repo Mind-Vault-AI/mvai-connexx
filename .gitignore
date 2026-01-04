@@ -52,6 +52,17 @@ Thumbs.db
 # Logs
 *.log
 logs/
+access.log
+error.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Flask
+instance/
+.webassets-cache
 
 # Testing
 .pytest_cache/
@@ -60,3 +71,13 @@ htmlcov/
 
 # Documentation builds
 docs/_build/
+.tox/
+
+# Docker
+.dockerignore
+
+# Fly.io
+.fly/
+
+# OS
+Thumbs.db

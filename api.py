@@ -2,7 +2,7 @@
 MVAI Connexx - REST API Module
 RESTful API endpoints voor third-party integraties
 """
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from functools import wraps
 import database as db
 import json
@@ -28,11 +28,13 @@ def require_api_key(f):
             api_key = request.args.get('api_key')
             if api_key:
                 logger.warning(f"DEPRECATED: API key passed via query string from {request.remote_addr}. Use X-API-Key header instead.")
+        api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
 
         if not api_key:
             return jsonify({
                 'error': 'API key required',
                 'message': 'Provide API key via X-API-Key header'
+                'message': 'Provide API key via X-API-Key header or api_key parameter'
             }), 401
 
         customer_id = db.verify_api_key(api_key)
@@ -114,6 +116,8 @@ def get_logs():
             offset = 0
     except (ValueError, TypeError):
         offset = 0
+    limit = min(int(request.args.get('limit', 100)), 1000)  # Max 1000
+    offset = int(request.args.get('offset', 0))
 
     logs = db.get_customer_logs(request.customer_id, limit=limit, offset=offset)
 
@@ -218,6 +222,7 @@ def get_daily_analytics():
             days = 30
     except (ValueError, TypeError):
         days = 30
+    days = min(int(request.args.get('days', 30)), 365)
 
     with db.get_db() as conn:
         cursor = conn.cursor()
@@ -248,13 +253,7 @@ def get_daily_analytics():
 @require_api_key
 def export_json():
     """Export data als JSON"""
-    try:
-        limit = min(int(request.args.get('limit', 10000)), 100000)
-        if limit < 1:
-            limit = 10000
-    except (ValueError, TypeError):
-        limit = 10000
-        
+    limit = min(int(request.args.get('limit', 10000)), 100000)
     logs = db.get_customer_logs(request.customer_id, limit=limit)
 
     customer = db.get_customer_by_id(request.customer_id)

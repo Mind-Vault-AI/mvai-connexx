@@ -2,11 +2,9 @@
 MVAI Connexx - ICT Monitoring & Error Reporting Module
 Enterprise-grade monitoring voor error tracking, alerting en exit strategies
 """
-import os
-import sys
 import traceback
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 import database as db
@@ -177,7 +175,8 @@ class SystemHealthMonitor:
         """Check beschikbare disk space"""
         try:
             import shutil
-            stats = shutil.disk_usage('/home/user/mvai-connexx')
+            disk_path = os.environ.get('MVAI_MONITOR_DISK_PATH', '/home/user/mvai-connexx')
+            stats = shutil.disk_usage(disk_path)
 
             total_gb = stats.total / (1024**3)
             used_gb = stats.used / (1024**3)
@@ -316,7 +315,7 @@ class SystemHealthMonitor:
                 uptime_percentage = (uptime_minutes / total_minutes) * 100
 
                 return max(0, min(100, round(uptime_percentage, 2)))
-        except:
+        except Exception:
             return 99.9  # Default
 
 # Global health monitor

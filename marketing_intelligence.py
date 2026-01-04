@@ -2,7 +2,6 @@
 MVAI Connexx - Marketing Intelligence & Growth Module
 Data-driven marketing strategieën voor revenue growth en customer acquisition
 """
-import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from enum import Enum

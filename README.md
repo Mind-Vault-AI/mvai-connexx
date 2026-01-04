@@ -36,6 +36,15 @@ MVAI Connexx is een **production-ready multi-tenant platform** voor logistieke d
 - Clean en intuitive navigation
 - Samsung S23 Plus geoptimaliseerd
 
+### 💳 Subscription & Payments (NIEUW!)
+- **6 Pricing Tiers** (Demo, Particulier, MKB, Starter, Professional, Enterprise)
+- **Gumroad integratie** - PayPal backend (info@mindvault-ai.com)
+- **Automatic tier activation** via webhooks
+- **Usage tracking** met real-time limits
+- **Self-service upgrades/downgrades**
+- **Email notifications** (welcome, upgrades, alerts)
+- **Stripe ready** (voor later, na KVK)
+
 ### 💾 Database
 - **SQLite** database met multi-tenant schema
 - Automatische migratie van JSON naar SQLite
@@ -242,18 +251,22 @@ exit
 
 ## 🎯 Roadmap / Toekomstige Features
 
-**NIET geïmplementeerd (zoals gevraagd):**
-- ❌ Pricing tiers
-- ❌ Payment processing
-- ❌ Subscriptie logica
-- ❌ Email notificaties
+**✅ GEÏMPLEMENTEERD (production-ready):**
+- ✅ **Pricing tiers** - 6 tiers (Demo, Particulier, MKB, Starter, Professional, Enterprise)
+- ✅ **Payment processing** - Gumroad integratie (PayPal backend via info@mindvault-ai.com)
+- ✅ **Subscriptie logica** - Upgrade/downgrade met automatic tier activation
+- ✅ **Email notificaties** - SMTP met professional HTML templates (welcome, upgrade, alerts)
+
+**Payment Strategie:**
+- 🎯 **NU:** Gumroad → PayPal (actief na $100 verkopen) - geen KVK vereist
+- 🔄 **LATER:** Stripe (zodra KVK nummer beschikbaar) - lagere fees
 
 **Mogelijk in toekomst:**
 - 📊 PDF export met grafieken
-- 📧 Email notificaties bij events
 - 📱 Progressive Web App (PWA)
 - 🔔 Real-time notificaties
 - 📈 Geavanceerde analytics dashboards
+- 🤖 AI-powered insights (basis AI Assistant al aanwezig)
 
 ## 🐛 Troubleshooting
 

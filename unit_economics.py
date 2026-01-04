@@ -101,7 +101,10 @@ class UnitEconomicsCalculator:
 
             # Get customer data
             cursor.execute('SELECT * FROM customers WHERE id = ?', (customer_id,))
-            customer = dict(cursor.fetchone())
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError(f"Customer with id {customer_id} not found")
+            customer = dict(row)
 
             # Get pricing tier
             tier = customer.get('pricing_tier', 'starter')
