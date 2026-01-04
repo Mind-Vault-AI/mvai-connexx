@@ -11,8 +11,14 @@ RUN groupadd -r mvai && useradd -r -g mvai mvai_user
 # Copy application code
 COPY . .
 
+# Make startup script executable
+RUN chmod +x start.sh
+
 # Fix permissions
 RUN chown -R mvai_user:mvai /app
+
+# Switch to non-root user
+USER mvai_user
 
 # Switch to non-root user
 USER mvai_user
