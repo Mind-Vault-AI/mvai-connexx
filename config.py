@@ -78,6 +78,7 @@ class Config:
     PAYMENT_PROVIDER = os.getenv('PAYMENT_PROVIDER', 'stripe')  # stripe, mollie
     STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
     STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
+    STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
     MOLLIE_API_KEY = os.getenv('MOLLIE_API_KEY', '')
 
     # Monitoring

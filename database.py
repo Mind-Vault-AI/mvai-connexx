@@ -399,6 +399,11 @@ def init_db():
         if cursor.fetchone()[0] == 0:
             cursor.execute("ALTER TABLE customers ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 
+        # Add stripe_customer_id column if not exists (for payment integration)
+        cursor.execute("SELECT COUNT(*) FROM pragma_table_info('customers') WHERE name='stripe_customer_id'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("ALTER TABLE customers ADD COLUMN stripe_customer_id TEXT")
+
         # Add usage_count to api_keys if not exists
         cursor.execute("SELECT COUNT(*) FROM pragma_table_info('api_keys') WHERE name='usage_count'")
         if cursor.fetchone()[0] == 0:
@@ -454,6 +459,14 @@ def create_customer(name, contact_email=None, company_info=None):
             VALUES (?, ?, ?, ?)
         ''', (name, access_code, contact_email, company_info))
         customer_id = cursor.lastrowid
+
+    # Send welcome email (non-blocking - fails gracefully)
+    if contact_email:
+        try:
+            from email_notifications import send_welcome_email
+            send_welcome_email(name, contact_email, access_code)
+        except Exception as e:
+            print(f"⚠️ Welcome email failed (non-critical): {e}")
 
     return {
         'id': customer_id,
