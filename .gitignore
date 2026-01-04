@@ -20,23 +20,22 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv
-
-# Environment Variables
-.env
-.env.local
-.env.production
-
 # Database
 *.db
+*.db-journal
 *.sqlite
 *.sqlite3
 mvai_connexx.db
-backups/
+mvai_data.json
+*.backup.*
+
+# Environment
+.env
+.env.local
+*.env
+venv/
+ENV/
+env/
 
 # IDE
 .vscode/
@@ -44,7 +43,11 @@ backups/
 *.swp
 *.swo
 *~
+
+# OS
 .DS_Store
+Thumbs.db
+.directory
 
 # Logs
 *.log
@@ -65,6 +68,9 @@ instance/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Documentation builds
+docs/_build/
 .tox/
 
 # Docker

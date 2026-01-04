@@ -7,6 +7,9 @@ from functools import wraps
 import database as db
 import json
 from datetime import datetime
+import logging
+
+logger = logging.getLogger('mvai-connexx.api')
 
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -18,11 +21,19 @@ def require_api_key(f):
     """Decorator voor API key authenticatie"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        api_key = request.headers.get('X-API-Key')
+        
+        if not api_key:
+            # Check query param but log deprecation warning
+            api_key = request.args.get('api_key')
+            if api_key:
+                logger.warning(f"DEPRECATED: API key passed via query string from {request.remote_addr}. Use X-API-Key header instead.")
         api_key = request.headers.get('X-API-Key') or request.args.get('api_key')
 
         if not api_key:
             return jsonify({
                 'error': 'API key required',
+                'message': 'Provide API key via X-API-Key header'
                 'message': 'Provide API key via X-API-Key header or api_key parameter'
             }), 401
 
@@ -92,6 +103,19 @@ def get_status():
 @require_api_key
 def get_logs():
     """Haal logs op voor authenticated customer"""
+    try:
+        limit = min(int(request.args.get('limit', 100)), 1000)
+        if limit < 1:
+            limit = 100
+    except (ValueError, TypeError):
+        limit = 100
+    
+    try:
+        offset = int(request.args.get('offset', 0))
+        if offset < 0:
+            offset = 0
+    except (ValueError, TypeError):
+        offset = 0
     limit = min(int(request.args.get('limit', 100)), 1000)  # Max 1000
     offset = int(request.args.get('offset', 0))
 
@@ -192,6 +216,12 @@ def get_analytics_stats():
 @require_api_key
 def get_daily_analytics():
     """Haal dagelijkse activity op"""
+    try:
+        days = min(int(request.args.get('days', 30)), 365)
+        if days < 1:
+            days = 30
+    except (ValueError, TypeError):
+        days = 30
     days = min(int(request.args.get('days', 30)), 365)
 
     with db.get_db() as conn:

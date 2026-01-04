@@ -9,8 +9,39 @@ import time
 import functools
 from datetime import datetime
 from contextlib import contextmanager
+from functools import wraps
 
-DATABASE = 'mvai_connexx.db'
+# Database path: gebruik environment variabele of fallback naar lokale directory
+# In productie (Fly.io): DATABASE_PATH=/app/data/mvai_connexx.db
+# In development: mvai_connexx.db in current directory
+DATABASE = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
+
+def retry_on_locked(max_retries=3, delay=0.5):
+    """
+    Decorator to retry database operations when encountering OperationalError: database is locked
+    
+    Args:
+        max_retries: Maximum number of retry attempts (default: 3)
+        delay: Delay in seconds between retries (default: 0.5)
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except sqlite3.OperationalError as e:
+                    if "database is locked" in str(e):
+                        last_exception = e
+                        if attempt < max_retries - 1:
+                            time.sleep(delay * (attempt + 1))  # Exponential backoff
+                            continue
+                    raise
+            if last_exception:
+                raise last_exception
+        return wrapper
+    return decorator
 
 def retry_on_locked(max_retries=5, initial_delay=0.1):
     """
@@ -67,6 +98,9 @@ def init_db():
     """Initialiseer database met multi-tenant schema"""
     with get_db() as conn:
         cursor = conn.cursor()
+        
+        # Ensure WAL mode is enabled at database creation
+        cursor.execute('PRAGMA journal_mode=WAL')
 
         # Customers tabel
         cursor.execute('''
@@ -475,6 +509,7 @@ def create_customer(name, contact_email=None, company_info=None):
         'contact_email': contact_email
     }
 
+@retry_on_locked(max_retries=3, delay=0.5)
 def get_customer_by_code(access_code):
     """Haal klant op via access code"""
     with get_db() as conn:
@@ -639,6 +674,7 @@ def create_admin(username, password=None):
         'access_code': access_code
     }
 
+@retry_on_locked(max_retries=3, delay=0.5)
 def verify_admin(access_code):
     """Verifieer admin access code"""
     with get_db() as conn:
