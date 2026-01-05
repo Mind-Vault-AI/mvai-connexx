@@ -25,17 +25,16 @@ logger = logging.getLogger('mvai-connexx')
 
 app = Flask(__name__)
 
-# Secret key validation for production (before loading config)
-app.secret_key = os.environ.get('SECRET_KEY')
-if not app.secret_key:
-    if os.environ.get('FLASK_ENV') == 'development':
-        app.secret_key = 'dev-secret-key-ONLY-FOR-LOCAL-DEV'
-        logger.warning("⚠️ WARNING: Using development secret key - DO NOT USE IN PRODUCTION")
-    else:
-        raise RuntimeError("SECRET_KEY environment variable is required in production!")
-
-# Load other config settings from Config class
+# Load config first to get SECRET_KEY from config.py
 app.config.from_object(Config)
+
+# Secret key: Use environment variable, fallback to config.py, then generate random
+app.secret_key = os.environ.get('SECRET_KEY') or Config.SECRET_KEY
+if app.secret_key == 'dev-secret-key-change-in-production':
+    # Generate a random secret key for production if still using default
+    import secrets
+    app.secret_key = secrets.token_hex(32)
+    logger.warning("⚠️ Generated random SECRET_KEY - set SECRET_KEY env var for persistence!")
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
