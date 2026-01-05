@@ -14,6 +14,8 @@ env:
 jobs:
   check-secrets:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       has-secret: ${{ steps.check.outputs.has-secret }}
     steps:
@@ -34,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-secrets
     if: needs.check-secrets.outputs.has-secret == 'true'
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -71,6 +76,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-secrets
     if: needs.check-secrets.outputs.has-secret == 'false'
+    permissions:
+      contents: read
     steps:
       - name: Deployment skipped notice
         run: |
