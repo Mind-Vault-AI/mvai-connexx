@@ -62,7 +62,7 @@ jobs:
             --allow-unauthenticated \
             --memory=1Gi \
             --cpu=1 \
-            --set-env-vars=PAYMENT_PROVIDER=gumroad,FLASK_ENV=production \
+            --set-env-vars=PAYMENT_PROVIDER=gumroad,FLASK_DEBUG=false \
             --project=${{ env.PROJECT_ID }}
 
       - name: Get Service URL
