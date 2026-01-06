@@ -38,7 +38,6 @@ jobs:
     if: needs.check-secrets.outputs.has-secret == 'true'
     permissions:
       contents: read
-      id-token: write
 
     steps:
   with:
