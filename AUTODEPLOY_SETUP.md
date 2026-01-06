@@ -45,7 +45,7 @@ Dit betekent dat de workflow altijd succesvol zal zijn, zelfs als de secret nog 
 3. **Grant permissions:**
    - Role 1: `Cloud Run Admin`
    - Role 2: `Service Account User`
-   - Role 3: `Storage Admin`
+   - Role 3: `Storage Object Admin` (bij voorkeur alleen op de specifieke deployment bucket)
    - Click **CONTINUE** → **DONE**
 
 4. **Create key:**
