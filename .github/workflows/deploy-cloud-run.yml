@@ -82,7 +82,7 @@ jobs:
     steps:
       - name: Deployment skipped notice
         run: |
-          echo "❌ Deployment skipped - GCP_SA_KEY secret is not configured"
+          echo "⏭️ Deployment skipped - GCP_SA_KEY secret is not configured"
           echo ""
           echo "📖 To enable automatic deployments to Google Cloud Run:"
           echo "   1. Create a GCP service account with Cloud Run permissions"
