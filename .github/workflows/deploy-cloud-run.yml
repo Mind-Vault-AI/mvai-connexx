@@ -22,14 +22,31 @@ jobs:
       - name: Check if GCP_SA_KEY secret exists
         id: check
         run: |
-          if [ -z "${{ secrets.GCP_SA_KEY }}" ]; then
-            echo "has-secret=false" >> $GITHUB_OUTPUT
+          GCP_SA_KEY='${{ secrets.GCP_SA_KEY }}'
+          if [ -z "$GCP_SA_KEY" ]; then
+            echo "has-secret=false" >> "$GITHUB_OUTPUT"
             echo "::warning::GCP_SA_KEY secret is not set. Deployment will be skipped."
             echo "::warning::To enable automatic deployments, please configure the GCP_SA_KEY secret."
             echo "::warning::See AUTODEPLOY_SETUP.md for instructions."
           else
-            echo "has-secret=true" >> $GITHUB_OUTPUT
-            echo "✅ GCP_SA_KEY secret is configured"
+            export GCP_SA_KEY
+            if python - << 'EOF'
+import json, os, sys
+key = os.environ.get("GCP_SA_KEY")
+try:
+    json.loads(key)
+except Exception:
+    sys.exit(1)
+EOF
+            then
+              echo "has-secret=true" >> "$GITHUB_OUTPUT"
+              echo "✅ GCP_SA_KEY secret is configured and valid JSON"
+            else
+              echo "has-secret=false" >> "$GITHUB_OUTPUT"
+              echo "::warning::GCP_SA_KEY secret is set but is not valid JSON. Deployment will be skipped."
+              echo "::warning::Please ensure the GCP_SA_KEY secret contains a valid GCP service account JSON key."
+              echo "::warning::See AUTODEPLOY_SETUP.md for instructions."
+            fi
           fi
 
   deploy:
