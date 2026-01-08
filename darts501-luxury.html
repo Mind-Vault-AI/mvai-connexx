@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Darts 501 - Luxury Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #141414;
+            --card-alt: #1a1a1a;
+            --input: #1f1f1f;
+            --border: #2a2a2a;
+            --border-light: #3a3a3a;
+            --text: #f5f5f5;
+            --text-muted: #888;
+            --gold: #c9a962;
+            --gold-light: #e0c885;
+            --gold-dark: #a08a4a;
+            --gold-glow: rgba(201, 169, 98, 0.3);
+            --danger: #ef4444;
+            --orange: #f97316;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 16px;
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 8px 0 16px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--input);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn.selected {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            border-color: var(--gold);
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Name Inputs */
+        .name-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .name-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .name-input {
+            flex: 1;
+            padding: 12px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px var(--gold-glow);
+        }
+
+        .name-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .name-del {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .name-del:active {
+            opacity: 0.8;
+            transform: scale(0.95);
+        }
+
+        /* Start Button */
+        .start-btn {
+            margin-top: auto;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px var(--gold-glow);
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px var(--gold-glow);
+        }
+
+        /* Player Cards */
+        .players-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .players-grid.p2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .players-grid.p3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .players-grid.p4 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .player-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 10px;
+            text-align: center;
+            opacity: 0.6;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(201, 169, 98, 0.03));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .player-card.active {
+            opacity: 1;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .player-card.active::before {
+            opacity: 1;
+        }
+
+        .p-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .p-score {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--text);
+            transition: color 0.2s;
+        }
+
+        .active .p-score {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .p-stats {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .p-avg {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 3px 10px;
+            background: var(--input);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .active .p-avg {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: #000;
+        }
+
+        /* Middle Section */
+        .middle {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            min-height: 70px;
+            padding: 10px 0;
+        }
+
+        .checkout-box {
+            display: none;
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.1), rgba(201, 169, 98, 0.05));
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .checkout-box.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .checkout-label {
+            font-size: 0.65rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .checkout-combo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            font-weight: 600;
+        }
+
+        .ai-indicator {
+            display: none;
+            color: var(--gold);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-indicator.visible {
+            display: block;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .last-throw {
+            display: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .last-throw.visible {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .last-throw.bust {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .last-throw.normal {
+            background: rgba(201, 169, 98, 0.1);
+            color: var(--gold-light);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+        }
+
+        .throw-name {
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .throw-score {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-top: auto;
+        }
+
+        .input-display {
+            background: linear-gradient(135deg, var(--card), var(--card-alt));
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-light);
+        }
+
+        /* Quick Buttons */
+        .quick-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .quick-btn {
+            padding: 10px 4px;
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quick-btn:active {
+            background: var(--gold);
+            color: #000;
+            transform: scale(0.95);
+        }
+
+        /* Number Pad */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .num-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .num-btn:active {
+            transform: scale(0.95);
+        }
+
+        .num-btn.digit {
+            background: var(--card-alt);
+            color: var(--text);
+        }
+
+        .num-btn.digit:active {
+            background: #3a3a3a;
+        }
+
+        .num-btn.clear {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .num-btn.undo {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .num-btn.submit {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: #000;
+            grid-row: span 2;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px var(--gold-glow);
+        }
+
+        .num-btn.zero {
+            grid-column: span 2;
+        }
+
+        /* Stop Button Container */
+        .stop-container {
+            margin-top: 10px;
+        }
+
+        .stop-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        .stop-btn:active {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+            transform: scale(0.98);
+        }
+
+        /* Settings Button */
+        .settings-btn {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .settings-btn:active {
+            transform: scale(0.9);
+            background: var(--card-alt);
+            color: var(--gold);
+        }
+
+        /* Settings Screen */
+        .settings-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .back-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-right: 16px;
+            transition: var(--transition);
+        }
+
+        .back-btn:active {
+            background: var(--card-alt);
+        }
+
+        .settings-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .setting-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .setting-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .toggle {
+            width: 52px;
+            height: 28px;
+            border-radius: 14px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggle.on {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle.on::after {
+            left: 27px;
+        }
+
+        .danger-zone {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .danger-btn {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--danger);
+            border-radius: 10px;
+            color: var(--danger);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .danger-btn:active {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        /* Win Screen */
+        .win-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .trophy {
+            font-size: 4.5rem;
+            margin-bottom: 12px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .win-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .win-name {
+            font-size: 1.1rem;
+            margin: 12px 0 24px;
+            color: var(--text);
+        }
+
+        .results-card {
+            width: 100%;
+            max-width: 320px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-avg {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .restart-btn {
+            width: 100%;
+            max-width: 320px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px var(--gold-glow);
+        }
+
+        .restart-btn:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 380px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+            .p-score {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="settings-btn" id="settingsBtn">⚙️</button>
+
+    <!-- SETUP SCREEN -->
+    <div id="setupScreen" class="screen active">
+        <div class="header">
+            <div class="logo">DARTS 501</div>
+        </div>
+
+        <div class="section">
+            <div class="section-label">Number of Players</div>
+            <div class="btn-row" id="playerBtns"></div>
+        </div>
+
+        <div class="section" id="aiSection" style="display:none;">
+            <div class="section-label">AI Difficulty</div>
+            <div class="btn-row" id="aiBtns"></div>
+        </div>
+
+        <div class="section" id="namesSection">
+            <div class="section-label">Player Names (Optional)</div>
+            <div id="nameInputs"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-label">Legs / Sets</div>
+            <div class="btn-row" id="legsBtns" style="margin-bottom:8px;"></div>
+            <div class="btn-row" id="setsBtns"></div>
+        </div>
+
+        <button class="start-btn" id="startBtn">▶ START GAME</button>
+    </div>
+
+    <!-- SETTINGS SCREEN -->
+    <div id="settingsScreen" class="screen">
+        <div class="settings-header">
+            <button class="back-btn" id="backBtn">←</button>
+            <div class="settings-title">Settings</div>
+        </div>
+
+        <div class="setting-item">
+            <div>
+                <div class="setting-label">🔊 Voice Feedback</div>
+                <div class="setting-desc">Enable spoken announcements</div>
+            </div>
+            <div class="toggle" id="voiceToggle"></div>
+        </div>
+
+        <div class="setting-item">
+            <div>
+                <div class="setting-label">📳 Haptic Feedback</div>
+                <div class="setting-desc">Vibration on button press</div>
+            </div>
+            <div class="toggle on" id="vibToggle"></div>
+        </div>
+
+        <div class="setting-item">
+            <div>
+                <div class="setting-label">💾 Remember Names</div>
+                <div class="setting-desc">Save player names for next game</div>
+            </div>
+            <div class="toggle on" id="saveToggle"></div>
+        </div>
+
+        <div class="danger-zone">
+            <button class="danger-btn" id="clearNamesBtn">🗑️ Clear Saved Names</button>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="screen">
+        <div class="players-grid" id="playersGrid"></div>
+
+        <div class="middle">
+            <div class="checkout-box" id="checkoutBox">
+                <div class="checkout-label">Checkout Suggestion</div>
+                <div class="checkout-combo" id="checkoutCombo"></div>
+            </div>
+
+            <div class="ai-indicator" id="aiIndicator">🤖 AI thinking...</div>
+
+            <div class="last-throw" id="lastThrow">
+                <span class="throw-name" id="throwName"></span>
+                <span class="throw-score" id="throwScore"></span>
+            </div>
+        </div>
+
+        <div class="input-section" id="inputSection">
+            <div class="input-display" id="inputDisplay">0</div>
+
+            <div class="quick-row">
+                <button class="quick-btn" data-q="26">26</button>
+                <button class="quick-btn" data-q="41">41</button>
+                <button class="quick-btn" data-q="60">60</button>
+                <button class="quick-btn" data-q="100">100</button>
+            </div>
+
+            <div class="quick-row">
+                <button class="quick-btn" data-q="85">85</button>
+                <button class="quick-btn" data-q="121">121</button>
+                <button class="quick-btn" data-q="140">140</button>
+                <button class="quick-btn" data-q="180">180</button>
+            </div>
+
+            <div class="numpad">
+                <button class="num-btn undo" id="undoBtn">↩</button>
+                <button class="num-btn digit" data-n="1">1</button>
+                <button class="num-btn digit" data-n="2">2</button>
+                <button class="num-btn digit" data-n="3">3</button>
+                <button class="num-btn clear" id="clearBtn">C</button>
+                <button class="num-btn digit" data-n="4">4</button>
+                <button class="num-btn digit" data-n="5">5</button>
+                <button class="num-btn digit" data-n="6">6</button>
+                <button class="num-btn submit" id="submitBtn">✓</button>
+                <button class="num-btn digit" data-n="7">7</button>
+                <button class="num-btn digit" data-n="8">8</button>
+                <button class="num-btn digit" data-n="9">9</button>
+                <button class="num-btn digit zero" data-n="0">0</button>
+            </div>
+
+            <div class="stop-container">
+                <button class="stop-btn" id="stopBtn">Stop Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIN SCREEN -->
+    <div id="winScreen" class="screen">
+        <div class="win-content">
+            <div class="trophy">🏆</div>
+            <div class="win-title">CHAMPION!</div>
+            <div class="win-name" id="winnerName"></div>
+
+            <div class="results-card">
+                <div class="results-title">Final Averages</div>
+                <div id="resultsList"></div>
+            </div>
+
+            <button class="restart-btn" id="restartBtn">NEW GAME</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // Checkout combinations
+            const CHECKOUTS = {
+                170: "T20 T20 Bull", 167: "T20 T19 Bull", 164: "T20 T18 Bull", 161: "T20 T17 Bull",
+                160: "T20 T20 D20", 158: "T20 T20 D19", 157: "T20 T19 D20", 156: "T20 T20 D18",
+                155: "T20 T19 D19", 154: "T20 T18 D20", 153: "T20 T19 D18", 152: "T20 T20 D16",
+                151: "T20 T17 D20", 150: "T20 T18 D18", 149: "T20 T19 D16", 148: "T20 T20 D14",
+                147: "T20 T17 D18", 146: "T20 T18 D16", 145: "T20 T19 D14", 144: "T20 T20 D12",
+                143: "T20 T17 D16", 142: "T20 T14 D20", 141: "T20 T19 D12", 140: "T20 T20 D10",
+                139: "T20 T13 D20", 138: "T20 T18 D12", 137: "T20 T19 D10", 136: "T20 T20 D8",
+                135: "T20 T17 D12", 134: "T20 T14 D16", 133: "T20 T19 D8", 132: "T20 T16 D12",
+                131: "T20 T13 D16", 130: "T20 T18 D8", 129: "T19 T16 D12", 128: "T18 T14 D16",
+                127: "T20 T17 D8", 126: "T19 T19 D6", 125: "T20 T19 D4", 124: "T20 T16 D8",
+                123: "T19 T16 D9", 122: "T18 T18 D7", 121: "T20 T11 D14", 120: "T20 S20 D20",
+                119: "T19 T12 D13", 118: "T20 S18 D20", 117: "T20 S17 D20", 116: "T20 S16 D20",
+                115: "T20 S15 D20", 114: "T20 S14 D20", 113: "T20 S13 D20", 112: "T20 T12 D8",
+                111: "T20 S19 D16", 110: "T20 S18 D16", 109: "T20 S17 D16", 108: "T20 S16 D16",
+                107: "T19 S18 D16", 106: "T20 S14 D16", 105: "T20 S13 D16", 104: "T18 S18 D16",
+                103: "T19 S14 D16", 102: "T20 S10 D16", 101: "T17 S18 D16", 100: "T20 D20",
+                99: "T19 S10 D16", 98: "T20 D19", 97: "T19 D20", 96: "T20 D18", 95: "T19 D19",
+                94: "T18 D20", 93: "T19 D18", 92: "T20 D16", 91: "T17 D20", 90: "T18 D18",
+                89: "T19 D16", 88: "T20 D14", 87: "T17 D18", 86: "T18 D16", 85: "T15 D20",
+                84: "T20 D12", 83: "T17 D16", 82: "T14 D20", 81: "T19 D12", 80: "T20 D10",
+                79: "T13 D20", 78: "T18 D12", 77: "T19 D10", 76: "T20 D8", 75: "T17 D12",
+                74: "T14 D16", 73: "T19 D8", 72: "T16 D12", 71: "T13 D16", 70: "T18 D8",
+                69: "T19 D6", 68: "T20 D4", 67: "T17 D8", 66: "T10 D18", 65: "T19 D4",
+                64: "T16 D8", 63: "T13 D12", 62: "T10 D16", 61: "T15 D8", 60: "S20 D20",
+                59: "S19 D20", 58: "S18 D20", 57: "S17 D20", 56: "T16 D4", 55: "S15 D20",
+                54: "S14 D20", 53: "S13 D20", 52: "T12 D8", 51: "S19 D16", 50: "S18 D16",
+                49: "S17 D16", 48: "S16 D16", 47: "S15 D16", 46: "S14 D16", 45: "S13 D16",
+                44: "S12 D16", 43: "S11 D16", 42: "S10 D16", 41: "S9 D16", 40: "D20",
+                39: "S7 D16", 38: "D19", 37: "S5 D16", 36: "D18", 35: "S3 D16", 34: "D17",
+                33: "S1 D16", 32: "D16", 31: "S15 D8", 30: "D15", 29: "S13 D8", 28: "D14",
+                27: "S11 D8", 26: "D13", 25: "S9 D8", 24: "D12", 23: "S7 D8", 22: "D11",
+                21: "S5 D8", 20: "D10", 19: "S3 D8", 18: "D9", 17: "S1 D8", 16: "D8",
+                15: "S7 D4", 14: "D7", 13: "S5 D4", 12: "D6", 11: "S3 D4", 10: "D5",
+                9: "S1 D4", 8: "D4", 7: "S3 D2", 6: "D3", 5: "S1 D2", 4: "D2",
+                3: "S1 D1", 2: "D1"
+            };
+
+            // Storage keys
+            const SETTINGS_KEY = 'darts501_settings';
+            const NAMES_KEY = 'darts501_names';
+
+            // Load/save settings
+            function loadSettings() {
+                try {
+                    const saved = localStorage.getItem(SETTINGS_KEY);
+                    if (saved) return JSON.parse(saved);
+                } catch (e) {}
+                return { voice: false, vibrate: true, saveNames: true };
+            }
+
+            function saveSettings(settings) {
+                try {
+                    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+                } catch (e) {}
+            }
+
+            // Load/save names
+            function loadNames() {
+                try {
+                    const saved = localStorage.getItem(NAMES_KEY);
+                    if (saved) return JSON.parse(saved);
+                } catch (e) {}
+                return ['', '', '', ''];
+            }
+
+            function saveNames(names) {
+                try {
+                    localStorage.setItem(NAMES_KEY, JSON.stringify(names));
+                } catch (e) {}
+            }
+
+            function clearNames() {
+                try {
+                    localStorage.removeItem(NAMES_KEY);
+                } catch (e) {}
+            }
+
+            // Global state
+            const settings = loadSettings();
+            const savedNames = loadNames();
+
+            const gameState = {
+                numPlayers: 1,
+                aiLevel: 'medium',
+                legs: 3,
+                sets: 1,
+                players: [],
+                currentPlayerIndex: 0,
+                input: '',
+                history: [],
+                lastThrow: null,
+                aiTimer: null
+            };
+
+            // Utility functions
+            const $ = (id) => document.getElementById(id);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            function speak(text) {
+                if (!settings.voice || !('speechSynthesis' in window)) return;
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-GB';
+                utterance.rate = 1.0;
+                speechSynthesis.speak(utterance);
+            }
+
+            function vibrate(pattern) {
+                if (settings.vibrate && 'vibrate' in navigator) {
+                    navigator.vibrate(pattern);
+                }
+            }
+
+            function showScreen(name) {
+                $$('.screen').forEach(s => s.classList.remove('active'));
+                $(name + 'Screen').classList.add('active');
+                $('settingsBtn').style.display = (name === 'setup' || name === 'settings') ? 'flex' : 'none';
+            }
+
+            // Settings UI
+            function updateSettingsUI() {
+                $('voiceToggle').classList.toggle('on', settings.voice);
+                $('vibToggle').classList.toggle('on', settings.vibrate);
+                $('saveToggle').classList.toggle('on', settings.saveNames);
+            }
+
+            // Setup screen
+            function initSetup() {
+                // Clear any pending AI timer
+                if (gameState.aiTimer) {
+                    clearTimeout(gameState.aiTimer);
+                    gameState.aiTimer = null;
+                }
+
+                // Player count buttons
+                $('playerBtns').innerHTML = '';
+                [1, 2, 3, 4].forEach(n => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn' + (n === gameState.numPlayers ? ' selected' : '');
+                    btn.textContent = n === 1 ? '1 vs AI' : n + '';
+                    btn.onclick = () => selectPlayers(n);
+                    $('playerBtns').appendChild(btn);
+                });
+
+                // AI level buttons
+                $('aiBtns').innerHTML = '';
+                [['easy', 'Easy'], ['medium', 'Medium'], ['hard', 'Pro']].forEach(([key, label]) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn' + (key === gameState.aiLevel ? ' selected' : '');
+                    btn.textContent = label;
+                    btn.onclick = () => selectAI(key);
+                    $('aiBtns').appendChild(btn);
+                });
+
+                $('aiSection').style.display = gameState.numPlayers === 1 ? 'block' : 'none';
+
+                // Legs buttons
+                $('legsBtns').innerHTML = '';
+                [1, 3, 5, 7].forEach(n => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn' + (n === gameState.legs ? ' selected' : '');
+                    btn.textContent = 'Best of ' + n;
+                    btn.onclick = () => selectLegs(n);
+                    $('legsBtns').appendChild(btn);
+                });
+
+                // Sets buttons
+                $('setsBtns').innerHTML = '';
+                [1, 3, 5].forEach(n => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn' + (n === gameState.sets ? ' selected' : '');
+                    btn.textContent = n + ' Set' + (n > 1 ? 's' : '');
+                    btn.onclick = () => selectSets(n);
+                    $('setsBtns').appendChild(btn);
+                });
+
+                updateNames();
+            }
+
+            function selectPlayers(n) {
+                gameState.numPlayers = n;
+                $('aiSection').style.display = n === 1 ? 'block' : 'none';
+                $$('#playerBtns .btn').forEach((b, i) => {
+                    b.classList.toggle('selected', [1, 2, 3, 4][i] === n);
+                });
+                updateNames();
+            }
+
+            function selectAI(key) {
+                gameState.aiLevel = key;
+                const keys = ['easy', 'medium', 'hard'];
+                $$('#aiBtns .btn').forEach((b, i) => {
+                    b.classList.toggle('selected', keys[i] === key);
+                });
+            }
+
+            function selectLegs(n) {
+                gameState.legs = n;
+                $$('#legsBtns .btn').forEach(b => {
+                    b.classList.toggle('selected', b.textContent === 'Best of ' + n);
+                });
+            }
+
+            function selectSets(n) {
+                gameState.sets = n;
+                $$('#setsBtns .btn').forEach(b => {
+                    b.classList.toggle('selected', parseInt(b.textContent) === n);
+                });
+            }
+
+            function updateNames() {
+                const container = $('nameInputs');
+                container.innerHTML = '';
+
+                for (let i = 0; i < gameState.numPlayers; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'name-row';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'name-input';
+                    input.id = 'name' + i;
+                    input.placeholder = 'Player ' + (i + 1);
+                    input.value = savedNames[i] || '';
+                    input.oninput = () => {
+                        if (settings.saveNames) {
+                            savedNames[i] = input.value;
+                            saveNames(savedNames);
+                        }
+                    };
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'name-del';
+                    deleteBtn.textContent = '×';
+                    deleteBtn.onclick = () => {
+                        input.value = '';
+                        savedNames[i] = '';
+                        if (settings.saveNames) saveNames(savedNames);
+                    };
+
+                    row.appendChild(input);
+                    row.appendChild(deleteBtn);
+                    container.appendChild(row);
+                }
+            }
+
+            // Start game
+            function startGame() {
+                gameState.players = [];
+                gameState.history = [];
+                gameState.input = '';
+                gameState.lastThrow = null;
+
+                if (gameState.aiTimer) {
+                    clearTimeout(gameState.aiTimer);
+                    gameState.aiTimer = null;
+                }
+
+                for (let i = 0; i < gameState.numPlayers; i++) {
+                    const input = $('name' + i);
+                    const name = input && input.value.trim() ? input.value.trim() : 'Player ' + (i + 1);
+                    gameState.players.push({
+                        name: name,
+                        score: 501,
+                        legs: 0,
+                        sets: 0,
+                        totalScore: 0,
+                        dartsThrown: 0,
+                        isAI: false,
+                        throws: []
+                    });
+                }
+
+                if (gameState.numPlayers === 1) {
+                    gameState.players.push({
+                        name: '🤖 Computer',
+                        score: 501,
+                        legs: 0,
+                        sets: 0,
+                        totalScore: 0,
+                        dartsThrown: 0,
+                        isAI: true,
+                        throws: []
+                    });
+                }
+
+                gameState.currentPlayerIndex = 0;
+                $('playersGrid').className = 'players-grid p' + gameState.players.length;
+                showScreen('game');
+                renderGame();
+                speak(gameState.players[0].name + ' to start!');
+            }
+
+            // Render game
+            function renderGame() {
+                const grid = $('playersGrid');
+                grid.innerHTML = '';
+
+                gameState.players.forEach((player, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'player-card' + (index === gameState.currentPlayerIndex ? ' active' : '');
+
+                    const avg = player.dartsThrown > 0
+                        ? ((player.totalScore / player.dartsThrown) * 3).toFixed(1)
+                        : '0.0';
+
+                    card.innerHTML = `
+                        <div class="p-name">${player.name}</div>
+                        <div class="p-score">${player.score}</div>
+                        <div class="p-stats">S${player.sets} L${player.legs}</div>
+                        <div class="p-avg">${avg}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+
+                // Checkout suggestion
+                const checkoutBox = $('checkoutBox');
+                if (CHECKOUTS[currentPlayer.score] && !currentPlayer.isAI) {
+                    checkoutBox.classList.add('visible');
+                    $('checkoutCombo').textContent = CHECKOUTS[currentPlayer.score];
+                } else {
+                    checkoutBox.classList.remove('visible');
+                }
+
+                // Input display
+                $('inputDisplay').textContent = currentPlayer.isAI ? '...' : (gameState.input || '0');
+
+                // AI indicator
+                $('aiIndicator').classList.toggle('visible', currentPlayer.isAI);
+
+                // Input section visibility
+                $('inputSection').style.visibility = currentPlayer.isAI ? 'hidden' : 'visible';
+
+                // Last throw display
+                const lastThrowEl = $('lastThrow');
+                if (gameState.lastThrow) {
+                    lastThrowEl.classList.add('visible');
+                    lastThrowEl.classList.toggle('bust', gameState.lastThrow.bust);
+                    lastThrowEl.classList.toggle('normal', !gameState.lastThrow.bust);
+                    $('throwName').textContent = gameState.lastThrow.name + ':';
+                    $('throwScore').textContent = gameState.lastThrow.bust ? 'BUST!' : gameState.lastThrow.score;
+                } else {
+                    lastThrowEl.classList.remove('visible');
+                }
+
+                // Trigger AI turn
+                if (currentPlayer.isAI) {
+                    gameState.aiTimer = setTimeout(aiTurn, 1200 + Math.random() * 600);
+                }
+            }
+
+            // Input handling
+            function typeDigit(digit) {
+                if (gameState.players[gameState.currentPlayerIndex].isAI || gameState.input.length >= 3) return;
+                gameState.input += digit;
+                $('inputDisplay').textContent = gameState.input;
+                vibrate(10);
+            }
+
+            function clearInput() {
+                gameState.input = '';
+                $('inputDisplay').textContent = '0';
+                vibrate(20);
+            }
+
+            function submitScore() {
+                if (gameState.players[gameState.currentPlayerIndex].isAI) return;
+                const score = parseInt(gameState.input || '0', 10);
+                if (isNaN(score) || score > 180) {
+                    clearInput();
+                    vibrate([50, 50, 50]);
+                    return;
+                }
+                processScore(score);
+            }
+
+            function quickScore(value) {
+                if (!gameState.players[gameState.currentPlayerIndex].isAI) {
+                    processScore(value);
+                }
+            }
+
+            function undo() {
+                if (!gameState.history.length || gameState.players[gameState.currentPlayerIndex].isAI) return;
+
+                let historyItem = gameState.history.pop();
+
+                // Skip AI throws
+                while (historyItem && historyItem.ai && gameState.history.length) {
+                    restoreState(historyItem);
+                    historyItem = gameState.history.pop();
+                }
+
+                if (historyItem) restoreState(historyItem);
+
+                gameState.input = '';
+                gameState.lastThrow = null;
+                renderGame();
+                vibrate(30);
+            }
+
+            function restoreState(item) {
+                const player = gameState.players[item.playerIndex];
+                player.score = item.score;
+                player.legs = item.legs;
+                player.sets = item.sets;
+                player.totalScore = item.totalScore;
+                player.dartsThrown = item.dartsThrown;
+                player.throws = item.throws.slice();
+                gameState.currentPlayerIndex = item.playerIndex;
+            }
+
+            // Process score
+            function processScore(score) {
+                const player = gameState.players[gameState.currentPlayerIndex];
+
+                // Save history
+                gameState.history.push({
+                    playerIndex: gameState.currentPlayerIndex,
+                    score: player.score,
+                    legs: player.legs,
+                    sets: player.sets,
+                    totalScore: player.totalScore,
+                    dartsThrown: player.dartsThrown,
+                    throws: player.throws.slice(),
+                    ai: player.isAI
+                });
+
+                const remaining = player.score - score;
+
+                // Bust check
+                if (remaining < 0 || remaining === 1) {
+                    gameState.lastThrow = { name: player.name, score: 0, bust: true };
+                    speak('Bust!');
+                    vibrate([100, 50, 100]);
+                    player.dartsThrown += 3;
+                    nextPlayer();
+                    return;
+                }
+
+                // Valid score
+                player.totalScore += score;
+                player.dartsThrown += 3;
+                player.throws.push(score);
+                gameState.lastThrow = { name: player.name, score: score, bust: false };
+
+                // Check for leg win
+                if (remaining === 0) {
+                    player.legs++;
+                    speak(player.name + ' wins the leg!');
+                    vibrate([50, 100, 50, 100]);
+
+                    // Check for set win
+                    if (player.legs >= Math.ceil(gameState.legs / 2)) {
+                        player.sets++;
+                        player.legs = 0;
+                        gameState.players.forEach(p => p.legs = 0);
+
+                        // Check for match win
+                        if (player.sets >= gameState.sets) {
+                            showWin(player);
+                            return;
+                        }
+
+                        speak(player.name + ' wins the set!');
+                    }
+
+                    // Reset scores for new leg
+                    gameState.players.forEach(p => p.score = 501);
+                } else {
+                    player.score = remaining;
+
+                    // Special announcements
+                    if (score === 180) {
+                        speak('One hundred and eighty!');
+                    } else if (score >= 140) {
+                        speak(score + '!');
+                    } else if (score >= 100) {
+                        speak('Ton ' + (score - 100));
+                    }
+                }
+
+                gameState.input = '';
+                nextPlayer();
+            }
+
+            function nextPlayer() {
+                gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+                renderGame();
+            }
+
+            // AI turn
+            function aiTurn() {
+                const player = gameState.players[gameState.currentPlayerIndex];
+                if (!player || !player.isAI) return;
+
+                let score;
+
+                // Check for checkout opportunity
+                if (player.score <= 170 && CHECKOUTS[player.score]) {
+                    const checkoutChance = gameState.aiLevel === 'easy' ? 0.12 :
+                                          gameState.aiLevel === 'medium' ? 0.30 : 0.50;
+                    if (Math.random() < checkoutChance) {
+                        score = player.score;
+                    }
+                }
+
+                // Generate regular score if no checkout
+                if (score === undefined) {
+                    const avgScore = gameState.aiLevel === 'easy' ? 32 :
+                                    gameState.aiLevel === 'medium' ? 50 : 68;
+                    const variance = gameState.aiLevel === 'easy' ? 28 :
+                                    gameState.aiLevel === 'medium' ? 22 : 16;
+
+                    score = Math.floor(avgScore + (Math.random() - 0.5) * variance * 2);
+
+                    // Random big score chance
+                    if (Math.random() < 0.07) {
+                        score = 100 + Math.floor(Math.random() * 40);
+                    }
+
+                    // Random bad throw chance
+                    if (Math.random() < 0.05) {
+                        score = Math.floor(Math.random() * 20);
+                    }
+
+                    score = Math.max(0, Math.min(180, score));
+
+                    // Prevent bust
+                    if (score >= player.score || player.score - score === 1) {
+                        score = Math.max(0, Math.floor((player.score - 2) * 0.5));
+                    }
+                }
+
+                processScore(score);
+            }
+
+            // Win screen
+            function showWin(winner) {
+                if (gameState.aiTimer) {
+                    clearTimeout(gameState.aiTimer);
+                    gameState.aiTimer = null;
+                }
+
+                speak(winner.name + ' wins the match!');
+                vibrate([100, 100, 100, 100, 200]);
+
+                $('winnerName').textContent = winner.name;
+
+                const list = $('resultsList');
+                list.innerHTML = '';
+
+                gameState.players.forEach(player => {
+                    const avg = player.dartsThrown > 0
+                        ? ((player.totalScore / player.dartsThrown) * 3).toFixed(1)
+                        : '0.0';
+
+                    const row = document.createElement('div');
+                    row.className = 'result-row';
+                    row.innerHTML = `
+                        <span>${player.name}</span>
+                        <span class="result-avg">${avg}</span>
+                    `;
+                    list.appendChild(row);
+                });
+
+                showScreen('win');
+            }
+
+            // Event listeners
+            function init() {
+                initSetup();
+                updateSettingsUI();
+
+                // Setup events
+                $('startBtn').onclick = startGame;
+
+                $$('.num-btn.digit').forEach(btn => {
+                    btn.onclick = () => typeDigit(btn.dataset.n);
+                });
+
+                $('clearBtn').onclick = clearInput;
+                $('undoBtn').onclick = undo;
+                $('submitBtn').onclick = submitScore;
+
+                $$('.quick-btn').forEach(btn => {
+                    btn.onclick = () => quickScore(parseInt(btn.dataset.q, 10));
+                });
+
+                $('stopBtn').onclick = () => {
+                    if (gameState.aiTimer) {
+                        clearTimeout(gameState.aiTimer);
+                        gameState.aiTimer = null;
+                    }
+                    showScreen('setup');
+                    initSetup();
+                };
+
+                $('restartBtn').onclick = () => {
+                    showScreen('setup');
+                    initSetup();
+                };
+
+                // Settings events
+                $('settingsBtn').onclick = () => showScreen('settings');
+
+                $('backBtn').onclick = () => {
+                    showScreen('setup');
+                    initSetup();
+                };
+
+                $('voiceToggle').onclick = () => {
+                    settings.voice = !settings.voice;
+                    saveSettings(settings);
+                    updateSettingsUI();
+                    vibrate(20);
+                };
+
+                $('vibToggle').onclick = () => {
+                    settings.vibrate = !settings.vibrate;
+                    saveSettings(settings);
+                    updateSettingsUI();
+                };
+
+                $('saveToggle').onclick = () => {
+                    settings.saveNames = !settings.saveNames;
+                    saveSettings(settings);
+                    updateSettingsUI();
+                    vibrate(20);
+                };
+
+                $('clearNamesBtn').onclick = () => {
+                    clearNames();
+                    for (let i = 0; i < 4; i++) savedNames[i] = '';
+                    updateNames();
+                    vibrate([50, 50]);
+                };
+
+                showScreen('setup');
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>
