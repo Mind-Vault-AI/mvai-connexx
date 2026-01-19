@@ -1,30 +1,30 @@
 #!/bin/sh
-# MVAI Connexx - Startup Script voor Fly.io
-# Zorgt voor correct database setup voor deployment
+# MVAI Connexx - Production Startup Script
 
-echo "🚀 MVAI Connexx - Starting..."
+echo "🚀 MVAI Connexx starting..."
 
-# Maak /app/data directory als het niet bestaat (voor volume mount)
-if [ ! -d "/app/data" ]; then
-    echo "📁 Creating /app/data directory..."
-    mkdir -p /app/data
-fi
+# Create data directory if needed
+mkdir -p /app/data
 
-# Check permissions (Fly.io volume is writable voor user)
-if [ ! -w "/app/data" ]; then
-    echo "⚠️  Warning: /app/data not writable!"
-fi
-
-# Database locatie info
+# Database location
 if [ -d "/app/data" ]; then
+    export DATABASE_PATH="/app/data/mvai_connexx.db"
     echo "✅ Using persistent storage: /app/data/mvai_connexx.db"
 else
-    echo "⚠️  Using local storage: mvai_connexx.db (not persistent!)"
+    export DATABASE_PATH="mvai_connexx.db"
+    echo "⚠️  Using local storage: mvai_connexx.db"
+fi
+
+# Auto-generate SECRET_KEY if not set
+if [ -z "$SECRET_KEY" ]; then
+    export SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+    echo "⚠️  Generated random SECRET_KEY (set SECRET_KEY env var for persistence)"
 fi
 
 # Start gunicorn
 echo "🎯 Starting Gunicorn..."
-exec gunicorn --bind 0.0.0.0:5000 \
+exec gunicorn \
+    --bind 0.0.0.0:${PORT:-5000} \
     --workers 2 \
     --timeout 120 \
     --access-logfile - \
