@@ -42,27 +42,17 @@ python3 -c "from database import init_db; init_db()"
 ```
 
 ## Stap 6: Gunicorn Service
-Maak `/etc/systemd/system/mvai-connexx.service`:
-```ini
-[Unit]
-Description=MVAI Connexx Gunicorn Service
-After=network.target
-
-[Service]
-User=www-data
-Group=www-data
-WorkingDirectory=/var/www/mvai-connexx
-Environment="PATH=/var/www/mvai-connexx/venv/bin"
-ExecStart=/var/www/mvai-connexx/venv/bin/gunicorn --workers 3 --bind unix:mvai-connexx.sock -m 007 app:app
-
-[Install]
-WantedBy=multi-user.target
+Kopieer het service bestand naar systemd:
+```bash
+sudo cp mvai-connexx.service /etc/systemd/system/
+sudo systemctl daemon-reload
 ```
 
 Start service:
 ```bash
 sudo systemctl start mvai-connexx
 sudo systemctl enable mvai-connexx
+sudo systemctl status mvai-connexx
 ```
 
 ## Stap 7: Nginx Configuratie
