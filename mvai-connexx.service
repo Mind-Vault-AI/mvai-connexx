@@ -1,0 +1,17 @@
+[Unit]
+Description=MVAI Connexx Gunicorn Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/mvai-connexx
+Environment="PATH=/var/www/mvai-connexx/venv/bin"
+EnvironmentFile=/var/www/mvai-connexx/.env
+ExecStart=/var/www/mvai-connexx/venv/bin/gunicorn --config gunicorn.conf.py app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

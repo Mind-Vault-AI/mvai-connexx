@@ -176,7 +176,7 @@ mvai-connexx/
 - `GET /admin/search` - Zoeken
 - `GET /admin/export/all-csv` - Volledige CSV export
 
-## 🐳 Docker Deployment
+## 🐳 Docker Deployment (Optional)
 
 ### Lokaal Bouwen
 
@@ -185,30 +185,32 @@ docker build -t mvai-connexx .
 docker run -p 5000:5000 mvai-connexx
 ```
 
-### Fly.io Deployment
+## 🚀 Hostinger VPS Deployment
 
-```bash
-# Login
-fly auth login
+Voor production deployment op Hostinger VPS, zie de uitgebreide handleiding:
 
-# Deploy
-fly deploy
+**📖 [HOSTINGER_DEPLOY.md](HOSTINGER_DEPLOY.md)**
 
-# Check status
-fly status
+### Snelle Samenvatting
 
-# View logs
-fly logs
-```
+1. **Server Setup**: Ubuntu 22.04 LTS met Python, Nginx
+2. **Clone Repository**: `/var/www/mvai-connexx`
+3. **Virtual Environment**: Python venv met dependencies
+4. **Environment Config**: `.env` file met SECRET_KEY, DATABASE_PATH
+5. **Gunicorn Service**: Systemd service voor app
+6. **Nginx Proxy**: Reverse proxy configuratie
+7. **SSL Certificate**: Let's Encrypt voor HTTPS
+8. **Firewall**: UFW configuratie
 
-**Belangrijk**: Zorg dat je eerst demo data seed via `fly ssh console`:
+**Configuratie bestanden:**
+- `gunicorn.conf.py` - Gunicorn worker configuratie
+- `nginx.conf.example` - Nginx reverse proxy voorbeeld
+- `mvai-connexx.service` - Systemd service definitie
 
-```bash
-fly ssh console
-cd /app
-python seed_demo.py
-exit
-```
+**Vereisten:**
+- Hostinger VPS (minimaal KVM 1)
+- Ubuntu 22.04 LTS
+- Domain gekoppeld aan VPS IP
 
 ## 🔐 Security Features
 
