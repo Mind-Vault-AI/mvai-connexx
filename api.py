@@ -33,7 +33,6 @@ def require_api_key(f):
         if not api_key:
             return jsonify({
                 'error': 'API key required',
-                'message': 'Provide API key via X-API-Key header'
                 'message': 'Provide API key via X-API-Key header or api_key parameter'
             }), 401
 
