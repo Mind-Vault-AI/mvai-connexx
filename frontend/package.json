@@ -1,0 +1,50 @@
+{
+  "name": "vault-tv",
+  "version": "1.0.0",
+  "description": "High-Performance Local-First IPTV PWA - The Ultimate Streaming Experience",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.17.0",
+    "@vidstack/react": "^1.10.0",
+    "axios": "^1.6.5",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.2.0",
+    "dexie": "^3.2.4",
+    "dexie-react-hooks": "^1.1.7",
+    "framer-motion": "^10.18.0",
+    "hls.js": "^1.5.1",
+    "lucide-react": "^0.309.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.12",
+    "react-router-dom": "^6.21.1",
+    "tailwind-merge": "^2.2.0",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.18.0",
+    "@typescript-eslint/parser": "^6.18.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-pwa": "^0.17.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
