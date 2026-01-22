@@ -60,3 +60,8 @@ htmlcov/
 
 # Documentation builds
 docs/_build/
+
+# Node.js
+node_modules/
+.npm
+.pnpm-store/
