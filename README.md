@@ -176,38 +176,30 @@ mvai-connexx/
 - `GET /admin/search` - Zoeken
 - `GET /admin/export/all-csv` - Volledige CSV export
 
-## 🐳 Docker Deployment
+## 🚀 Production Deployment
 
-### Lokaal Bouwen
+### Hostinger VPS Deployment (Aanbevolen)
+
+**Complete deployment guide:** Zie `HOSTINGER_DEPLOYMENT.md`
+
+**Quick start:**
+1. VPS huren bij Hostinger (€5.99/maand)
+2. SSH naar server
+3. Clone repo + install dependencies
+4. Setup Gunicorn service
+5. Configure Nginx reverse proxy
+6. SSL certificaat (gratis Let's Encrypt)
+
+**Total setup tijd:** ~35 minuten
+**Kosten:** €5.99/maand
+**Support:** Hostinger 24/7 Nederlands
+
+### Lokaal Testen (Docker)
 
 ```bash
 docker build -t mvai-connexx .
-docker run -p 5000:5000 mvai-connexx
-```
-
-### Fly.io Deployment
-
-```bash
-# Login
-fly auth login
-
-# Deploy
-fly deploy
-
-# Check status
-fly status
-
-# View logs
-fly logs
-```
-
-**Belangrijk**: Zorg dat je eerst demo data seed via `fly ssh console`:
-
-```bash
-fly ssh console
-cd /app
-python seed_demo.py
-exit
+docker run -p 5000:5000 -e PAYMENT_PROVIDER=gumroad mvai-connexx
+# Open: http://localhost:5000
 ```
 
 ## 🔐 Security Features
