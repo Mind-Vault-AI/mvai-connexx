@@ -1,0 +1,162 @@
+/* ============================================
+   VAULT TV - Global Styles
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-vault-border;
+  }
+
+  html {
+    @apply antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-vault-bg text-vault-text;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-vault-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-vault-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-vault-text-muted;
+  }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Focus styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-vault-primary focus:ring-offset-2 focus:ring-offset-vault-bg;
+  }
+
+  /* Button base */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg font-medium transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-vault-primary focus:ring-offset-2 focus:ring-offset-vault-bg;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-vault-primary text-white hover:bg-vault-primary-hover;
+  }
+
+  .btn-secondary {
+    @apply btn bg-vault-elevated text-white hover:bg-vault-border;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-vault-surface border border-vault-border rounded-lg;
+  }
+
+  /* Input base */
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg;
+    @apply bg-vault-elevated border border-vault-border;
+    @apply text-white placeholder-vault-text-muted;
+    @apply focus:outline-none focus:border-vault-primary;
+    @apply transition-colors;
+  }
+}
+
+/* Utilities */
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-vault-primary to-vault-accent bg-clip-text text-transparent;
+  }
+
+  /* Shimmer animation */
+  .shimmer {
+    @apply bg-shimmer bg-[length:200%_100%] animate-shimmer;
+  }
+
+  /* Aspect ratios */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-poster {
+    aspect-ratio: 2 / 3;
+  }
+
+  /* Safe area insets for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Vidstack player overrides */
+:root {
+  --media-brand: #e50914;
+  --media-focus-ring-color: #e50914;
+  --media-focus-ring: 0 0 0 3px var(--media-focus-ring-color);
+}
+
+/* Player fullscreen */
+[data-fullscreen] {
+  @apply fixed inset-0 z-50;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
