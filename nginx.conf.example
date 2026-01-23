@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    server_name your-domain.com www.your-domain.com;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/var/www/mvai-connexx/mvai-connexx.sock;
+    }
+
+    location /static {
+        alias /var/www/mvai-connexx/static;
+        expires 30d;
+    }
+
+    client_max_body_size 10M;
+}
