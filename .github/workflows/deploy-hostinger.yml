@@ -1,0 +1,55 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+      branches:
+            - main
+              workflow_dispatch:
+
+              env:
+                APP_DIR: /var/www/mvai-connexx
+
+                jobs:
+                  deploy:
+                      runs-on: ubuntu-latest
+
+                              steps:
+                                    - name: Checkout code
+                                            uses: actions/checkout@v4
+
+                                                  - name: Deploy to Hostinger VPS
+                                                          uses: appleboy/ssh-action@v1.0.3
+                                                                  with:
+                                                                            host: ${{ secrets.HOSTINGER_HOST }}
+                                                                                      username: ${{ secrets.HOSTINGER_USER }}
+                                                                                                key: ${{ secrets.HOSTINGER_SSH_KEY }}
+                                                                                                          port: ${{ secrets.HOSTINGER_PORT }}
+                                                                                                                    script: |
+                                                                                                                                cd ${{ env.APP_DIR }}
+                                                                                                                                            
+                                                                                                                                                        # Pull latest changes
+                                                                                                                                                                    git fetch origin main
+                                                                                                                                                                                git reset --hard origin/main
+                                                                                                                                                                                            
+                                                                                                                                                                                                        # Activate virtual environment and install dependencies
+                                                                                                                                                                                                                    source venv/bin/activate
+                                                                                                                                                                                                                                pip install -r requirements.txt
+                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                        # Run database migrations if needed
+                                                                                                                                                                                                                                                                    python3 -c "from database import init_db; init_db()" || true
+                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                            # Restart application
+                                                                                                                                                                                                                                                                                                        sudo systemctl restart mvai-connexx
+                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                # Verify service is running
+                                                                                                                                                                                                                                                                                                                                            sleep 3
+                                                                                                                                                                                                                                                                                                                                                        sudo systemctl status mvai-connexx --no-pager
+                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                echo "Deployment complete!"
+                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                      - name: Health Check
+                                                                                                                                                                                                                                                                                                                                                                                              if: success()
+                                                                                                                                                                                                                                                                                                                                                                                                      run: |
+                                                                                                                                                                                                                                                                                                                                                                                                                echo "Performing health check..."
+                                                                                                                                                                                                                                                                                                                                                                                                                          sleep 5
+                                                                                                                                                                                                                                                                                                                                                                                                                                    echo "Deployment successful!"
