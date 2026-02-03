@@ -61,6 +61,12 @@ class Config:
     ENABLE_DEMO_MODE = os.getenv('ENABLE_DEMO_MODE', 'true').lower() == 'true'
     DEMO_ACCOUNT_EXPIRY_DAYS = int(os.getenv('DEMO_ACCOUNT_EXPIRY_DAYS', 14))
 
+    # AI / OpenAI Configuration
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+    OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4-turbo')
+    OPENAI_MAX_TOKENS = int(os.getenv('OPENAI_MAX_TOKENS', 1000))
+    OPENAI_TEMPERATURE = float(os.getenv('OPENAI_TEMPERATURE', 0.7))
+
     # Pricing
     DEFAULT_PRICING_TIER = os.getenv('DEFAULT_PRICING_TIER', 'demo')
     ALLOW_TIER_UPGRADE = True

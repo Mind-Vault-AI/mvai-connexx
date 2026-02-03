@@ -7,6 +7,15 @@ import re
 from datetime import datetime, timedelta
 from collections import defaultdict
 import database as db
+import config
+
+# OpenAI API integration
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    print("⚠️ OpenAI library not installed. AI Assistant will use fallback mode.")
 
 # ═══════════════════════════════════════════════════════
 # AI ASSISTANT PER KLANT (GEÏSOLEERD)
@@ -27,6 +36,15 @@ class AIAssistant:
         self.preferences = self.load_preferences()
         self.conversation_history = []
         self.learned_patterns = {}
+
+        # Initialize OpenAI client
+        self.openai_client = None
+        if OPENAI_AVAILABLE and config.Config.OPENAI_API_KEY:
+            try:
+                self.openai_client = OpenAI(api_key=config.Config.OPENAI_API_KEY)
+            except Exception as e:
+                print(f"⚠️ Failed to initialize OpenAI client: {e}")
+                self.openai_client = None
 
     def check_if_enabled(self):
         """Check of klant AI Assistant heeft geactiveerd"""
@@ -66,7 +84,155 @@ class AIAssistant:
         }
 
     # ══════════════════════════════════════════════════
-    # NATURAL LANGUAGE PROCESSING
+    # OPENAI-POWERED CHAT (PRIMARY METHOD)
+    # ══════════════════════════════════════════════════
+
+    def chat(self, user_message, context=None):
+        """
+        Chat met AI Assistant powered by OpenAI GPT
+
+        Args:
+            user_message (str): Bericht van gebruiker
+            context (dict): Optionele context (logs, stats, etc.)
+
+        Returns:
+            dict: {
+                'success': bool,
+                'message': str (AI response),
+                'data': dict (optional structured data)
+            }
+        """
+        if not self.enabled:
+            return {
+                'success': False,
+                'message': 'AI Assistant is niet geactiveerd. Ga naar instellingen om te activeren.'
+            }
+
+        # Als OpenAI beschikbaar is, gebruik GPT
+        if self.openai_client:
+            try:
+                return self._chat_with_openai(user_message, context)
+            except Exception as e:
+                print(f"OpenAI error: {e}")
+                # Fallback naar rule-based system
+                return self.process_command(user_message)
+
+        # Fallback: gebruik bestaande rule-based system
+        return self.process_command(user_message)
+
+    def _chat_with_openai(self, user_message, context=None):
+        """Gebruik OpenAI GPT voor intelligente responses"""
+
+        # Haal klant data op voor context
+        customer = self._get_customer_data()
+        recent_logs = self._get_recent_logs(limit=10)
+
+        # Bouw system prompt
+        system_prompt = f"""Je bent een persoonlijke AI Secretaresse voor MVAI Connexx, een logistiek data platform.
+
+Klant informatie:
+- Naam: {customer.get('name', 'Onbekend')}
+- Pricing tier: {customer.get('pricing_tier', 'demo')}
+- Taal voorkeur: {self.preferences['language']}
+- Toon: {self.preferences['tone']}
+
+Je taak:
+- Beantwoord vragen over logistieke data, statistieken, en trends
+- Geef proactieve suggesties voor optimalisatie
+- Wees {self.preferences['tone']} en spreek {self.preferences['language']}
+- Focus op logistiek, transport, kosten, en efficiency
+
+Beschikbare data:
+- Recente logs: {len(recent_logs)} entries
+- Totaal aantal logs: {customer.get('total_logs', 0)}
+
+Geef altijd concrete, actionable antwoorden gebaseerd op de data."""
+
+        # Voeg context toe als beschikbaar
+        if context:
+            system_prompt += f"\n\nExtra context: {json.dumps(context)}"
+
+        # Voeg recente logs toe aan context
+        if recent_logs:
+            logs_summary = "\n".join([
+                f"- {log['timestamp']}: {log.get('action', 'N/A')}"
+                for log in recent_logs[:5]
+            ])
+            system_prompt += f"\n\nRecentste logs:\n{logs_summary}"
+
+        # API call naar OpenAI
+        try:
+            response = self.openai_client.chat.completions.create(
+                model=config.Config.OPENAI_MODEL,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    *[{"role": msg["role"], "content": msg["content"]}
+                      for msg in self.conversation_history[-5:]],  # Laatste 5 berichten
+                    {"role": "user", "content": user_message}
+                ],
+                max_tokens=config.Config.OPENAI_MAX_TOKENS,
+                temperature=config.Config.OPENAI_TEMPERATURE
+            )
+
+            ai_response = response.choices[0].message.content
+
+            # Bewaar in conversation history
+            self.conversation_history.append({
+                "role": "user",
+                "content": user_message,
+                "timestamp": datetime.now().isoformat()
+            })
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": ai_response,
+                "timestamp": datetime.now().isoformat()
+            })
+
+            # Hou max 20 berichten in history
+            if len(self.conversation_history) > 20:
+                self.conversation_history = self.conversation_history[-20:]
+
+            return {
+                'success': True,
+                'message': ai_response,
+                'model': config.Config.OPENAI_MODEL,
+                'tokens_used': response.usage.total_tokens if hasattr(response, 'usage') else 0
+            }
+
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'AI fout: {str(e)}',
+                'error': str(e)
+            }
+
+    def _get_customer_data(self):
+        """Haal klant data op"""
+        customer = db.get_customer_by_id(self.customer_id)
+        if customer:
+            # Tel totaal logs
+            with db.get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT COUNT(*) as count FROM logs WHERE customer_id = ?',
+                             (self.customer_id,))
+                total_logs = cursor.fetchone()['count']
+            customer['total_logs'] = total_logs
+        return customer or {}
+
+    def _get_recent_logs(self, limit=10):
+        """Haal recente logs op"""
+        with db.get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT * FROM logs
+                WHERE customer_id = ?
+                ORDER BY timestamp DESC
+                LIMIT ?
+            ''', (self.customer_id, limit))
+            return [dict(row) for row in cursor.fetchall()]
+
+    # ══════════════════════════════════════════════════
+    # NATURAL LANGUAGE PROCESSING (FALLBACK)
     # ══════════════════════════════════════════════════
 
     def process_command(self, user_input):

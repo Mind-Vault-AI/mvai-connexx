@@ -467,8 +467,8 @@ def customer_ai_chat():
     from ai_assistant import get_assistant
     assistant = get_assistant(customer_id)
 
-    # Process command
-    result = assistant.process_command(message)
+    # Process with OpenAI-powered chat (fallback to rule-based if OpenAI unavailable)
+    result = assistant.chat(message)
 
     # Save conversation
     with db.get_db() as conn:
@@ -476,7 +476,7 @@ def customer_ai_chat():
         cursor.execute('''
             INSERT INTO ai_conversations (customer_id, user_message, ai_response, intent)
             VALUES (?, ?, ?, ?)
-        ''', (customer_id, message, result['message'], result.get('intent', 'unknown')))
+        ''', (customer_id, message, result['message'], result.get('intent', 'ai_chat')))
 
     return jsonify(result)
 
