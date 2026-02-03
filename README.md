@@ -176,31 +176,41 @@ mvai-connexx/
 - `GET /admin/search` - Zoeken
 - `GET /admin/export/all-csv` - Volledige CSV export
 
-## 🚀 Production Deployment
+## 🐳 Docker Deployment (Optional)
 
 ### Hostinger VPS Deployment (Aanbevolen)
 
-**Complete deployment guide:** Zie `HOSTINGER_DEPLOYMENT.md`
-
-**Quick start:**
-1. VPS huren bij Hostinger (€5.99/maand)
-2. SSH naar server
-3. Clone repo + install dependencies
-4. Setup Gunicorn service
-5. Configure Nginx reverse proxy
-6. SSL certificaat (gratis Let's Encrypt)
-
-**Total setup tijd:** ~35 minuten
-**Kosten:** €5.99/maand
-**Support:** Hostinger 24/7 Nederlands
-
-### Lokaal Testen (Docker)
-
 ```bash
 docker build -t mvai-connexx .
-docker run -p 5000:5000 -e PAYMENT_PROVIDER=gumroad mvai-connexx
-# Open: http://localhost:5000
+docker run -p 5000:5000 mvai-connexx
 ```
+
+## 🚀 Hostinger VPS Deployment
+
+Voor production deployment op Hostinger VPS, zie de uitgebreide handleiding:
+
+**📖 [HOSTINGER_DEPLOY.md](HOSTINGER_DEPLOY.md)**
+
+### Snelle Samenvatting
+
+1. **Server Setup**: Ubuntu 22.04 LTS met Python, Nginx
+2. **Clone Repository**: `/var/www/mvai-connexx`
+3. **Virtual Environment**: Python venv met dependencies
+4. **Environment Config**: `.env` file met SECRET_KEY, DATABASE_PATH
+5. **Gunicorn Service**: Systemd service voor app
+6. **Nginx Proxy**: Reverse proxy configuratie
+7. **SSL Certificate**: Let's Encrypt voor HTTPS
+8. **Firewall**: UFW configuratie
+
+**Configuratie bestanden:**
+- `gunicorn.conf.py` - Gunicorn worker configuratie
+- `nginx.conf.example` - Nginx reverse proxy voorbeeld
+- `mvai-connexx.service` - Systemd service definitie
+
+**Vereisten:**
+- Hostinger VPS (minimaal KVM 1)
+- Ubuntu 22.04 LTS
+- Domain gekoppeld aan VPS IP
 
 ## 🔐 Security Features
 
