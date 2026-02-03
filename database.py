@@ -510,7 +510,7 @@ def create_customer(name, contact_email=None, company_info=None):
         'contact_email': contact_email
     }
 
-@retry_on_locked(max_retries=3, delay=0.5)
+@retry_on_locked(max_retries=3, initial_delay=0.1)
 def get_customer_by_code(access_code):
     """Haal klant op via access code"""
     with get_db() as conn:
@@ -675,7 +675,7 @@ def create_admin(username, password=None):
         'access_code': access_code
     }
 
-@retry_on_locked(max_retries=3, delay=0.5)
+@retry_on_locked(max_retries=3, initial_delay=0.1)
 def verify_admin(access_code):
     """Verifieer admin access code"""
     with get_db() as conn:

@@ -178,7 +178,7 @@ mvai-connexx/
 
 ## 🐳 Docker Deployment (Optional)
 
-### Lokaal Bouwen
+### Hostinger VPS Deployment (Aanbevolen)
 
 ```bash
 docker build -t mvai-connexx .

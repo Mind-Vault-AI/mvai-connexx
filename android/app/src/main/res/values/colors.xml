@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MVAI Branding Colors -->
+    <color name="primary">#00ff41</color>          <!-- Neon Green -->
+    <color name="primary_dark">#00cc33</color>     <!-- Dark Green -->
+    <color name="accent">#00ff41</color>           <!-- Accent -->
+    <color name="background">#1a1a1a</color>       <!-- Dark Background -->
+    <color name="surface">#2a2a2a</color>          <!-- Surface -->
+    <color name="text_primary">#ffffff</color>     <!-- White Text -->
+    <color name="text_secondary">#b0b0b0</color>   <!-- Gray Text -->
+</resources>

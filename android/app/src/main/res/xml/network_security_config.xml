@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Production: Alleen HTTPS toegestaan -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Development: Sta localhost toe voor testing -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>  <!-- Android emulator localhost -->
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+
+    <!-- Production domain -->
+    <domain-config>
+        <domain includeSubdomains="true">mvai-connexx.com</domain>
+        <pin-set>
+            <!-- Certificate pinning (optioneel - voeg toe na SSL cert bekend) -->
+        </pin-set>
+    </domain-config>
+</network-security-config>
