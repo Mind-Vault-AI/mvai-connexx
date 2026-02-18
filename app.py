@@ -34,9 +34,13 @@ if os.getenv('FLASK_ENV') == 'production':
         # In production, fail hard
         sys.exit(1)
 else:
-    # In development, check maar faal niet
-    ConfigValidator.validate_config(Config, environment='development')
-    logger.info("✅ Development mode: Configuration check completed")
+    # In development, validate but don't fail (config issues are acceptable)
+    try:
+        ConfigValidator.validate_config(Config, environment='development')
+        logger.info("✅ Development mode: Configuration check completed")
+    except ValueError as e:
+        # This shouldn't happen in development mode, but log if it does
+        logger.warning(f"⚠️  Unexpected validation error in development: {e}")
 
 app = Flask(__name__)
 

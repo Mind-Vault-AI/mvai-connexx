@@ -191,7 +191,7 @@ class ConfigValidator:
                 value = getattr(config_obj, var, None)
                 # Special handling for SECRET_KEY to check for default value
                 if var == 'SECRET_KEY':
-                    if not value or value == config_obj.DEFAULT_SECRET_KEY:
+                    if value is None or not value or value == config_obj.DEFAULT_SECRET_KEY:
                         missing_required.append('SECRET_KEY (must be set to a unique value!)')
                 elif not value:
                     missing_required.append(var)
