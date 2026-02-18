@@ -24,7 +24,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger('mvai-connexx')
 
-# Valideer configuratie bij startup (alleen in productie)
+# Valideer configuratie bij startup
 if os.getenv('FLASK_ENV') == 'production':
     try:
         ConfigValidator.validate_config(Config, environment='production')
@@ -34,12 +34,9 @@ if os.getenv('FLASK_ENV') == 'production':
         # In production, fail hard
         sys.exit(1)
 else:
-    # In development, valideer maar faal niet
-    try:
-        ConfigValidator.validate_config(Config, environment='production')
-        logger.info("✅ Configuration validation passed!")
-    except ValueError as e:
-        logger.warning(f"⚠️  Configuration incomplete (OK for development): Missing config detected")
+    # In development, check maar faal niet
+    ConfigValidator.validate_config(Config, environment='development')
+    logger.info("✅ Development mode: Configuration check completed")
 
 app = Flask(__name__)
 

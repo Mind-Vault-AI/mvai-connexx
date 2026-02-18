@@ -163,7 +163,7 @@ class ConfigValidator:
         'SMTP_PASSWORD',
     ]
     
-    VALID_PAYMENT_PROVIDERS = ['gumroad', 'stripe', 'mollie', '']
+    VALID_PAYMENT_PROVIDERS = ['gumroad', 'stripe', 'mollie']
     
     @classmethod
     def validate_config(cls, config_obj, environment='production'):
@@ -175,26 +175,30 @@ class ConfigValidator:
             environment: 'development', 'production', of 'hybrid'
         
         Raises:
-            ValueError: Als verplichte config ontbreekt
+            ValueError: Als verplichte config ontbreekt in productie
         """
         missing_required = []
         missing_optional = []
         
-        # Check verplichte variabelen
-        for var in cls.REQUIRED_FOR_PRODUCTION:
-            value = getattr(config_obj, var, None)
-            if not value or value == '':
-                missing_required.append(var)
+        # Check verplichte variabelen (alleen in productie)
+        if environment == 'production':
+            for var in cls.REQUIRED_FOR_PRODUCTION:
+                value = getattr(config_obj, var, None)
+                if not value or value == '':
+                    missing_required.append(var)
         
-        # Check SECRET_KEY niet de default is
-        if hasattr(config_obj, 'SECRET_KEY') and hasattr(config_obj, 'DEFAULT_SECRET_KEY'):
-            if config_obj.SECRET_KEY == config_obj.DEFAULT_SECRET_KEY:
-                missing_required.append('SECRET_KEY (using default value!)')
+        # Check SECRET_KEY niet de default is (alleen in productie)
+        if environment == 'production':
+            if hasattr(config_obj, 'SECRET_KEY') and hasattr(config_obj, 'DEFAULT_SECRET_KEY'):
+                if config_obj.SECRET_KEY == config_obj.DEFAULT_SECRET_KEY:
+                    missing_required.append('SECRET_KEY (using default value!)')
         
-        # Check payment configuratie
+        # Check payment configuratie (alleen als ingesteld)
         payment_provider = getattr(config_obj, 'PAYMENT_PROVIDER', '')
-        if payment_provider not in cls.VALID_PAYMENT_PROVIDERS:
+        if payment_provider and payment_provider not in cls.VALID_PAYMENT_PROVIDERS:
             missing_required.append(f'PAYMENT_PROVIDER (invalid: {payment_provider})')
+        elif not payment_provider and environment == 'production':
+            missing_required.append('PAYMENT_PROVIDER (not set)')
         
         # Check optionele maar aanbevolen variabelen
         for var in cls.OPTIONAL_BUT_RECOMMENDED:
