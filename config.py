@@ -3,9 +3,13 @@ MVAI Connexx - Configuration Module
 Hybrid deployment configuratie met private network support
 """
 import os
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Initialize logger at module level
+logger = logging.getLogger(__name__)
 
 class Config:
     """Base configuratie"""
@@ -189,9 +193,8 @@ class ConfigValidator:
         
         # Check SECRET_KEY niet de default is (alleen in productie)
         if environment == 'production':
-            if hasattr(config_obj, 'SECRET_KEY') and hasattr(config_obj, 'DEFAULT_SECRET_KEY'):
-                if config_obj.SECRET_KEY == config_obj.DEFAULT_SECRET_KEY:
-                    missing_required.append('SECRET_KEY (using default value!)')
+            if config_obj.SECRET_KEY == config_obj.DEFAULT_SECRET_KEY:
+                missing_required.append('SECRET_KEY (using default value!)')
         
         # Check payment configuratie (alleen als ingesteld)
         payment_provider = getattr(config_obj, 'PAYMENT_PROVIDER', '')
@@ -231,8 +234,6 @@ PAYMENT_PROVIDER=gumroad
 ⚠️  OPTIONAL CONFIGURATION MISSING (recommended for full functionality):
 {chr(10).join('  - ' + var for var in missing_optional)}
 """
-            import logging
-            logger = logging.getLogger(__name__)
             logger.warning(warning_msg)
         
         return True
