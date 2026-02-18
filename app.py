@@ -3,6 +3,7 @@ MVAI Connexx - Multi-Tenant Enterprise Platform
 Flask applicatie met authentication en customer management
 """
 import os
+import sys
 import json
 import logging
 from datetime import datetime, timedelta
@@ -14,7 +15,7 @@ import database as db
 import analytics
 import csv
 import io
-from config import Config
+from config import Config, ConfigValidator
 
 # Configure structured logging
 logging.basicConfig(
@@ -22,6 +23,22 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger('mvai-connexx')
+
+# Valideer configuratie bij startup (alleen in productie)
+if os.getenv('FLASK_ENV') == 'production':
+    try:
+        ConfigValidator.validate_config(Config, environment='production')
+        logger.info("✅ Configuration validation passed!")
+    except ValueError as e:
+        logger.error(f"❌ Configuration error: {e}")
+        # In production, fail hard
+        sys.exit(1)
+elif os.getenv('FLASK_ENV') == 'development':
+    # In development, alleen waarschuwen
+    try:
+        ConfigValidator.validate_config(Config, environment='development')
+    except ValueError as e:
+        logger.warning(f"⚠️  Development config incomplete (this is OK): {e}")
 
 app = Flask(__name__)
 

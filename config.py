@@ -142,3 +142,100 @@ def get_config():
     """Haal configuratie op basis van environment"""
     env = os.getenv('FLASK_ENV', 'development')
     return config.get(env, DevelopmentConfig)
+
+class ConfigValidator:
+    """Valideer dat alle verplichte environment variables zijn ingesteld"""
+    
+    REQUIRED_FOR_PRODUCTION = [
+        'SECRET_KEY',
+        'DOMAIN',
+        'COMPANY_EMAIL',
+    ]
+    
+    REQUIRED_FOR_PAYMENTS = [
+        'PAYMENT_PROVIDER',  # moet 'gumroad', 'stripe', of 'mollie' zijn
+    ]
+    
+    OPTIONAL_BUT_RECOMMENDED = [
+        'OPENAI_API_KEY',  # Voor AI Assistant
+        'SMTP_USERNAME',    # Voor email notificaties
+        'SMTP_PASSWORD',
+    ]
+    
+    @classmethod
+    def validate_config(cls, config_obj, environment='production'):
+        """
+        Valideer configuratie
+        
+        Args:
+            config_obj: Config class instance
+            environment: 'development', 'production', of 'hybrid'
+        
+        Raises:
+            ValueError: Als verplichte config ontbreekt
+        """
+        missing_required = []
+        missing_optional = []
+        
+        # Check verplichte variabelen
+        for var in cls.REQUIRED_FOR_PRODUCTION:
+            value = getattr(config_obj, var, None)
+            if not value or value == '':
+                missing_required.append(var)
+        
+        # Check SECRET_KEY niet de default is
+        if hasattr(config_obj, 'SECRET_KEY'):
+            if config_obj.SECRET_KEY == 'dev-secret-key-change-in-production':
+                missing_required.append('SECRET_KEY (using default value!)')
+        
+        # Check payment configuratie
+        payment_provider = getattr(config_obj, 'PAYMENT_PROVIDER', '')
+        if payment_provider not in ['gumroad', 'stripe', 'mollie', '']:
+            missing_required.append(f'PAYMENT_PROVIDER (invalid: {payment_provider})')
+        
+        # Check optionele maar aanbevolen variabelen
+        for var in cls.OPTIONAL_BUT_RECOMMENDED:
+            value = getattr(config_obj, var, None)
+            if not value or value == '':
+                missing_optional.append(var)
+        
+        # Report missing variabelen
+        if environment == 'production' and missing_required:
+            error_msg = f"""
+╔═══════════════════════════════════════════════════════╗
+║  ⚠️  PRODUCTION CONFIGURATION ERROR                   ║
+╚═══════════════════════════════════════════════════════╝
+
+MISSING REQUIRED ENVIRONMENT VARIABLES:
+{chr(10).join('  - ' + var for var in missing_required)}
+
+Add these to your .env file or set as environment variables!
+
+Example .env:
+SECRET_KEY=generate_with_python_secrets
+DOMAIN=yourdomain.com
+COMPANY_EMAIL=info@yourdomain.com
+PAYMENT_PROVIDER=gumroad
+"""
+            raise ValueError(error_msg)
+        
+        if missing_optional and environment == 'production':
+            warning_msg = f"""
+⚠️  OPTIONAL CONFIGURATION MISSING (recommended for full functionality):
+{chr(10).join('  - ' + var for var in missing_optional)}
+"""
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(warning_msg)
+        
+        return True
+
+# Auto-validate in productie
+if os.getenv('FLASK_ENV') == 'production':
+    try:
+        ConfigValidator.validate_config(Config, environment='production')
+        print("✅ Configuration validation passed!")
+    except ValueError as e:
+        print(str(e))
+        import sys
+        sys.exit(1)

@@ -29,13 +29,27 @@ mvai_connexx.db
 mvai_data.json
 *.backup.*
 
-# Environment
+# Backups
+backups/
+*.backup
+*.bak
+
+# Environment & Secrets
 .env
 .env.local
+.env.production
 *.env
+*secrets*.txt
+fly_secrets.txt
 venv/
 ENV/
 env/
+
+# API Keys & Credentials
+*.key
+*.pem
+*.p12
+credentials.json
 
 # IDE
 .vscode/
