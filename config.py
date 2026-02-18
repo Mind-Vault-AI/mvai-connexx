@@ -3,15 +3,20 @@ MVAI Connexx - Configuration Module
 Hybrid deployment configuratie met private network support
 """
 import os
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Initialize logger at module level
+logger = logging.getLogger(__name__)
 
 class Config:
     """Base configuratie"""
 
     # Flask
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+    DEFAULT_SECRET_KEY = 'dev-secret-key-change-in-production'
+    SECRET_KEY = os.getenv('SECRET_KEY', DEFAULT_SECRET_KEY)
     SESSION_LIFETIME_HOURS = int(os.getenv('SESSION_LIFETIME_HOURS', 24))
 
     # Database
@@ -142,3 +147,95 @@ def get_config():
     """Haal configuratie op basis van environment"""
     env = os.getenv('FLASK_ENV', 'development')
     return config.get(env, DevelopmentConfig)
+
+class ConfigValidator:
+    """Valideer dat alle verplichte environment variables zijn ingesteld"""
+    
+    REQUIRED_FOR_PRODUCTION = [
+        'SECRET_KEY',
+        'DOMAIN',
+        'COMPANY_EMAIL',
+    ]
+    
+    REQUIRED_FOR_PAYMENTS = [
+        'PAYMENT_PROVIDER',  # moet 'gumroad', 'stripe', of 'mollie' zijn
+    ]
+    
+    OPTIONAL_BUT_RECOMMENDED = [
+        'OPENAI_API_KEY',  # Voor AI Assistant
+        'SMTP_USERNAME',    # Voor email notificaties
+        'SMTP_PASSWORD',
+    ]
+    
+    VALID_PAYMENT_PROVIDERS = ['gumroad', 'stripe', 'mollie']
+    
+    @classmethod
+    def validate_config(cls, config_obj, environment='production'):
+        """
+        Valideer configuratie
+        
+        Args:
+            config_obj: Config class instance
+            environment: 'development', 'production', of 'hybrid'
+        
+        Raises:
+            ValueError: Als verplichte config ontbreekt in productie
+        """
+        missing_required = []
+        missing_optional = []
+        
+        # Production-specific validation
+        if environment == 'production':
+            # Check required variables
+            for var in cls.REQUIRED_FOR_PRODUCTION:
+                value = getattr(config_obj, var, None)
+                # Special handling for SECRET_KEY to check for default value
+                if var == 'SECRET_KEY':
+                    if value is None or not value or value == config_obj.DEFAULT_SECRET_KEY:
+                        missing_required.append('SECRET_KEY (must be set to a unique value!)')
+                elif not value:
+                    missing_required.append(var)
+            
+            # Check payment provider is set and valid
+            payment_provider = getattr(config_obj, 'PAYMENT_PROVIDER', '')
+            if not payment_provider:
+                missing_required.append('PAYMENT_PROVIDER (not set)')
+            elif payment_provider not in cls.VALID_PAYMENT_PROVIDERS:
+                missing_required.append(f'PAYMENT_PROVIDER (invalid: {payment_provider})')
+        
+        # Check optional but recommended variables
+        for var in cls.OPTIONAL_BUT_RECOMMENDED:
+            value = getattr(config_obj, var, None)
+            if not value:
+                missing_optional.append(var)
+        
+        # Report missing variables
+        if environment == 'production' and missing_required:
+            missing_list = '\n'.join(f'  - {var}' for var in missing_required)
+            error_msg = f"""
+╔═══════════════════════════════════════════════════════╗
+║  ⚠️  PRODUCTION CONFIGURATION ERROR                   ║
+╚═══════════════════════════════════════════════════════╝
+
+MISSING REQUIRED ENVIRONMENT VARIABLES:
+{missing_list}
+
+Add these to your .env file or set as environment variables!
+
+Example .env:
+SECRET_KEY=generate_with_python_secrets
+DOMAIN=yourdomain.com
+COMPANY_EMAIL=info@yourdomain.com
+PAYMENT_PROVIDER=gumroad
+"""
+            raise ValueError(error_msg)
+        
+        if missing_optional and environment == 'production':
+            optional_list = '\n'.join(f'  - {var}' for var in missing_optional)
+            warning_msg = f"""
+⚠️  OPTIONAL CONFIGURATION MISSING (recommended for full functionality):
+{optional_list}
+"""
+            logger.warning(warning_msg)
+        
+        return True

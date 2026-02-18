@@ -14,7 +14,7 @@
 fly auth login
 fly launch --config fly.toml --name mvai-connexx --region ams --no-deploy
 fly volumes create mvai_data --region ams --size 1
-fly secrets set SECRET_KEY="49ca92d84587b28e907fd32b80f31c693de4b64cfb59b033c779a50251c12bea"
+fly secrets set SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 fly secrets set PAYMENT_PROVIDER="gumroad"
 fly deploy
 fly ssh console

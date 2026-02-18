@@ -31,8 +31,8 @@
 
 ## 🎯 DEPLOYMENT COMMANDS
 
-**SECRET_KEY gegenereerd:** `49ca92d84587b28e907fd32b80f31c693de4b64cfb59b033c779a50251c12bea`
-**Bewaard in:** `fly_secrets.txt`
+**⚠️ SECURITY:** Generate a unique SECRET_KEY for each deployment!
+**Command:** `python -c 'import secrets; print(secrets.token_hex(32))'`
 
 ### Stap-voor-stap (15 minuten)
 
@@ -46,8 +46,8 @@ fly launch --config fly.toml --name mvai-connexx --region ams --no-deploy
 # 3. Create persistent volume voor database
 fly volumes create mvai_data --region ams --size 1
 
-# 4. Set SECRET_KEY (Flask session security)
-fly secrets set SECRET_KEY="49ca92d84587b28e907fd32b80f31c693de4b64cfb59b033c779a50251c12bea"
+# 4. Set SECRET_KEY (Flask session security) - GENERATE YOUR OWN!
+fly secrets set SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 
 # 5. Set PAYMENT_PROVIDER (Gumroad actief)
 fly secrets set PAYMENT_PROVIDER="gumroad"

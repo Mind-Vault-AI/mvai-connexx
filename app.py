@@ -3,6 +3,7 @@ MVAI Connexx - Multi-Tenant Enterprise Platform
 Flask applicatie met authentication en customer management
 """
 import os
+import sys
 import json
 import logging
 from datetime import datetime, timedelta
@@ -14,7 +15,7 @@ import database as db
 import analytics
 import csv
 import io
-from config import Config
+from config import Config, ConfigValidator
 
 # Configure structured logging
 logging.basicConfig(
@@ -23,18 +24,38 @@ logging.basicConfig(
 )
 logger = logging.getLogger('mvai-connexx')
 
+# Valideer configuratie bij startup
+if os.getenv('FLASK_ENV') == 'production':
+    try:
+        ConfigValidator.validate_config(Config, environment='production')
+        logger.info("✅ Configuration validation passed!")
+    except ValueError as e:
+        logger.error(f"❌ Configuration error: {e}")
+        # In production, fail hard
+        sys.exit(1)
+else:
+    # In development, validate but don't fail (config issues are acceptable)
+    try:
+        ConfigValidator.validate_config(Config, environment='development')
+        logger.info("✅ Development mode: Configuration check completed")
+    except ValueError as e:
+        # This shouldn't happen in development mode, but log if it does
+        logger.warning(f"⚠️  Unexpected validation error in development: {e}")
+
 app = Flask(__name__)
 
 # Load config first to get SECRET_KEY from config.py
 app.config.from_object(Config)
 
-# Secret key: Use environment variable, fallback to config.py, then generate random
+# Secret key: Use environment variable or fallback to config.py
 app.secret_key = os.environ.get('SECRET_KEY') or Config.SECRET_KEY
-if app.secret_key == 'dev-secret-key-change-in-production':
-    # Generate a random secret key for production if still using default
+
+# In development mode only: generate random key if using default
+# (Production validation prevents app from starting with default key)
+if app.secret_key == Config.DEFAULT_SECRET_KEY and os.getenv('FLASK_ENV') != 'production':
     import secrets
     app.secret_key = secrets.token_hex(32)
-    logger.warning("⚠️ Generated random SECRET_KEY - set SECRET_KEY env var for persistence!")
+    logger.warning("⚠️ Development mode: Generated random SECRET_KEY for this session. Sessions will reset on restart!")
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 

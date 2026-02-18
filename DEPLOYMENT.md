@@ -23,14 +23,50 @@
 
 ## 📋 Inhoudsopgave
 
-1. [Lokale Deployment](#lokale-deployment)
-2. [Render Deployment](#render-deployment) ⭐ **LIVE PRODUCTION**
-3. [Fly.io Deployment](#flyio-deployment)
-4. [Docker Deployment](#docker-deployment)
-5. [Database Setup](#database-setup)
-6. [Productie Configuratie](#productie-configuratie)
-7. [Enterprise Features Setup](#enterprise-features-setup)
-8. [Troubleshooting](#troubleshooting)
+1. [🔒 Environment Variables - Security Checklist](#-environment-variables---security-checklist) ⚠️ **START HERE**
+2. [Lokale Deployment](#lokale-deployment)
+3. [Render Deployment](#render-deployment) ⭐ **LIVE PRODUCTION**
+4. [Fly.io Deployment](#flyio-deployment)
+5. [Docker Deployment](#docker-deployment)
+6. [Database Setup](#database-setup)
+7. [Productie Configuratie](#productie-configuratie)
+8. [Enterprise Features Setup](#enterprise-features-setup)
+9. [Troubleshooting](#troubleshooting)
+
+---
+
+## 🔒 ENVIRONMENT VARIABLES - SECURITY CHECKLIST
+
+### ✅ Voor Deployment:
+
+- [ ] `.env` bestaat en bevat UNIQUE SECRET_KEY
+- [ ] `fly_secrets.txt` is NIET in Git (verwijderd)
+- [ ] Alle API keys zijn in `.env` of als Fly secrets ingesteld
+- [ ] GEEN hardcoded secrets in code
+- [ ] `.gitignore` bevat `.env` en `*secrets*.txt`
+
+### 🔑 Verplichte Variables (Production):
+```bash
+SECRET_KEY=                 # UNIQUE! Generate met: python -c "import secrets; print(secrets.token_hex(32))"
+DOMAIN=                     # Je domein (bv. mindvault-ai.com)
+COMPANY_EMAIL=              # Contact email
+PAYMENT_PROVIDER=           # gumroad, stripe, of mollie
+```
+
+### 🎯 Aanbevolen Variables:
+```bash
+OPENAI_API_KEY=            # Voor AI Assistant functionaliteit
+SMTP_USERNAME=             # Voor email notificaties
+SMTP_PASSWORD=             # Voor email notificaties
+```
+
+### 🚀 Fly.io Secrets Setup:
+```bash
+# Set secrets in Fly.io (niet in .env voor productie!)
+fly secrets set SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+fly secrets set OPENAI_API_KEY="sk-proj-..."
+fly secrets set SMTP_PASSWORD="..."
+```
 
 ---
 
