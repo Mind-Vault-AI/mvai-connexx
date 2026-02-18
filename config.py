@@ -191,9 +191,9 @@ class ConfigValidator:
                 value = getattr(config_obj, var, None)
                 # Special handling for SECRET_KEY to check for default value
                 if var == 'SECRET_KEY':
-                    if not value or value == '' or value == config_obj.DEFAULT_SECRET_KEY:
+                    if not value or value == config_obj.DEFAULT_SECRET_KEY:
                         missing_required.append('SECRET_KEY (must be set to a unique value!)')
-                elif not value or value == '':
+                elif not value:
                     missing_required.append(var)
             
             # Check payment provider is set and valid
@@ -203,16 +203,10 @@ class ConfigValidator:
             elif payment_provider not in cls.VALID_PAYMENT_PROVIDERS:
                 missing_required.append(f'PAYMENT_PROVIDER (invalid: {payment_provider})')
         
-        # Check payment provider validity in all environments (if set)
-        payment_provider = getattr(config_obj, 'PAYMENT_PROVIDER', '')
-        if payment_provider and payment_provider not in cls.VALID_PAYMENT_PROVIDERS and environment != 'production':
-            # In development, just warn but don't fail
-            logger.warning(f"PAYMENT_PROVIDER '{payment_provider}' is not a valid provider. Valid options: {', '.join(cls.VALID_PAYMENT_PROVIDERS)}")
-        
         # Check optional but recommended variables
         for var in cls.OPTIONAL_BUT_RECOMMENDED:
             value = getattr(config_obj, var, None)
-            if not value or value == '':
+            if not value:
                 missing_optional.append(var)
         
         # Report missing variables
