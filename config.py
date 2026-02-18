@@ -11,7 +11,8 @@ class Config:
     """Base configuratie"""
 
     # Flask
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+    DEFAULT_SECRET_KEY = 'dev-secret-key-change-in-production'
+    SECRET_KEY = os.getenv('SECRET_KEY', DEFAULT_SECRET_KEY)
     SESSION_LIFETIME_HOURS = int(os.getenv('SESSION_LIFETIME_HOURS', 24))
 
     # Database
@@ -162,6 +163,8 @@ class ConfigValidator:
         'SMTP_PASSWORD',
     ]
     
+    VALID_PAYMENT_PROVIDERS = ['gumroad', 'stripe', 'mollie', '']
+    
     @classmethod
     def validate_config(cls, config_obj, environment='production'):
         """
@@ -184,13 +187,13 @@ class ConfigValidator:
                 missing_required.append(var)
         
         # Check SECRET_KEY niet de default is
-        if hasattr(config_obj, 'SECRET_KEY'):
-            if config_obj.SECRET_KEY == 'dev-secret-key-change-in-production':
+        if hasattr(config_obj, 'SECRET_KEY') and hasattr(config_obj, 'DEFAULT_SECRET_KEY'):
+            if config_obj.SECRET_KEY == config_obj.DEFAULT_SECRET_KEY:
                 missing_required.append('SECRET_KEY (using default value!)')
         
         # Check payment configuratie
         payment_provider = getattr(config_obj, 'PAYMENT_PROVIDER', '')
-        if payment_provider not in ['gumroad', 'stripe', 'mollie', '']:
+        if payment_provider not in cls.VALID_PAYMENT_PROVIDERS:
             missing_required.append(f'PAYMENT_PROVIDER (invalid: {payment_provider})')
         
         # Check optionele maar aanbevolen variabelen
@@ -229,13 +232,3 @@ PAYMENT_PROVIDER=gumroad
             logger.warning(warning_msg)
         
         return True
-
-# Auto-validate in productie
-if os.getenv('FLASK_ENV') == 'production':
-    try:
-        ConfigValidator.validate_config(Config, environment='production')
-        print("✅ Configuration validation passed!")
-    except ValueError as e:
-        print(str(e))
-        import sys
-        sys.exit(1)

@@ -33,12 +33,13 @@ if os.getenv('FLASK_ENV') == 'production':
         logger.error(f"❌ Configuration error: {e}")
         # In production, fail hard
         sys.exit(1)
-elif os.getenv('FLASK_ENV') == 'development':
-    # In development, alleen waarschuwen
+else:
+    # In development, valideer maar faal niet
     try:
-        ConfigValidator.validate_config(Config, environment='development')
+        ConfigValidator.validate_config(Config, environment='production')
+        logger.info("✅ Configuration validation passed!")
     except ValueError as e:
-        logger.warning(f"⚠️  Development config incomplete (this is OK): {e}")
+        logger.warning(f"⚠️  Configuration incomplete (OK for development): Missing config detected")
 
 app = Flask(__name__)
 
@@ -47,7 +48,7 @@ app.config.from_object(Config)
 
 # Secret key: Use environment variable, fallback to config.py, then generate random
 app.secret_key = os.environ.get('SECRET_KEY') or Config.SECRET_KEY
-if app.secret_key == 'dev-secret-key-change-in-production':
+if app.secret_key == Config.DEFAULT_SECRET_KEY:
     # Generate a random secret key for production if still using default
     import secrets
     app.secret_key = secrets.token_hex(32)
