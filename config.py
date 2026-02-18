@@ -3,13 +3,13 @@ MVAI Connexx - Configuration Module
 Hybrid deployment configuratie met private network support
 """
 import os
-import logging
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Initialize logger at module level
-logger = logging.getLogger(__name__)
+# NOTE: Logging is nu geconfigureerd via logging_config.py
+# Gebruik: from logging_config import get_logger
+# logger = get_logger(__name__)
 
 class Config:
     """Base configuratie"""
@@ -181,6 +181,9 @@ class ConfigValidator:
         Raises:
             ValueError: Als verplichte config ontbreekt in productie
         """
+        from logging_config import get_logger
+        logger = get_logger('config_validator')
+        
         missing_required = []
         missing_optional = []
         
@@ -228,14 +231,20 @@ DOMAIN=yourdomain.com
 COMPANY_EMAIL=info@yourdomain.com
 PAYMENT_PROVIDER=gumroad
 """
+            # Log structured event before raising
+            logger.error(
+                "production_config_missing",
+                missing_vars=missing_required,
+                environment=environment
+            )
             raise ValueError(error_msg)
         
         if missing_optional and environment == 'production':
-            optional_list = '\n'.join(f'  - {var}' for var in missing_optional)
-            warning_msg = f"""
-⚠️  OPTIONAL CONFIGURATION MISSING (recommended for full functionality):
-{optional_list}
-"""
-            logger.warning(warning_msg)
+            logger.warning(
+                "optional_config_missing",
+                missing_vars=missing_optional,
+                environment=environment,
+                impact="reduced_functionality"
+            )
         
         return True

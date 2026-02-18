@@ -5,7 +5,6 @@ Flask applicatie met authentication en customer management
 import os
 import sys
 import json
-import logging
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
@@ -17,30 +16,58 @@ import csv
 import io
 from config import Config, ConfigValidator
 
-# Configure structured logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+# Import structured logging
+from logging_config import configure_structured_logging, get_logger, LogEvents
+
+# Configure structured logging BEFORE any logging happens
+environment = os.getenv('FLASK_ENV', 'development')
+logger = configure_structured_logging('mvai-connexx', environment)
+
+# Log application startup
+logger.info(
+    LogEvents.APP_STARTUP,
+    environment=environment,
+    python_version=sys.version.split()[0],
+    flask_version="3.0.0"
 )
-logger = logging.getLogger('mvai-connexx')
 
 # Valideer configuratie bij startup
-if os.getenv('FLASK_ENV') == 'production':
+if environment == 'production':
     try:
         ConfigValidator.validate_config(Config, environment='production')
-        logger.info("✅ Configuration validation passed!")
+        logger.info(
+            LogEvents.CONFIG_VALIDATION_PASSED,
+            environment="production",
+            status="success",
+            required_vars=ConfigValidator.REQUIRED_FOR_PRODUCTION
+        )
     except ValueError as e:
-        logger.error(f"❌ Configuration error: {e}")
-        # In production, fail hard
+        logger.error(
+            LogEvents.CONFIG_VALIDATION_FAILED,
+            environment="production",
+            status="failed",
+            error_type=type(e).__name__,
+            error_message=str(e),
+            action="exit_application",
+            exit_code=1
+        )
         sys.exit(1)
 else:
-    # In development, validate but don't fail (config issues are acceptable)
     try:
         ConfigValidator.validate_config(Config, environment='development')
-        logger.info("✅ Development mode: Configuration check completed")
+        logger.info(
+            LogEvents.CONFIG_VALIDATION_PASSED,
+            environment="development",
+            status="success"
+        )
     except ValueError as e:
-        # This shouldn't happen in development mode, but log if it does
-        logger.warning(f"⚠️  Unexpected validation error in development: {e}")
+        logger.warning(
+            LogEvents.CONFIG_VALIDATION_WARNING,
+            environment="development",
+            error_type=type(e).__name__,
+            error_message=str(e),
+            note="Development mode allows missing config"
+        )
 
 app = Flask(__name__)
 
@@ -52,10 +79,15 @@ app.secret_key = os.environ.get('SECRET_KEY') or Config.SECRET_KEY
 
 # In development mode only: generate random key if using default
 # (Production validation prevents app from starting with default key)
-if app.secret_key == Config.DEFAULT_SECRET_KEY and os.getenv('FLASK_ENV') != 'production':
+if app.secret_key == Config.DEFAULT_SECRET_KEY and environment != 'production':
     import secrets
     app.secret_key = secrets.token_hex(32)
-    logger.warning("⚠️ Development mode: Generated random SECRET_KEY for this session. Sessions will reset on restart!")
+    logger.warning(
+        "secret_key_generated",
+        environment="development",
+        reason="using_default_key",
+        note="Sessions will reset on restart"
+    )
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
@@ -115,6 +147,11 @@ def get_client_ip():
 @app.route('/health')
 def health():
     """Basic liveness probe voor Fly.io - geen database check"""
+    logger.debug(
+        LogEvents.APP_HEALTH_CHECK,
+        endpoint="/health",
+        status="healthy"
+    )
     return jsonify({"status": "healthy", "service": "mvai-connexx"}), 200
 
 # ═══════════════════════════════════════════════════════
