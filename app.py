@@ -44,12 +44,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Secret key: Use environment variable or fallback to config.py
-# Note: Production validation will fail if DEFAULT_SECRET_KEY is used,
-# preventing the app from starting without proper configuration
 app.secret_key = os.environ.get('SECRET_KEY') or Config.SECRET_KEY
+
+# In development mode only: generate random key if using default
+# (Production validation prevents app from starting with default key)
 if app.secret_key == Config.DEFAULT_SECRET_KEY and os.getenv('FLASK_ENV') != 'production':
-    # Only in development: generate random secret key for convenience
-    # In production, validation will have already failed before reaching here
     import secrets
     app.secret_key = secrets.token_hex(32)
     logger.warning("⚠️ Development mode: Generated random SECRET_KEY for this session. Sessions will reset on restart!")
