@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: mvai-connexx
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --config gunicorn.conf.py
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4-turbo
+      - key: OPENAI_MAX_TOKENS
+        value: "1000"
+      - key: OPENAI_TEMPERATURE
+        value: "0.7"
+      - key: PAYMENT_PROVIDER
+        value: gumroad
+      - key: ENABLE_AI_ASSISTANT
+        value: "true"
+      - key: ENABLE_DEMO_MODE
+        value: "true"
+      - key: ENABLE_IP_WHITELIST
+        value: "false"
+      - key: RATELIMIT_ENABLED
+        value: "true"
+      - key: ENABLE_THREAT_DETECTION
+        value: "true"
