@@ -1,4 +1,4 @@
-h"""
+"""
 MVAI Connexx - REST API Module
 RESTful API endpoints voor third-party integraties
 """
