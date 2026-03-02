@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unit Economics | Admin</title>
+    <style>
+        :root { --bg:#050505; --panel:#121212; --accent:#00ff41; --text:#e0e0e0; --dim:#666; --border:#333; --error:#ff4444; --warning:#ffbd2e; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-height:100vh; }
+        header { background:rgba(18,18,18,0.95); padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo { font-weight:800; font-size:1.1rem; color:#fff; }
+        .logo span { color:var(--accent); }
+        .nav-links { display:flex; gap:15px; }
+        .nav-links a { color:var(--dim); text-decoration:none; font-size:0.85rem; }
+        .nav-links a:hover { color:var(--accent); }
+        .container { max-width:1200px; margin:0 auto; padding:20px; }
+        h1 { font-size:1.4rem; font-weight:700; margin-bottom:5px; }
+        .subtitle { color:var(--dim); font-size:0.85rem; margin-bottom:25px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-bottom:25px; }
+        .card { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px; }
+        .card h3 { font-size:0.8rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+        .stat-value { font-size:2rem; font-weight:800; color:var(--accent); }
+        .stat-label { font-size:0.8rem; color:var(--dim); margin-top:5px; }
+        .table-wrap { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:25px; }
+        .table-header { padding:15px 20px; border-bottom:1px solid var(--border); }
+        .table-header h2 { font-size:1rem; font-weight:700; }
+        table { width:100%; border-collapse:collapse; }
+        th { padding:12px 20px; text-align:left; font-size:0.75rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--border); }
+        td { padding:12px 20px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; }
+        tr:last-child td { border-bottom:none; }
+        .badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; }
+        .badge-green { background:rgba(0,255,65,0.15); color:var(--accent); }
+        .badge-yellow { background:rgba(255,189,46,0.15); color:var(--warning); }
+        .badge-red { background:rgba(255,68,68,0.15); color:var(--error); }
+        .empty { padding:40px; text-align:center; color:var(--dim); font-size:0.9rem; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">MVAI <span>CONNEXX</span> <span style="color:var(--dim);font-size:0.75rem;">ADMIN</span></div>
+    <nav class="nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/customers">Klanten</a>
+        <a href="/admin/security">Security</a>
+        <a href="/logout">Uitloggen</a>
+    </nav>
+</header>
+<div class="container">
+    <h1>Unit Economics</h1>
+    <p class="subtitle">MRR, ARR, LTV, CAC en winstgevendheid per klant</p>
+
+    <!-- Business Metrics Grid -->
+    {% if business_metrics %}
+    <div class="grid">
+        <div class="card">
+            <h3>MRR</h3>
+            <div class="stat-value">€{{ "%.0f"|format(business_metrics.mrr) }}</div>
+            <div class="stat-label">Monthly Recurring Revenue</div>
+        </div>
+        <div class="card">
+            <h3>ARR</h3>
+            <div class="stat-value">€{{ "%.0f"|format(business_metrics.arr) }}</div>
+            <div class="stat-label">Annual Recurring Revenue</div>
+        </div>
+        <div class="card">
+            <h3>Bruto Marge</h3>
+            <div class="stat-value {% if business_metrics.gross_margin_pct >= 50 %}style="color:var(--accent)"{% elif business_metrics.gross_margin_pct >= 30 %}style="color:var(--warning)"{% else %}style="color:var(--error)"{% endif %}">{{ business_metrics.gross_margin_pct }}%</div>
+            <div class="stat-label">Gross Margin</div>
+        </div>
+        <div class="card">
+            <h3>Actieve Klanten</h3>
+            <div class="stat-value">{{ business_metrics.total_active_customers }}</div>
+            <div class="stat-label">Break-even bij {{ business_metrics.break_even_customers }} klanten</div>
+        </div>
+        <div class="card">
+            <h3>Churn Rate</h3>
+            <div class="stat-value {% if business_metrics.churn_rate_pct <= 2 %}style="color:var(--accent)"{% elif business_metrics.churn_rate_pct <= 5 %}style="color:var(--warning)"{% else %}style="color:var(--error)"{% endif %}">{{ business_metrics.churn_rate_pct }}%</div>
+            <div class="stat-label">Churn afgelopen 30 dagen</div>
+        </div>
+        <div class="card">
+            <h3>Maandelijkse Kosten</h3>
+            <div class="stat-value">€{{ "%.0f"|format(business_metrics.total_monthly_costs) }}</div>
+            <div class="stat-label">Totale operationele kosten</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Customer Grades -->
+    <div class="table-wrap">
+        <div class="table-header"><h2>Klant Winstgevendheid (Grade)</h2></div>
+        {% if customer_grades %}
+        <table>
+            <thead><tr><th>Klant</th><th>Grade</th><th>Maand Winst</th><th>Marge %</th></tr></thead>
+            <tbody>
+            {% for c in customer_grades %}
+            <tr>
+                <td>{{ c.customer_name or '—' }}</td>
+                <td><span class="badge {% if c.grade in ['A+','A','A-'] %}badge-green{% elif c.grade in ['B+','B','B-'] %}badge-yellow{% else %}badge-red{% endif %}">{{ c.grade }}</span></td>
+                <td>€{{ "%.2f"|format(c.monthly_profit) }}</td>
+                <td>{{ c.profit_margin_pct }}%</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen klantdata beschikbaar</div>
+        {% endif %}
+    </div>
+
+    <!-- Cohort Analysis -->
+    {% if cohort_analysis and cohort_analysis.cohorts %}
+    <div class="table-wrap">
+        <div class="table-header"><h2>Cohort Analyse ({{ cohort_analysis.months_analyzed }} maanden)</h2></div>
+        <table>
+            <thead><tr><th>Cohort</th><th>Klanten</th><th>Actief</th><th>Retentie %</th><th>MRR Bijdrage</th></tr></thead>
+            <tbody>
+            {% for cohort in cohort_analysis.cohorts %}
+            <tr>
+                <td>{{ cohort.cohort_month or '—' }}</td>
+                <td>{{ cohort.total_customers }}</td>
+                <td>{{ cohort.active_customers }}</td>
+                <td>{{ cohort.retention_rate }}%</td>
+                <td>€{{ "%.2f"|format(cohort.mrr_contribution) }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>

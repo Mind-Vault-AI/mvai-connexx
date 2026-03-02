@@ -1,0 +1,67 @@
+services:
+  - type: web
+    name: mvai-connexx
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --config gunicorn.conf.py
+    healthCheckPath: /health
+    disk:
+      name: mvai-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEPLOYMENT_MODE
+        value: cloud
+      - key: DATABASE_PATH
+        value: /app/data/mvai_connexx.db
+      - key: BACKUP_DIR
+        value: /app/data/backups
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4-turbo
+      - key: OPENAI_MAX_TOKENS
+        value: "1000"
+      - key: OPENAI_TEMPERATURE
+        value: "0.7"
+      - key: PAYMENT_PROVIDER
+        value: gumroad
+      - key: GUMROAD_SECRET
+        sync: false
+      - key: GUMROAD_USERNAME
+        value: mindvault-ai
+      - key: GUMROAD_PARTICULIER_URL
+        sync: false
+      - key: GUMROAD_MKB_URL
+        sync: false
+      - key: GUMROAD_STARTER_URL
+        sync: false
+      - key: GUMROAD_PROFESSIONAL_URL
+        sync: false
+      - key: GUMROAD_ENTERPRISE_URL
+        sync: false
+      - key: SMTP_SERVER
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        value: info@mindvault-ai.com
+      - key: ENABLE_AI_ASSISTANT
+        value: "true"
+      - key: ENABLE_DEMO_MODE
+        value: "true"
+      - key: ENABLE_IP_WHITELIST
+        value: "false"
+      - key: RATELIMIT_ENABLED
+        value: "true"
+      - key: ENABLE_THREAT_DETECTION
+        value: "true"

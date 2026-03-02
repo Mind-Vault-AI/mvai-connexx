@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lean Six Sigma | Admin</title>
+    <style>
+        :root { --bg:#050505; --panel:#121212; --accent:#00ff41; --text:#e0e0e0; --dim:#666; --border:#333; --error:#ff4444; --warning:#ffbd2e; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-height:100vh; }
+        header { background:rgba(18,18,18,0.95); padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo { font-weight:800; font-size:1.1rem; color:#fff; }
+        .logo span { color:var(--accent); }
+        .nav-links { display:flex; gap:15px; }
+        .nav-links a { color:var(--dim); text-decoration:none; font-size:0.85rem; }
+        .nav-links a:hover { color:var(--accent); }
+        .container { max-width:1200px; margin:0 auto; padding:20px; }
+        h1 { font-size:1.4rem; font-weight:700; margin-bottom:5px; }
+        .subtitle { color:var(--dim); font-size:0.85rem; margin-bottom:25px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-bottom:25px; }
+        .card { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px; }
+        .card h3 { font-size:0.8rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+        .stat-value { font-size:2rem; font-weight:800; color:var(--accent); }
+        .stat-label { font-size:0.8rem; color:var(--dim); margin-top:5px; }
+        .table-wrap { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:25px; }
+        .table-header { padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .table-header h2 { font-size:1rem; font-weight:700; }
+        table { width:100%; border-collapse:collapse; }
+        th { padding:12px 20px; text-align:left; font-size:0.75rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--border); }
+        td { padding:12px 20px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; }
+        tr:last-child td { border-bottom:none; }
+        .badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; text-transform:uppercase; }
+        .badge-green { background:rgba(0,255,65,0.15); color:var(--accent); }
+        .badge-yellow { background:rgba(255,189,46,0.15); color:var(--warning); }
+        .badge-red { background:rgba(255,68,68,0.15); color:var(--error); }
+        .belt-banner { background:var(--panel); border:1px solid var(--accent); border-radius:10px; padding:20px; margin-bottom:25px; text-align:center; font-size:1.2rem; font-weight:700; }
+        .rec-list { list-style:none; }
+        .rec-list li { padding:10px 20px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; display:flex; gap:10px; align-items:flex-start; }
+        .rec-list li:last-child { border-bottom:none; }
+        .rec-priority { min-width:60px; }
+        .empty { padding:40px; text-align:center; color:var(--dim); font-size:0.9rem; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">MVAI <span>CONNEXX</span> <span style="color:var(--dim);font-size:0.75rem;">ADMIN</span></div>
+    <nav class="nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/customers">Klanten</a>
+        <a href="/admin/security">Security</a>
+        <a href="/logout">Uitloggen</a>
+    </nav>
+</header>
+<div class="container">
+    <h1>Lean Six Sigma</h1>
+    <p class="subtitle">Kwaliteitsmetrieken, DMAIC projecten en verbeteranalyse</p>
+
+    <!-- Belt Status -->
+    {% if dmaic_dashboard and dmaic_dashboard.sigma_belt_status %}
+    <div class="belt-banner">{{ dmaic_dashboard.sigma_belt_status }}</div>
+    {% endif %}
+
+    <!-- Quality Metrics -->
+    {% set q = dmaic_dashboard.current_quality if dmaic_dashboard else quality_metrics %}
+    {% if q %}
+    <div class="grid">
+        <div class="card">
+            <h3>Sigma Level</h3>
+            <div class="stat-value">{{ q.sigma_level if q.sigma_level is defined else '—' }}σ</div>
+            <div class="stat-label">{{ q.quality_grade if q.quality_grade is defined else '' }}</div>
+        </div>
+        <div class="card">
+            <h3>First Pass Yield</h3>
+            <div class="stat-value">{{ q.first_pass_yield if q.first_pass_yield is defined else '—' }}%</div>
+            <div class="stat-label">Operaties zonder fouten</div>
+        </div>
+        <div class="card">
+            <h3>Totale Defects</h3>
+            <div class="stat-value {% if q.total_defects == 0 %}status-ok{% elif q.total_defects < 10 %}style="color:var(--warning)"{% else %}style="color:var(--error)"{% endif %}">{{ q.total_defects if q.total_defects is defined else '—' }}</div>
+            <div class="stat-label">Afgelopen {{ q.period_days if q.period_days is defined else 30 }} dagen</div>
+        </div>
+        <div class="card">
+            <h3>Totale Operaties</h3>
+            <div class="stat-value">{{ q.total_operations if q.total_operations is defined else '—' }}</div>
+            <div class="stat-label">Verwerkte operaties</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- DMAIC Active Projects -->
+    <div class="table-wrap">
+        <div class="table-header">
+            <h2>Actieve DMAIC Projecten</h2>
+            <span style="color:var(--dim);font-size:0.8rem;">{{ dmaic_dashboard.active_projects|length if dmaic_dashboard else 0 }} actief</span>
+        </div>
+        {% if dmaic_dashboard and dmaic_dashboard.active_projects %}
+        <table>
+            <thead><tr><th>Naam</th><th>Fase</th><th>Doel</th><th>Gestart</th></tr></thead>
+            <tbody>
+            {% for proj in dmaic_dashboard.active_projects %}
+            <tr>
+                <td>{{ proj.name or '—' }}</td>
+                <td><span class="badge badge-yellow">{{ proj.current_phase or '—' }}</span></td>
+                <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ proj.goal or '—' }}</td>
+                <td>{{ proj.created_at[:10] if proj.created_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen actieve DMAIC projecten</div>
+        {% endif %}
+    </div>
+
+    <!-- Pareto Analysis -->
+    <div class="table-wrap">
+        <div class="table-header">
+            <h2>Pareto Analyse (80/20)</h2>
+            {% if pareto_analysis and pareto_analysis.message %}
+            <span style="color:var(--dim);font-size:0.8rem;">{{ pareto_analysis.message }}</span>
+            {% endif %}
+        </div>
+        {% if pareto_analysis and pareto_analysis.defects %}
+        <table>
+            <thead><tr><th>Component</th><th>Fout Type</th><th>Aantal</th><th>Cumulatief %</th></tr></thead>
+            <tbody>
+            {% for d in pareto_analysis.defects[:15] %}
+            <tr>
+                <td>{{ d.component or '—' }}</td>
+                <td>{{ d.error_type or '—' }}</td>
+                <td>{{ d.count }}</td>
+                <td>
+                    <span class="badge {% if d.cumulative_pct <= 50 %}badge-red{% elif d.cumulative_pct <= 80 %}badge-yellow{% else %}badge-green{% endif %}">
+                        {{ d.cumulative_pct }}%
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen defect data beschikbaar</div>
+        {% endif %}
+    </div>
+
+    <!-- Improvement Recommendations -->
+    {% if dmaic_dashboard and dmaic_dashboard.improvement_recommendations %}
+    <div class="table-wrap">
+        <div class="table-header"><h2>Verbeteraanbevelingen</h2></div>
+        <ul class="rec-list">
+        {% for rec in dmaic_dashboard.improvement_recommendations[:10] %}
+        <li>
+            <span class="rec-priority badge {% if rec.priority == 'high' or rec.priority == 'critical' %}badge-red{% elif rec.priority == 'medium' %}badge-yellow{% else %}badge-green{% endif %}">{{ rec.priority or 'info' }}</span>
+            <span>{{ rec.description or rec.message or rec|string }}</span>
+        </li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Completed Projects -->
+    {% if dmaic_dashboard and dmaic_dashboard.completed_projects %}
+    <div class="table-wrap">
+        <div class="table-header"><h2>Voltooide Projecten</h2></div>
+        <table>
+            <thead><tr><th>Naam</th><th>Afgerond</th><th>Resultaat</th></tr></thead>
+            <tbody>
+            {% for proj in dmaic_dashboard.completed_projects %}
+            <tr>
+                <td>{{ proj.name or '—' }}</td>
+                <td>{{ proj.completed_at[:10] if proj.completed_at else '—' }}</td>
+                <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ proj.result or proj.goal or '—' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
