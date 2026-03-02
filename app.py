@@ -202,6 +202,23 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Aparte admin login pagina"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    if request.method == 'POST':
+        access_code = request.form.get('access_code', '').strip()
+        admin = db.verify_admin(access_code)
+        if admin:
+            session.permanent = True
+            session['admin'] = True
+            session['admin_username'] = admin['username']
+            flash(f'Welkom Admin {admin["username"]}!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        flash('Ongeldige admin code', 'error')
+    return render_template('admin_login.html')
+
 @app.route('/logout')
 def logout():
     """Log uit en clear session"""
