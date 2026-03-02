@@ -473,6 +473,16 @@ def init_db():
 
         conn.commit()
 
+        # Maak standaard admin aan als er nog geen admins zijn
+        cursor.execute('SELECT COUNT(*) FROM admins')
+        if cursor.fetchone()[0] == 0:
+            admin_password = os.getenv('ADMIN_PASSWORD', 'admin123')
+            cursor.execute(
+                'INSERT INTO admins (username, access_code) VALUES (?, ?)',
+                ('admin', admin_password)
+            )
+            conn.commit()
+
 def generate_access_code(length=16):
     """Genereer veilige access code"""
     return secrets.token_urlsafe(length)
