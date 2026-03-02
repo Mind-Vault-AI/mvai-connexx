@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ICT Monitoring | Admin</title>
+    <style>
+        :root { --bg:#050505; --panel:#121212; --accent:#00ff41; --text:#e0e0e0; --dim:#666; --border:#333; --error:#ff4444; --warning:#ffbd2e; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-height:100vh; }
+        header { background:rgba(18,18,18,0.95); padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo { font-weight:800; font-size:1.1rem; color:#fff; }
+        .logo span { color:var(--accent); }
+        .nav-links { display:flex; gap:15px; }
+        .nav-links a { color:var(--dim); text-decoration:none; font-size:0.85rem; }
+        .nav-links a:hover { color:var(--accent); }
+        .container { max-width:1200px; margin:0 auto; padding:20px; }
+        h1 { font-size:1.4rem; font-weight:700; margin-bottom:5px; }
+        .subtitle { color:var(--dim); font-size:0.85rem; margin-bottom:25px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-bottom:25px; }
+        .card { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px; }
+        .card h3 { font-size:0.8rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+        .stat-value { font-size:2rem; font-weight:800; color:var(--accent); }
+        .stat-label { font-size:0.8rem; color:var(--dim); margin-top:5px; }
+        .status-ok { color:var(--accent); }
+        .status-warn { color:var(--warning); }
+        .status-err { color:var(--error); }
+        .table-wrap { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:25px; }
+        .table-header { padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .table-header h2 { font-size:1rem; font-weight:700; }
+        table { width:100%; border-collapse:collapse; }
+        th { padding:12px 20px; text-align:left; font-size:0.75rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--border); }
+        td { padding:12px 20px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; }
+        tr:last-child td { border-bottom:none; }
+        .badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; text-transform:uppercase; }
+        .badge-green { background:rgba(0,255,65,0.15); color:var(--accent); }
+        .badge-yellow { background:rgba(255,189,46,0.15); color:var(--warning); }
+        .badge-red { background:rgba(255,68,68,0.15); color:var(--error); }
+        .empty { padding:40px; text-align:center; color:var(--dim); font-size:0.9rem; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">MVAI <span>CONNEXX</span> <span style="color:var(--dim);font-size:0.75rem;">ADMIN</span></div>
+    <nav class="nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/customers">Klanten</a>
+        <a href="/admin/security">Security</a>
+        <a href="/logout">Uitloggen</a>
+    </nav>
+</header>
+<div class="container">
+    <h1>ICT Monitoring</h1>
+    <p class="subtitle">Systeem gezondheid, actieve alerts en incidenten</p>
+
+    <!-- Health Status -->
+    <div class="grid">
+        {% if health_status %}
+        <div class="card">
+            <h3>Systeem Status</h3>
+            <div class="stat-value {% if health_status.status == 'healthy' %}status-ok{% elif health_status.status == 'degraded' %}status-warn{% else %}status-err{% endif %}">
+                {{ (health_status.status or 'unknown')|upper }}
+            </div>
+            <div class="stat-label">Algemene gezondheid</div>
+        </div>
+        {% if health_status.uptime_seconds is defined %}
+        <div class="card">
+            <h3>Uptime</h3>
+            <div class="stat-value status-ok">{{ (health_status.uptime_seconds // 3600)|int }}u</div>
+            <div class="stat-label">{{ health_status.uptime_seconds // 60 }} minuten totaal</div>
+        </div>
+        {% endif %}
+        {% endif %}
+        <div class="card">
+            <h3>Actieve Alerts</h3>
+            <div class="stat-value {% if active_alerts|length > 0 %}status-warn{% else %}status-ok{% endif %}">{{ active_alerts|length }}</div>
+            <div class="stat-label">Open waarschuwingen</div>
+        </div>
+        <div class="card">
+            <h3>Actieve Incidenten</h3>
+            <div class="stat-value {% if active_incidents|length > 0 %}status-err{% else %}status-ok{% endif %}">{{ active_incidents|length }}</div>
+            <div class="stat-label">Lopende incidenten</div>
+        </div>
+    </div>
+
+    <!-- Active Alerts -->
+    <div class="table-wrap">
+        <div class="table-header"><h2>Actieve Alerts</h2></div>
+        {% if active_alerts %}
+        <table>
+            <thead><tr><th>Type</th><th>Bericht</th><th>Ernst</th><th>Tijd</th></tr></thead>
+            <tbody>
+            {% for alert in active_alerts %}
+            <tr>
+                <td>{{ alert.type or alert.get('alert_type','—') }}</td>
+                <td>{{ alert.message or '—' }}</td>
+                <td><span class="badge {% if alert.severity == 'critical' %}badge-red{% elif alert.severity == 'warning' %}badge-yellow{% else %}badge-green{% endif %}">{{ alert.severity or 'info' }}</span></td>
+                <td>{{ alert.timestamp or '—' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen actieve alerts</div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Errors -->
+    <div class="table-wrap">
+        <div class="table-header"><h2>Recente Fouten (50)</h2></div>
+        {% if recent_errors %}
+        <table>
+            <thead><tr><th>Type</th><th>Bericht</th><th>Tijd</th></tr></thead>
+            <tbody>
+            {% for err in recent_errors[:20] %}
+            <tr>
+                <td>{{ err.error_type or '—' }}</td>
+                <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ err.message or '—' }}</td>
+                <td>{{ err.timestamp or '—' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen recente fouten</div>
+        {% endif %}
+    </div>
+
+    <!-- Active Incidents -->
+    <div class="table-wrap">
+        <div class="table-header"><h2>Actieve Incidenten</h2></div>
+        {% if active_incidents %}
+        <table>
+            <thead><tr><th>ID</th><th>Titel</th><th>Prioriteit</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for inc in active_incidents %}
+            <tr>
+                <td>{{ inc.id or '—' }}</td>
+                <td>{{ inc.title or '—' }}</td>
+                <td><span class="badge {% if inc.priority == 'critical' %}badge-red{% elif inc.priority == 'high' %}badge-yellow{% else %}badge-green{% endif %}">{{ inc.priority or '—' }}</span></td>
+                <td>{{ inc.status or '—' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen actieve incidenten</div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
