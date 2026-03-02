@@ -6,6 +6,10 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --config gunicorn.conf.py
     healthCheckPath: /health
+    disk:
+      name: mvai-data
+      mountPath: /app/data
+      sizeGB: 1
     envVars:
       - key: FLASK_ENV
         value: production
@@ -21,6 +25,18 @@ services:
         value: "0.7"
       - key: PAYMENT_PROVIDER
         value: gumroad
+      - key: GUMROAD_SECRET
+        sync: false
+      - key: SMTP_SERVER
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        sync: false
       - key: ENABLE_AI_ASSISTANT
         value: "true"
       - key: ENABLE_DEMO_MODE
