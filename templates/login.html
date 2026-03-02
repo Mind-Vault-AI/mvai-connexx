@@ -8,14 +8,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         :root {
-            --green: #10b981;
-            --green-bright: #34d399;
-            --green-dim: #059669;
-            --bg: #020202;
-            --panel: rgba(12, 12, 12, 0.85);
-            --text: #f0f0f0;
-            --dim: #555;
-            --border: rgba(16, 185, 129, 0.15);
+            --teal: #5aafaf;
+            --teal-bright: #72c4c4;
+            --teal-dim: #3d8a8a;
+            --bg: #0f1520;
+            --bg-card: rgba(18, 24, 36, 0.88);
+            --text: #eef0f4;
+            --dim: #4a5568;
+            --border: rgba(90, 175, 175, 0.12);
+            --border-soft: rgba(255,255,255,0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,13 +34,13 @@
             position: relative;
         }
 
-        /* Animated background */
+        /* Background grid */
         .bg-grid {
             position: fixed;
             inset: 0;
             background-image:
-                linear-gradient(rgba(16,185,129,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(16,185,129,0.04) 1px, transparent 1px);
+                linear-gradient(rgba(90,175,175,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(90,175,175,0.04) 1px, transparent 1px);
             background-size: 48px 48px;
             z-index: 0;
         }
@@ -47,27 +48,27 @@
         .orb {
             position: fixed;
             border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.12;
-            animation: float 12s ease-in-out infinite;
+            filter: blur(90px);
+            opacity: 0.1;
             z-index: 0;
+            animation: float 14s ease-in-out infinite;
         }
         .orb-1 {
             width: 500px; height: 500px;
-            background: radial-gradient(circle, #10b981, transparent 70%);
-            top: -150px; right: -100px;
+            background: radial-gradient(circle, #5aafaf, transparent 70%);
+            top: -160px; right: -80px;
             animation-delay: 0s;
         }
         .orb-2 {
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, #059669, transparent 70%);
-            bottom: -100px; left: -100px;
-            animation-delay: -6s;
+            width: 380px; height: 380px;
+            background: radial-gradient(circle, #3d8a8a, transparent 70%);
+            bottom: -100px; left: -80px;
+            animation-delay: -7s;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-30px) scale(1.05); }
+            50% { transform: translateY(-28px) scale(1.04); }
         }
 
         /* Card */
@@ -76,35 +77,35 @@
             z-index: 10;
             width: 100%;
             max-width: 440px;
-            background: var(--panel);
+            background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 44px 40px;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             box-shadow:
-                0 0 0 1px rgba(16,185,129,0.08),
-                0 20px 60px rgba(0,0,0,0.8),
-                0 0 80px rgba(16,185,129,0.05);
+                0 0 0 1px rgba(90,175,175,0.06),
+                0 24px 64px rgba(0,0,0,0.7),
+                0 0 80px rgba(90,175,175,0.04);
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(28px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Status badge */
+        /* Badge */
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(16,185,129,0.08);
-            border: 1px solid rgba(16,185,129,0.25);
-            color: var(--green);
+            background: rgba(90,175,175,0.08);
+            border: 1px solid rgba(90,175,175,0.2);
+            color: var(--teal);
             padding: 5px 14px;
             border-radius: 20px;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 600;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -112,14 +113,14 @@
         }
         .badge-dot {
             width: 6px; height: 6px;
-            background: var(--green);
+            background: var(--teal);
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 0 6px var(--green);
+            box-shadow: 0 0 6px var(--teal);
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.75); }
+            50% { opacity: 0.4; transform: scale(0.7); }
         }
 
         /* Logo */
@@ -127,23 +128,29 @@
             text-align: center;
             margin-bottom: 36px;
         }
+
+        /* MVAI circuit icon SVG */
+        .mvai-icon {
+            width: 52px; height: 52px;
+            margin: 0 auto 14px;
+            opacity: 0.85;
+        }
+
         .logo h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 900;
             letter-spacing: 6px;
-            color: #fff;
+            color: #f0f2f5;
             line-height: 1;
-            text-shadow:
-                0 0 30px rgba(16,185,129,0.25),
-                0 0 60px rgba(16,185,129,0.1);
+            text-shadow: 0 0 40px rgba(90,175,175,0.2);
         }
         .logo .sub {
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             font-weight: 500;
             letter-spacing: 4px;
-            color: var(--green);
-            margin-top: 6px;
-            opacity: 0.8;
+            color: var(--teal);
+            margin-top: 7px;
+            opacity: 0.7;
         }
 
         /* Form */
@@ -151,10 +158,10 @@
 
         label {
             display: block;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-weight: 600;
             letter-spacing: 0.5px;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.35);
             margin-bottom: 8px;
             text-transform: uppercase;
         }
@@ -163,8 +170,8 @@
         input[type="text"] {
             width: 100%;
             padding: 14px 18px;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(10,14,22,0.7);
+            border: 1px solid rgba(255,255,255,0.07);
             border-radius: 10px;
             color: var(--text);
             font-size: 1rem;
@@ -174,41 +181,41 @@
         }
         input:focus {
             outline: none;
-            border-color: rgba(16,185,129,0.5);
-            background: rgba(16,185,129,0.04);
-            box-shadow: 0 0 0 3px rgba(16,185,129,0.08), 0 0 20px rgba(16,185,129,0.08);
+            border-color: rgba(90,175,175,0.4);
+            background: rgba(90,175,175,0.04);
+            box-shadow: 0 0 0 3px rgba(90,175,175,0.07);
         }
-        input::placeholder { color: rgba(255,255,255,0.2); letter-spacing: 0; }
+        input::placeholder { color: rgba(255,255,255,0.15); letter-spacing: 0; }
 
         /* Button */
         .btn {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #000;
+            background: linear-gradient(135deg, #5aafaf 0%, #3d8a8a 100%);
+            color: #0f1520;
             border: none;
             border-radius: 10px;
             font-weight: 800;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.25s;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(16,185,129,0.25);
+            box-shadow: 0 4px 20px rgba(90,175,175,0.2);
             font-family: 'Inter', sans-serif;
         }
         .btn::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(16,185,129,0.4);
-            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            box-shadow: 0 8px 28px rgba(90,175,175,0.35);
+            background: linear-gradient(135deg, #72c4c4 0%, #5aafaf 100%);
         }
         .btn:active { transform: translateY(0); }
 
@@ -217,18 +224,18 @@
             padding: 12px 16px;
             border-radius: 8px;
             margin-bottom: 20px;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             border-left: 3px solid;
         }
         .alert-error {
-            background: rgba(255, 68, 68, 0.08);
-            border-color: #ff4444;
+            background: rgba(255,68,68,0.07);
+            border-color: #ff5555;
             color: #ff6b6b;
         }
         .alert-success {
-            background: rgba(16,185,129,0.08);
-            border-color: var(--green);
-            color: var(--green);
+            background: rgba(90,175,175,0.08);
+            border-color: var(--teal);
+            color: var(--teal);
         }
 
         /* Divider */
@@ -238,7 +245,7 @@
             gap: 14px;
             margin: 26px 0;
             color: var(--dim);
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
@@ -246,10 +253,10 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.05);
         }
 
-        /* Social buttons */
+        /* Social */
         .social-btn {
             display: flex;
             align-items: center;
@@ -257,66 +264,62 @@
             gap: 10px;
             padding: 13px 16px;
             border-radius: 10px;
-            font-size: 0.88rem;
+            font-size: 0.87rem;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.08);
             font-family: 'Inter', sans-serif;
         }
-        .social-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .social-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
 
         /* Info box */
         .info-box {
-            background: rgba(16,185,129,0.04);
-            border: 1px solid rgba(16,185,129,0.12);
+            background: rgba(90,175,175,0.04);
+            border: 1px solid rgba(90,175,175,0.1);
             border-radius: 10px;
             padding: 16px 18px;
             margin-top: 22px;
         }
         .info-box h4 {
-            color: var(--green);
-            font-size: 0.8rem;
+            color: var(--teal);
+            font-size: 0.78rem;
             font-weight: 700;
             letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
         .info-box p {
-            color: rgba(255,255,255,0.3);
-            font-size: 0.8rem;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.78rem;
             line-height: 1.6;
         }
 
-        /* Admin link */
         .admin-link {
             display: inline-block;
             margin-top: 16px;
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             color: rgba(255,255,255,0.2);
             text-decoration: none;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.05);
             padding: 7px 18px;
             border-radius: 6px;
             transition: all 0.2s;
-            letter-spacing: 0.5px;
         }
         .admin-link:hover {
-            color: rgba(255,255,255,0.5);
-            border-color: rgba(255,255,255,0.15);
-            background: rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.45);
+            border-color: rgba(255,255,255,0.12);
         }
 
         .help-text {
             text-align: center;
-            font-size: 0.78rem;
-            color: rgba(255,255,255,0.2);
+            font-size: 0.76rem;
+            color: rgba(255,255,255,0.18);
             margin-top: 16px;
-            letter-spacing: 0.3px;
         }
 
         @media (max-width: 480px) {
-            .card { padding: 36px 24px; }
-            .logo h1 { font-size: 2.4rem; }
+            .card { padding: 34px 22px; }
+            .logo h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -328,6 +331,23 @@
     <div class="card">
         <div class="logo">
             <div class="badge"><span class="badge-dot"></span>System Secure</div>
+            <!-- MVAI circuit icon -->
+            <svg class="mvai-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="46" stroke="#5aafaf" stroke-width="3" fill="none" opacity="0.6"/>
+                <circle cx="50" cy="78" r="4" fill="#5aafaf"/>
+                <line x1="50" y1="74" x2="50" y2="58" stroke="#5aafaf" stroke-width="2.5"/>
+                <line x1="50" y1="58" x2="50" y2="40" stroke="#5aafaf" stroke-width="2.5"/>
+                <line x1="50" y1="40" x2="28" y2="26" stroke="#5aafaf" stroke-width="2.5"/>
+                <line x1="50" y1="40" x2="50" y2="22" stroke="#5aafaf" stroke-width="2.5"/>
+                <line x1="50" y1="40" x2="72" y2="26" stroke="#5aafaf" stroke-width="2.5"/>
+                <line x1="50" y1="58" x2="32" y2="52" stroke="#5aafaf" stroke-width="2.5"/>
+                <line x1="50" y1="58" x2="68" y2="52" stroke="#5aafaf" stroke-width="2.5"/>
+                <circle cx="28" cy="26" r="4" fill="#5aafaf"/>
+                <circle cx="50" cy="22" r="4" fill="#5aafaf"/>
+                <circle cx="72" cy="26" r="4" fill="#5aafaf"/>
+                <circle cx="32" cy="52" r="3.5" fill="#5aafaf"/>
+                <circle cx="68" cy="52" r="3.5" fill="#5aafaf"/>
+            </svg>
             <h1>MVAI</h1>
             <p class="sub">Connexx Enterprise</p>
         </div>
@@ -383,7 +403,7 @@
             <p>MVAI Connexx Enterprise — veilige multi-tenant oplossing voor logistieke data borging en procesoptimalisatie. Elke klant heeft toegang tot alleen eigen data via een unieke access code.</p>
         </div>
 
-        <div style="text-align:center;margin-top:20px;">
+        <div style="text-align:center;margin-top:18px;">
             <a href="/admin/login" class="admin-link">🔐 Admin Login</a>
         </div>
     </div>
