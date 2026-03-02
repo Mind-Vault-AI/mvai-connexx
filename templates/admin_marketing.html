@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marketing Intelligence | Admin</title>
+    <style>
+        :root { --bg:#050505; --panel:#121212; --accent:#00ff41; --text:#e0e0e0; --dim:#666; --border:#333; --error:#ff4444; --warning:#ffbd2e; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-height:100vh; }
+        header { background:rgba(18,18,18,0.95); padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo { font-weight:800; font-size:1.1rem; color:#fff; }
+        .logo span { color:var(--accent); }
+        .nav-links { display:flex; gap:15px; }
+        .nav-links a { color:var(--dim); text-decoration:none; font-size:0.85rem; }
+        .nav-links a:hover { color:var(--accent); }
+        .container { max-width:1200px; margin:0 auto; padding:20px; }
+        h1 { font-size:1.4rem; font-weight:700; margin-bottom:5px; }
+        .subtitle { color:var(--dim); font-size:0.85rem; margin-bottom:25px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-bottom:25px; }
+        .card { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px; }
+        .card h3 { font-size:0.8rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; }
+        .stat-value { font-size:2rem; font-weight:800; color:var(--accent); }
+        .stat-label { font-size:0.8rem; color:var(--dim); margin-top:5px; }
+        .table-wrap { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:25px; }
+        .table-header { padding:15px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .table-header h2 { font-size:1rem; font-weight:700; }
+        table { width:100%; border-collapse:collapse; }
+        th { padding:12px 20px; text-align:left; font-size:0.75rem; color:var(--dim); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--border); }
+        td { padding:12px 20px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; }
+        tr:last-child td { border-bottom:none; }
+        .badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; text-transform:uppercase; }
+        .badge-green { background:rgba(0,255,65,0.15); color:var(--accent); }
+        .badge-yellow { background:rgba(255,189,46,0.15); color:var(--warning); }
+        .badge-red { background:rgba(255,68,68,0.15); color:var(--error); }
+        .funnel { display:flex; flex-direction:column; gap:8px; padding:20px; }
+        .funnel-step { background:rgba(0,255,65,0.05); border:1px solid var(--border); border-radius:6px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; }
+        .funnel-step-name { font-size:0.85rem; font-weight:600; }
+        .funnel-step-count { font-size:1.1rem; font-weight:800; color:var(--accent); }
+        .funnel-step-rate { font-size:0.75rem; color:var(--dim); }
+        .strategy-list { list-style:none; }
+        .strategy-list li { padding:12px 20px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; display:flex; gap:12px; align-items:flex-start; }
+        .strategy-list li:last-child { border-bottom:none; }
+        .empty { padding:40px; text-align:center; color:var(--dim); font-size:0.9rem; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">MVAI <span>CONNEXX</span> <span style="color:var(--dim);font-size:0.75rem;">ADMIN</span></div>
+    <nav class="nav-links">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/customers">Klanten</a>
+        <a href="/admin/security">Security</a>
+        <a href="/logout">Uitloggen</a>
+    </nav>
+</header>
+<div class="container">
+    <h1>Marketing Intelligence</h1>
+    <p class="subtitle">Funnel, kanalen, segmenten en groeistrategie</p>
+
+    {% set md = marketing_dashboard %}
+
+    <!-- Summary KPIs -->
+    {% if md and md.summary %}
+    <div class="grid">
+        <div class="card">
+            <h3>Leads (30d)</h3>
+            <div class="stat-value">{{ md.summary.total_leads_30d or 0 }}</div>
+            <div class="stat-label">Awareness fase</div>
+        </div>
+        <div class="card">
+            <h3>Conversies (30d)</h3>
+            <div class="stat-value">{{ md.summary.total_conversions_30d or 0 }}</div>
+            <div class="stat-label">Aankopen voltooid</div>
+        </div>
+        <div class="card">
+            <h3>Conversieratio</h3>
+            <div class="stat-value">{{ md.summary.overall_conversion_rate or 0 }}%</div>
+            <div class="stat-label">Lead → klant</div>
+        </div>
+        <div class="card">
+            <h3>Gem. Campagne ROI</h3>
+            <div class="stat-value {% if (md.summary.avg_campaign_roi or 0) >= 100 %}style="color:var(--accent)"{% elif (md.summary.avg_campaign_roi or 0) >= 0 %}style="color:var(--warning)"{% else %}style="color:var(--error)"{% endif %}">{{ md.summary.avg_campaign_roi or 0 }}%</div>
+            <div class="stat-label">Return on Investment</div>
+        </div>
+        {% if md.summary.at_risk_customers is defined %}
+        <div class="card">
+            <h3>At-Risk Klanten</h3>
+            <div class="stat-value {% if md.summary.at_risk_customers > 0 %}style="color:var(--warning)"{% else %}style="color:var(--accent)"{% endif %}">{{ md.summary.at_risk_customers }}</div>
+            <div class="stat-label">Vereisen aandacht</div>
+        </div>
+        {% endif %}
+        {% if md.top_channel %}
+        <div class="card">
+            <h3>Top Kanaal</h3>
+            <div class="stat-value" style="font-size:1.2rem;">{{ md.top_channel.channel_name or md.top_channel.name or '—' }}</div>
+            <div class="stat-label">ROI: {{ md.top_channel.roi_pct or 0 }}%</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Funnel -->
+    {% if md and md.funnel %}
+    <div class="table-wrap">
+        <div class="table-header"><h2>Marketing Funnel (30 dagen)</h2></div>
+        <div class="funnel">
+            {% set funnel = md.funnel %}
+            {% if funnel.total_awareness is defined %}
+            <div class="funnel-step">
+                <span class="funnel-step-name">Awareness</span>
+                <span class="funnel-step-count">{{ funnel.total_awareness }}</span>
+                <span class="funnel-step-rate">100%</span>
+            </div>
+            {% endif %}
+            {% if funnel.total_interest is defined %}
+            <div class="funnel-step">
+                <span class="funnel-step-name">Interest</span>
+                <span class="funnel-step-count">{{ funnel.total_interest }}</span>
+                <span class="funnel-step-rate">{% if funnel.total_awareness %}{{ "%.1f"|format(funnel.total_interest / funnel.total_awareness * 100) }}%{% endif %}</span>
+            </div>
+            {% endif %}
+            {% if funnel.total_consideration is defined %}
+            <div class="funnel-step">
+                <span class="funnel-step-name">Consideration</span>
+                <span class="funnel-step-count">{{ funnel.total_consideration }}</span>
+                <span class="funnel-step-rate">{% if funnel.total_awareness %}{{ "%.1f"|format(funnel.total_consideration / funnel.total_awareness * 100) }}%{% endif %}</span>
+            </div>
+            {% endif %}
+            {% if funnel.total_intent is defined %}
+            <div class="funnel-step">
+                <span class="funnel-step-name">Intent</span>
+                <span class="funnel-step-count">{{ funnel.total_intent }}</span>
+                <span class="funnel-step-rate">{% if funnel.total_awareness %}{{ "%.1f"|format(funnel.total_intent / funnel.total_awareness * 100) }}%{% endif %}</span>
+            </div>
+            {% endif %}
+            {% if funnel.total_purchases is defined %}
+            <div class="funnel-step" style="border-color:var(--accent);">
+                <span class="funnel-step-name" style="color:var(--accent);">Purchase</span>
+                <span class="funnel-step-count">{{ funnel.total_purchases }}</span>
+                <span class="funnel-step-rate">{{ funnel.overall_conversion_rate or 0 }}%</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Channel Performance -->
+    <div class="table-wrap">
+        <div class="table-header"><h2>Kanaal Prestaties</h2></div>
+        {% if md and md.channels %}
+        <table>
+            <thead><tr><th>Kanaal</th><th>Leads</th><th>Conversies</th><th>Omzet</th><th>ROI</th></tr></thead>
+            <tbody>
+            {% for ch in md.channels %}
+            <tr>
+                <td>{{ ch.channel_name or ch.name or '—' }}</td>
+                <td>{{ ch.total_leads or ch.leads or 0 }}</td>
+                <td>{{ ch.total_conversions or ch.conversions or 0 }}</td>
+                <td>€{{ "%.2f"|format(ch.total_revenue or ch.revenue or 0) }}</td>
+                <td><span class="badge {% if (ch.roi_pct or 0) >= 100 %}badge-green{% elif (ch.roi_pct or 0) >= 0 %}badge-yellow{% else %}badge-red{% endif %}">{{ ch.roi_pct or 0 }}%</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen kanaaldata beschikbaar</div>
+        {% endif %}
+    </div>
+
+    <!-- Growth Strategies -->
+    <div class="table-wrap">
+        <div class="table-header"><h2>Groeistrategieën</h2></div>
+        {% if md and md.growth_strategies %}
+        <ul class="strategy-list">
+        {% for s in md.growth_strategies %}
+        <li>
+            <span class="badge {% if s.priority == 'high' or s.priority == 'critical' %}badge-green{% elif s.priority == 'medium' %}badge-yellow{% else %}badge-red{% endif %}">{{ s.priority or 'info' }}</span>
+            <div>
+                <div style="font-weight:600;margin-bottom:3px;">{{ s.strategy or s.name or '—' }}</div>
+                {% if s.description %}<div style="color:var(--dim);font-size:0.8rem;">{{ s.description }}</div>{% endif %}
+                {% if s.expected_impact %}<div style="color:var(--accent);font-size:0.8rem;margin-top:3px;">Impact: {{ s.expected_impact }}</div>{% endif %}
+            </div>
+        </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty">Geen groeistrategieën beschikbaar</div>
+        {% endif %}
+    </div>
+
+    <!-- Customer Segments -->
+    {% if md and md.segments %}
+    <div class="table-wrap">
+        <div class="table-header"><h2>Klant Segmenten</h2></div>
+        {% if md.segments.by_tier %}
+        <table>
+            <thead><tr><th>Tier</th><th>Klanten</th><th>MRR Bijdrage</th></tr></thead>
+            <tbody>
+            {% for tier, data in md.segments.by_tier.items() %}
+            <tr>
+                <td>{{ tier|capitalize }}</td>
+                <td>{{ data.count if data.count is defined else data }}</td>
+                <td>{% if data.mrr_contribution is defined %}€{{ "%.2f"|format(data.mrr_contribution) }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Geen segmentdata beschikbaar</div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
