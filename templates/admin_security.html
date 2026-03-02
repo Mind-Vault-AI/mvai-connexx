@@ -8,7 +8,7 @@
         :root {
             --bg: #050505;
             --panel: #121212;
-            --accent: #00ff41;
+            --accent: #10b981;
             --text: #e0e0e0;
             --dim: #666;
             --border: #333;
@@ -54,7 +54,7 @@
         .subtitle { color: var(--dim); margin-bottom: 30px; }
 
         .status-banner {
-            background: {{ 'rgba(0, 255, 65, 0.1)' if security.status == 'secure' else 'rgba(255, 68, 68, 0.1)' }};
+            background: {{ 'rgba(16, 185, 129, 0.1)' if security.status == 'secure' else 'rgba(255, 68, 68, 0.1)' }};
             border-left: 4px solid {{ 'var(--accent)' if security.status == 'secure' else 'var(--error)' }};
             padding: 20px;
             border-radius: 6px;
@@ -140,7 +140,7 @@
         }
 
         .severity-medium {
-            background: rgba(0, 255, 65, 0.1);
+            background: rgba(16, 185, 129, 0.1);
             color: var(--accent);
         }
 

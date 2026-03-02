@@ -55,7 +55,7 @@ class EmailService:
         body_html = f"""
         <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #00ff41 0%, #00dd35 100%); padding: 30px; text-align: center;">
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
                 <h1 style="color: white; margin: 0;">🎉 Welkom bij MVAI Connexx!</h1>
             </div>
 
@@ -72,7 +72,7 @@ class EmailService:
                     <p><strong>Login URL:</strong> <a href="https://mindvault-ai.com/login">https://mindvault-ai.com/login</a></p>
                 </div>
 
-                <div style="background: #e8f5e9; padding: 15px; border-left: 4px solid #00ff41; margin: 20px 0;">
+                <div style="background: #e8f5e9; padding: 15px; border-left: 4px solid #10b981; margin: 20px 0;">
                     <p style="margin: 0;"><strong>💡 Pro Tip:</strong> Bewaar je access code veilig! Je hebt deze nodig om in te loggen.</p>
                 </div>
 
@@ -87,7 +87,7 @@ class EmailService:
 
                 <div style="text-align: center; margin: 30px 0;">
                     <a href="https://mindvault-ai.com/login"
-                       style="background: #00ff41; color: #000; padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                       style="background: #10b981; color: #000; padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                         🔐 Inloggen
                     </a>
                 </div>
@@ -135,7 +135,7 @@ class EmailService:
         body_html = f"""
         <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #00ff41 0%, #00dd35 100%); padding: 30px; text-align: center;">
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
                 <h1 style="color: white; margin: 0;">🚀 Upgrade Succesvol!</h1>
             </div>
 
@@ -164,7 +164,7 @@ class EmailService:
 
                 <div style="text-align: center; margin: 30px 0;">
                     <a href="https://mindvault-ai.com/dashboard"
-                       style="background: #00ff41; color: #000; padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                       style="background: #10b981; color: #000; padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                         📊 Bekijk Dashboard
                     </a>
                 </div>
@@ -259,7 +259,7 @@ class EmailService:
 
                 <div style="text-align: center; margin: 30px 0;">
                     <a href="https://mindvault-ai.com/customer/subscription"
-                       style="background: #00ff41; color: #000; padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                       style="background: #10b981; color: #000; padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                         🚀 Upgrade Nu
                     </a>
                 </div>
@@ -289,3 +289,60 @@ def send_admin_alert(alert_type, message, severity="HIGH"):
 def send_usage_limit_warning(customer_name, customer_email, current_usage, limit, tier):
     """Send usage warning"""
     return email_service.send_usage_limit_warning(customer_name, customer_email, current_usage, limit, tier)
+
+
+def send_data_export_email(customer_name, customer_email, logs):
+    """Stuur data export per e-mail als CSV bijlage"""
+    import csv
+    import io
+    from email.mime.base import MIMEBase
+    from email import encoders
+
+    try:
+        service = email_service
+
+        # Maak CSV in memory
+        csv_buffer = io.StringIO()
+        writer = csv.writer(csv_buffer)
+        writer.writerow(['ID', 'Tijdstip', 'IP', 'Data'])
+        for log in logs:
+            writer.writerow([log.get('id'), log.get('timestamp', '')[:19],
+                             log.get('ip_address', ''), str(log.get('data', ''))[:200]])
+        csv_data = csv_buffer.getvalue().encode('utf-8')
+        filename = f"mvai_export_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+
+        subject = f"MVAI Connexx - Data Export {datetime.now().strftime('%d-%m-%Y')}"
+        body_html = f"""
+        <html><body style="font-family:sans-serif;max-width:600px;margin:0 auto;">
+            <div style="background:#10b981;padding:20px;color:#000;">
+                <h2 style="margin:0;">📊 MVAI Connexx Data Export</h2>
+            </div>
+            <div style="padding:20px;background:#f9f9f9;">
+                <p>Hallo {customer_name},</p>
+                <p>Uw data export is bijgevoegd als CSV bestand ({len(logs)} records).</p>
+                <p>Gegenereerd op: {datetime.now().strftime('%d-%m-%Y %H:%M')}</p>
+            </div>
+        </body></html>"""
+
+        msg = MIMEMultipart('mixed')
+        msg['From'] = f"{service.from_name} <{service.from_email}>"
+        msg['To'] = customer_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body_html, 'html'))
+
+        # CSV bijlage
+        attachment = MIMEBase('text', 'csv')
+        attachment.set_payload(csv_data)
+        encoders.encode_base64(attachment)
+        attachment.add_header('Content-Disposition', 'attachment', filename=filename)
+        msg.attach(attachment)
+
+        import smtplib
+        with smtplib.SMTP(service.smtp_server, service.smtp_port) as s:
+            s.starttls()
+            s.login(service.smtp_username, service.smtp_password)
+            s.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"❌ Export email error: {e}")
+        raise

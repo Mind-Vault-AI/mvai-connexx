@@ -8,7 +8,7 @@
         :root {
             --bg: #050505;
             --panel: #121212;
-            --accent: #00ff41;
+            --accent: #10b981;
             --text: #e0e0e0;
             --dim: #666;
             --border: #333;
@@ -206,7 +206,7 @@
         }
 
         .btn-primary:hover {
-            background: #00dd35;
+            background: #059669;
             transform: translateY(-1px);
         }
 
@@ -349,12 +349,15 @@
         <!-- Action Buttons -->
         <div class="action-buttons">
             <a href="{{ url_for('customer_ai_assistant') }}" class="btn-secondary"
-               style="background: linear-gradient(135deg, rgba(0,255,65,0.2), rgba(0,221,53,0.1)); border-color: var(--accent);">
+               style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(0,221,53,0.1)); border-color: var(--accent);">
                 🤖 AI Secretaresse
             </a>
             <a href="{{ url_for('customer_analytics') }}" class="btn-secondary">📊 Analytics</a>
             <a href="{{ url_for('customer_logs') }}" class="btn-secondary">📋 Alle Logs</a>
             <a href="{{ url_for('customer_api_keys') }}" class="btn-secondary">🔑 API Keys</a>
+            <a href="{{ url_for('customer_integrations') }}" class="btn-secondary">🔗 Integraties</a>
+            <a href="{{ url_for('customer_webhooks') }}" class="btn-secondary">📡 Webhooks</a>
+            <a href="{{ url_for('customer_export_pdf') }}" class="btn-secondary">📄 PDF Export</a>
             <a href="{{ url_for('customer_export_csv') }}" class="btn-secondary">💾 Export CSV</a>
             <a href="{{ url_for('customer_search') }}" class="btn-secondary">🔍 Zoeken</a>
         </div>
@@ -429,7 +432,7 @@
                 .then(res => res.json())
                 .then(data => {
                     status.innerText = "✓ Veilig Geborgd (Cloud Synced)";
-                    status.style.color = "#00ff41";
+                    status.style.color = "#10b981";
                 })
                 .catch(err => {
                     status.innerText = "✗ Fout bij opslaan";
