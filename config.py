@@ -108,6 +108,20 @@ class Config:
     # Mollie (alternatief)
     MOLLIE_API_KEY = os.getenv('MOLLIE_API_KEY', '')
 
+    # ── Social Login (Google / Apple OAuth2) ────────────
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
+    APPLE_CLIENT_ID = os.getenv('APPLE_CLIENT_ID', '')
+    APPLE_CLIENT_SECRET = os.getenv('APPLE_CLIENT_SECRET', '')
+    # Genereer een stabiele AUTHLIB_INSECURE_TRANSPORT waarde voor dev
+    AUTHLIB_INSECURE_TRANSPORT = os.getenv('AUTHLIB_INSECURE_TRANSPORT', '0')
+
+    # ── On-Premise / Cloud Deployment ───────────────────
+    # DEPLOYMENT_MODE is al gedefinieerd als 'cloud', 'on-premise', of 'hybrid'
+    # Extra on-premise opties:
+    ON_PREMISE_ALLOWED_IPS = os.getenv('ON_PREMISE_ALLOWED_IPS', '').split(',') if os.getenv('ON_PREMISE_ALLOWED_IPS') else []
+    ON_PREMISE_API_KEY = os.getenv('ON_PREMISE_API_KEY', '')  # Extra key voor interne installaties
+
     # Monitoring
     SENTRY_DSN = os.getenv('SENTRY_DSN', '')
     ENABLE_SENTRY = bool(os.getenv('SENTRY_DSN', ''))

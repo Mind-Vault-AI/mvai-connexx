@@ -202,6 +202,23 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Aparte admin login pagina"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    if request.method == 'POST':
+        access_code = request.form.get('access_code', '').strip()
+        admin = db.verify_admin(access_code)
+        if admin:
+            session.permanent = True
+            session['admin'] = True
+            session['admin_username'] = admin['username']
+            flash(f'Welkom Admin {admin["username"]}!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        flash('Ongeldige admin code', 'error')
+    return render_template('admin_login.html')
+
 @app.route('/logout')
 def logout():
     """Log uit en clear session"""
@@ -1191,4 +1208,355 @@ if __name__ == '__main__':
 def legal_pages():
     """Legal pages: Terms, Privacy Policy, Disclaimer"""
     return render_template('legal.html')
+
+
+# ═══════════════════════════════════════════════════════
+# SOCIAL LOGIN - GOOGLE & APPLE OAUTH2
+# ═══════════════════════════════════════════════════════
+
+def _setup_oauth():
+    """Initialiseer OAuth clients als credentials beschikbaar zijn"""
+    google_client_id = os.environ.get('GOOGLE_CLIENT_ID')
+    if not google_client_id:
+        return None
+    try:
+        from authlib.integrations.flask_client import OAuth
+        oauth_inst = OAuth(app)
+        oauth_inst.register(
+            name='google',
+            client_id=google_client_id,
+            client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+            server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+            client_kwargs={'scope': 'openid email profile'},
+        )
+        apple_client_id = os.environ.get('APPLE_CLIENT_ID')
+        if apple_client_id:
+            oauth_inst.register(
+                name='apple',
+                client_id=apple_client_id,
+                client_secret=os.environ.get('APPLE_CLIENT_SECRET'),
+                authorize_url='https://appleid.apple.com/auth/authorize',
+                access_token_url='https://appleid.apple.com/auth/token',
+                client_kwargs={'scope': 'name email', 'response_mode': 'form_post'},
+            )
+        return oauth_inst
+    except ImportError:
+        return None
+
+_oauth = _setup_oauth()
+
+
+@app.route('/auth/google')
+def auth_google():
+    """Start Google OAuth2 flow"""
+    if _oauth is None or not os.environ.get('GOOGLE_CLIENT_ID'):
+        flash('Google login is niet geconfigureerd. Gebruik een access code.', 'error')
+        return redirect(url_for('login'))
+    redirect_uri = url_for('auth_google_callback', _external=True)
+    return _oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route('/auth/google/callback')
+def auth_google_callback():
+    """Verwerk Google OAuth2 callback"""
+    if _oauth is None:
+        return redirect(url_for('login'))
+    try:
+        token = _oauth.google.authorize_access_token()
+        userinfo = token.get('userinfo') or _oauth.google.userinfo()
+        email = userinfo.get('email')
+        name = userinfo.get('name', email)
+        provider_id = userinfo.get('sub')
+
+        # Zoek bestaande social login
+        customer = db.get_customer_by_social_login('google', provider_id)
+        if not customer:
+            # Probeer te matchen op email
+            customer = db.get_customer_by_email(email)
+            if customer:
+                db.link_social_login(customer['id'], 'google', provider_id, email, name)
+            else:
+                flash(f'Geen account gevonden voor {email}. Vraag uw beheerder om een account.', 'error')
+                return redirect(url_for('login'))
+        else:
+            db.link_social_login(customer['id'], 'google', provider_id, email, name)
+
+        session.permanent = True
+        session['customer_id'] = customer['id']
+        session['customer_name'] = customer['name']
+        flash(f'Welkom {customer["name"]}!', 'success')
+        return redirect(url_for('customer_dashboard'))
+    except Exception as e:
+        flash('Google login mislukt. Probeer opnieuw.', 'error')
+        return redirect(url_for('login'))
+
+
+@app.route('/auth/apple', methods=['GET', 'POST'])
+def auth_apple():
+    """Start Apple Sign-In flow"""
+    if _oauth is None or not os.environ.get('APPLE_CLIENT_ID'):
+        flash('Apple login is niet geconfigureerd. Gebruik een access code.', 'error')
+        return redirect(url_for('login'))
+    redirect_uri = url_for('auth_apple_callback', _external=True)
+    return _oauth.apple.authorize_redirect(redirect_uri)
+
+
+@app.route('/auth/apple/callback', methods=['GET', 'POST'])
+def auth_apple_callback():
+    """Verwerk Apple Sign-In callback"""
+    if _oauth is None:
+        return redirect(url_for('login'))
+    try:
+        import jwt as _jwt
+        token = _oauth.apple.authorize_access_token()
+        id_token = token.get('id_token')
+        claims = _jwt.decode(id_token, options={"verify_signature": False})
+        email = claims.get('email')
+        provider_id = claims.get('sub')
+
+        customer = db.get_customer_by_social_login('apple', provider_id)
+        if not customer:
+            customer = db.get_customer_by_email(email) if email else None
+            if customer:
+                db.link_social_login(customer['id'], 'apple', provider_id, email)
+            else:
+                flash('Geen account gevonden. Vraag uw beheerder om een account.', 'error')
+                return redirect(url_for('login'))
+        else:
+            db.link_social_login(customer['id'], 'apple', provider_id, email)
+
+        session.permanent = True
+        session['customer_id'] = customer['id']
+        session['customer_name'] = customer['name']
+        flash(f'Welkom {customer["name"]}!', 'success')
+        return redirect(url_for('customer_dashboard'))
+    except Exception as e:
+        flash('Apple login mislukt. Probeer opnieuw.', 'error')
+        return redirect(url_for('login'))
+
+
+# ═══════════════════════════════════════════════════════
+# ERP/WMS INTEGRATIES ROUTES
+# ═══════════════════════════════════════════════════════
+
+@app.route('/customer/integrations')
+@login_required
+def customer_integrations():
+    """Integratie overzicht voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    import json as _json
+    from integrations import INTEGRATION_CATALOG, INTEGRATION_CATEGORIES
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    integrations = db.get_customer_integrations(customer_id)
+    return render_template('customer_integrations.html',
+                           customer=customer,
+                           integrations=integrations,
+                           catalog=INTEGRATION_CATALOG,
+                           catalog_json=_json.dumps(INTEGRATION_CATALOG),
+                           categories=INTEGRATION_CATEGORIES)
+
+
+@app.route('/customer/integrations/connect', methods=['POST'])
+@login_required
+def customer_integration_connect():
+    """Verbind nieuwe integratie"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    import json as _json
+    from integrations import INTEGRATION_CATALOG, test_integration_connection
+    customer_id = session['customer_id']
+    integration_type = request.form.get('integration_type')
+    name = request.form.get('name', integration_type)
+
+    # Haal alle config_ velden op
+    config = {}
+    for key, val in request.form.items():
+        if key.startswith('config_') and val:
+            config[key[7:]] = val
+
+    # Test verbinding
+    result = test_integration_connection(integration_type, config)
+    integration_id = db.create_integration(customer_id, integration_type, name, config)
+
+    if result['success']:
+        flash(f'✓ {name} succesvol verbonden. {result["message"]}', 'success')
+    else:
+        flash(f'⚠ Verbinding getest maar probleem gevonden: {result["message"]}', 'error')
+    return redirect(url_for('customer_integrations'))
+
+
+@app.route('/customer/integrations/<int:integration_id>/sync', methods=['POST'])
+@login_required
+def customer_integration_sync(integration_id):
+    """Voer datasync uit voor integratie"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    import json as _json
+    from integrations import sync_integration
+    customer_id = session['customer_id']
+    integrations = db.get_customer_integrations(customer_id)
+    intg = next((i for i in integrations if i['id'] == integration_id), None)
+    if not intg:
+        flash('Integratie niet gevonden', 'error')
+        return redirect(url_for('customer_integrations'))
+    try:
+        count = sync_integration(integration_id, intg['integration_type'], intg['config'], customer_id)
+        flash(f'✓ Sync geslaagd: {count} records gesynchroniseerd', 'success')
+    except Exception as e:
+        flash(f'Sync mislukt: {str(e)[:100]}', 'error')
+    return redirect(url_for('customer_integrations'))
+
+
+@app.route('/customer/integrations/<int:integration_id>/delete', methods=['POST'])
+@login_required
+def customer_integration_delete(integration_id):
+    """Verwijder integratie"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    customer_id = session['customer_id']
+    db.delete_integration(integration_id, customer_id)
+    flash('Integratie verwijderd', 'success')
+    return redirect(url_for('customer_integrations'))
+
+
+# ═══════════════════════════════════════════════════════
+# OUTPUT MODULE - PDF, EMAIL, PRINT, WEBHOOKS
+# ═══════════════════════════════════════════════════════
+
+@app.route('/customer/export/pdf')
+@login_required
+def customer_export_pdf():
+    """Exporteer klantlogs als PDF rapport"""
+    if 'admin' in session:
+        return jsonify({'error': 'Admin kan geen customer PDF exporteren'}), 403
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    logs = db.get_customer_logs(customer_id, limit=500)
+
+    try:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import cm
+        from reportlab.lib import colors
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+        from reportlab.lib.enums import TA_LEFT, TA_CENTER
+
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4,
+                                leftMargin=2*cm, rightMargin=2*cm,
+                                topMargin=2*cm, bottomMargin=2*cm)
+        styles = getSampleStyleSheet()
+        story = []
+
+        # Header
+        title_style = ParagraphStyle('title', parent=styles['Heading1'],
+                                     fontSize=18, textColor=colors.HexColor('#10b981'), spaceAfter=6)
+        story.append(Paragraph('MVAI Connexx - Data Export', title_style))
+        story.append(Paragraph(f'Klant: {customer["name"]}', styles['Normal']))
+        story.append(Paragraph(f'Gegenereerd: {datetime.now().strftime("%d-%m-%Y %H:%M")}', styles['Normal']))
+        story.append(Spacer(1, 0.5*cm))
+        story.append(Paragraph(f'Totaal records: {len(logs)}', styles['Normal']))
+        story.append(Spacer(1, 0.5*cm))
+
+        # Tabel
+        table_data = [['#', 'Tijdstip', 'IP', 'Data (beknopt)']]
+        for log in logs[:200]:
+            data_preview = str(log.get('data', ''))[:80]
+            table_data.append([
+                str(log['id']),
+                str(log.get('timestamp', ''))[:16],
+                str(log.get('ip_address', '')),
+                data_preview
+            ])
+
+        t = Table(table_data, colWidths=[1.2*cm, 3.5*cm, 3.5*cm, None])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#10b981')),
+            ('TEXTCOLOR', (0,0), (-1,0), colors.black),
+            ('FONTSIZE', (0,0), (-1,0), 9),
+            ('FONTSIZE', (0,1), (-1,-1), 8),
+            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.HexColor('#0a0a0a'), colors.HexColor('#111')]),
+            ('TEXTCOLOR', (0,1), (-1,-1), colors.HexColor('#e0e0e0')),
+            ('GRID', (0,0), (-1,-1), 0.3, colors.HexColor('#333')),
+            ('VALIGN', (0,0), (-1,-1), 'TOP'),
+            ('PADDING', (0,0), (-1,-1), 4),
+        ]))
+        story.append(t)
+        doc.build(story)
+        buffer.seek(0)
+
+        filename = f"mvai_rapport_{customer['name']}_{datetime.now().strftime('%Y%m%d')}.pdf"
+        return send_file(buffer, mimetype='application/pdf', as_attachment=True, download_name=filename)
+
+    except Exception as e:
+        flash(f'PDF generatie mislukt: {str(e)}', 'error')
+        return redirect(url_for('customer_dashboard'))
+
+
+@app.route('/customer/export/email', methods=['POST'])
+@login_required
+def customer_export_email():
+    """Stuur data export per e-mail"""
+    if 'admin' in session:
+        return jsonify({'error': 'Admin kan dit niet uitvoeren'}), 403
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    email = request.form.get('email') or customer.get('contact_email')
+    if not email:
+        flash('Geen e-mailadres opgegeven', 'error')
+        return redirect(url_for('customer_dashboard'))
+    try:
+        from email_notifications import send_data_export_email
+        logs = db.get_customer_logs(customer_id, limit=1000)
+        send_data_export_email(customer['name'], email, logs)
+        flash(f'✓ Export verzonden naar {email}', 'success')
+    except Exception as e:
+        flash(f'E-mail verzenden mislukt: {str(e)[:80]}', 'error')
+    return redirect(url_for('customer_dashboard'))
+
+
+@app.route('/customer/webhooks')
+@login_required
+def customer_webhooks():
+    """Webhook beheer voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    webhooks = db.get_customer_webhooks(customer_id)
+    return render_template('customer_webhooks.html', customer=customer, webhooks=webhooks)
+
+
+@app.route('/customer/webhooks/create', methods=['POST'])
+@login_required
+def customer_webhook_create():
+    """Maak nieuwe webhook aan"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    customer_id = session['customer_id']
+    name = request.form.get('name', 'Webhook')
+    url = request.form.get('url', '').strip()
+    events = request.form.get('events', 'all')
+    if not url or not url.startswith('http'):
+        flash('Ongeldige webhook URL', 'error')
+        return redirect(url_for('customer_webhooks'))
+    import secrets as _secrets
+    secret = _secrets.token_hex(16)
+    db.create_webhook(customer_id, name, url, secret, events)
+    flash(f'✓ Webhook aangemaakt. Secret: {secret}', 'success')
+    return redirect(url_for('customer_webhooks'))
+
+
+@app.route('/customer/webhooks/<int:webhook_id>/delete', methods=['POST'])
+@login_required
+def customer_webhook_delete(webhook_id):
+    """Verwijder webhook"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+    customer_id = session['customer_id']
+    db.delete_webhook(webhook_id, customer_id)
+    flash('Webhook verwijderd', 'success')
+    return redirect(url_for('customer_webhooks'))
 

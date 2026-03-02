@@ -9,7 +9,7 @@
         :root {
             --bg: #050505;
             --panel: #121212;
-            --accent: #00ff41;
+            --accent: #5aafaf;
             --text: #e0e0e0;
             --dim: #666;
             --border: #333;
@@ -167,7 +167,7 @@
 
         .insight-item {
             padding: 15px;
-            background: rgba(0, 255, 65, 0.05);
+            background: rgba(90, 175, 175, 0.05);
             border-left: 3px solid var(--accent);
             margin-bottom: 15px;
             border-radius: 4px;
@@ -356,8 +356,8 @@
                 datasets: [{
                     label: 'Logs per dag',
                     data: dailyData.map(d => d.count),
-                    borderColor: '#00ff41',
-                    backgroundColor: 'rgba(0, 255, 65, 0.1)',
+                    borderColor: '#5aafaf',
+                    backgroundColor: 'rgba(90, 175, 175, 0.1)',
                     tension: 0.4,
                     fill: true
                 }]
@@ -374,8 +374,8 @@
                 datasets: [{
                     label: 'Logs per week',
                     data: weeklyData.map(d => d.count),
-                    backgroundColor: '#00ff41',
-                    borderColor: '#00dd35',
+                    backgroundColor: '#5aafaf',
+                    borderColor: '#3d8a8a',
                     borderWidth: 1
                 }]
             },
@@ -392,7 +392,7 @@
                     label: 'Logs per uur',
                     data: hourlyData.map(d => d.count),
                     backgroundColor: [
-                        '#00ff41', '#00dd35', '#00bb2a', '#009920', '#007716',
+                        '#5aafaf', '#3d8a8a', '#00bb2a', '#009920', '#007716',
                         '#00550c', '#003308', '#001104', '#000000', '#111111',
                         '#222222', '#333333', '#444444', '#555555', '#666666',
                         '#777777', '#888888', '#999999', '#aaaaaa', '#bbbbbb',

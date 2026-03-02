@@ -471,6 +471,76 @@ def init_db():
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_marketing_channel ON marketing_campaigns(channel)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_funnel_stage ON marketing_funnel(funnel_stage)')
 
+        # ═══════════════════════════════════════════════════════
+        # SOCIAL LOGIN TABLES (Google / Apple OAuth)
+        # ═══════════════════════════════════════════════════════
+
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS social_logins (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                provider TEXT NOT NULL,
+                provider_user_id TEXT NOT NULL,
+                email TEXT,
+                name TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(provider, provider_user_id),
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_social_logins_provider ON social_logins(provider, provider_user_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_social_logins_customer ON social_logins(customer_id)')
+
+        # ═══════════════════════════════════════════════════════
+        # ERP/WMS INTEGRATIONS TABLES
+        # ═══════════════════════════════════════════════════════
+
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS integrations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                integration_type TEXT NOT NULL,
+                name TEXT NOT NULL,
+                config TEXT,
+                status TEXT DEFAULT 'inactive',
+                last_sync TIMESTAMP,
+                sync_count INTEGER DEFAULT 0,
+                error_message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_integrations_customer ON integrations(customer_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_integrations_type ON integrations(integration_type)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_integrations_status ON integrations(status)')
+
+        # ═══════════════════════════════════════════════════════
+        # WEBHOOK CONFIGS TABLE
+        # ═══════════════════════════════════════════════════════
+
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS customer_webhooks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                url TEXT NOT NULL,
+                secret TEXT,
+                events TEXT DEFAULT 'all',
+                is_active BOOLEAN DEFAULT 1,
+                last_triggered TIMESTAMP,
+                trigger_count INTEGER DEFAULT 0,
+                last_status_code INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_webhooks_customer ON customer_webhooks(customer_id)')
+
         conn.commit()
 
         # Maak standaard admin aan als er nog geen admins zijn
@@ -818,6 +888,147 @@ def revoke_api_key(key_id):
             SET is_active = 0
             WHERE id = ?
         ''', (key_id,))
+
+# ═══════════════════════════════════════════════════════
+# SOCIAL LOGIN FUNCTIES
+# ═══════════════════════════════════════════════════════
+
+@retry_on_locked()
+def get_customer_by_social_login(provider, provider_user_id):
+    """Haal klant op via social login (Google/Apple)"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT c.* FROM customers c
+            JOIN social_logins sl ON c.id = sl.customer_id
+            WHERE sl.provider = ? AND sl.provider_user_id = ? AND c.status = 'active'
+        ''', (provider, provider_user_id))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+@retry_on_locked()
+def get_customer_by_email(email):
+    """Haal actieve klant op via email"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT * FROM customers WHERE contact_email = ? AND status = 'active'
+        ''', (email,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+@retry_on_locked()
+def link_social_login(customer_id, provider, provider_user_id, email=None, name=None):
+    """Koppel social login account aan klant"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO social_logins (customer_id, provider, provider_user_id, email, name)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(provider, provider_user_id) DO UPDATE SET
+                last_login = CURRENT_TIMESTAMP,
+                email = EXCLUDED.email,
+                name = EXCLUDED.name
+        ''', (customer_id, provider, provider_user_id, email, name))
+
+# ═══════════════════════════════════════════════════════
+# INTEGRATIES FUNCTIES (ERP/WMS/etc.)
+# ═══════════════════════════════════════════════════════
+
+@retry_on_locked()
+def create_integration(customer_id, integration_type, name, config=None):
+    """Maak nieuwe integratie aan voor klant"""
+    import json as _json
+    config_str = _json.dumps(config) if config else '{}'
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO integrations (customer_id, integration_type, name, config, status)
+            VALUES (?, ?, ?, ?, 'active')
+        ''', (customer_id, integration_type, name, config_str))
+        return cursor.lastrowid
+
+def get_customer_integrations(customer_id):
+    """Haal alle integraties voor klant op"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT * FROM integrations WHERE customer_id = ?
+            ORDER BY created_at DESC
+        ''', (customer_id,))
+        return [dict(row) for row in cursor.fetchall()]
+
+@retry_on_locked()
+def update_integration_sync(integration_id, status='active', error=None):
+    """Update laatste sync status"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE integrations
+            SET last_sync = CURRENT_TIMESTAMP,
+                sync_count = sync_count + 1,
+                status = ?,
+                error_message = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ''', (status, error, integration_id))
+
+@retry_on_locked()
+def delete_integration(integration_id, customer_id):
+    """Verwijder integratie"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            DELETE FROM integrations WHERE id = ? AND customer_id = ?
+        ''', (integration_id, customer_id))
+
+# ═══════════════════════════════════════════════════════
+# WEBHOOK FUNCTIES
+# ═══════════════════════════════════════════════════════
+
+@retry_on_locked()
+def create_webhook(customer_id, name, url, secret=None, events='all'):
+    """Maak nieuwe webhook aan"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO customer_webhooks (customer_id, name, url, secret, events)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (customer_id, name, url, secret, events))
+        return cursor.lastrowid
+
+def get_customer_webhooks(customer_id):
+    """Haal alle webhooks voor klant op"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT * FROM customer_webhooks WHERE customer_id = ?
+            ORDER BY created_at DESC
+        ''', (customer_id,))
+        return [dict(row) for row in cursor.fetchall()]
+
+@retry_on_locked()
+def update_webhook_trigger(webhook_id, status_code):
+    """Update webhook trigger statistieken"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE customer_webhooks
+            SET last_triggered = CURRENT_TIMESTAMP,
+                trigger_count = trigger_count + 1,
+                last_status_code = ?
+            WHERE id = ?
+        ''', (status_code, webhook_id))
+
+@retry_on_locked()
+def delete_webhook(webhook_id, customer_id):
+    """Verwijder webhook"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            DELETE FROM customer_webhooks WHERE id = ? AND customer_id = ?
+        ''', (webhook_id, customer_id))
+
 
 if __name__ == '__main__':
     # Test database setup

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integraties | MVAI Connexx</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #111;
+            --panel2: #171717;
+            --accent: #5aafaf;
+            --accent-dark: #3d8a8a;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #222;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+
+        /* ── Nav ── */
+        nav { background: #0a0a0a; border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 58px; }
+        .nav-brand { font-weight: 800; font-size: 1.1rem; color: var(--accent); letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--dim); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); }
+        .nav-user { color: var(--dim); font-size: 0.85rem; }
+
+        /* ── Layout ── */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .page-header p { color: var(--dim); font-size: 0.9rem; }
+
+        /* ── Tabs / Filter ── */
+        .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .filter-btn { padding: 6px 16px; border: 1px solid var(--border); border-radius: 20px; background: transparent; color: var(--dim); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .filter-btn.active, .filter-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+
+        /* ── Catalog Grid ── */
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .catalog-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; cursor: pointer; transition: all 0.2s; position: relative; }
+        .catalog-card:hover { border-color: var(--accent); background: var(--panel2); transform: translateY(-1px); }
+        .catalog-card .logo { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .catalog-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .catalog-card p { font-size: 0.82rem; color: var(--dim); line-height: 1.5; }
+        .catalog-card .cat-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-bottom: 0.5rem; font-weight: 600; }
+        .cat-ERP { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .cat-WMS { background: rgba(90,175,175,0.15); color: #5aafaf; }
+        .cat-E-Commerce { background: rgba(168,85,247,0.15); color: #c084fc; }
+        .cat-Output { background: rgba(245,158,11,0.15); color: #fbbf24; }
+        .popular-badge { position: absolute; top: 10px; right: 10px; font-size: 0.65rem; background: rgba(90,175,175,0.15); color: var(--accent); border: 1px solid rgba(90,175,175,0.3); padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+
+        /* ── Actieve Integraties ── */
+        .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+        .section-title span { font-size: 0.8rem; background: var(--panel); border: 1px solid var(--border); padding: 2px 8px; border-radius: 10px; color: var(--dim); }
+        .active-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 3rem; }
+        .active-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1rem; }
+        .active-item .logo { font-size: 1.4rem; }
+        .active-item .info { flex: 1; }
+        .active-item .info .name { font-weight: 600; font-size: 0.9rem; }
+        .active-item .info .meta { color: var(--dim); font-size: 0.8rem; margin-top: 2px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .status-dot.active { background: var(--accent); box-shadow: 0 0 6px rgba(90,175,175,0.6); }
+        .status-dot.error { background: var(--error); }
+        .status-dot.inactive { background: var(--dim); }
+        .btn-sm { padding: 5px 12px; border-radius: 5px; border: 1px solid; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .btn-sync { border-color: var(--accent); color: var(--accent); background: transparent; }
+        .btn-sync:hover { background: rgba(90,175,175,0.1); }
+        .btn-del { border-color: #333; color: var(--dim); background: transparent; }
+        .btn-del:hover { border-color: var(--error); color: var(--error); }
+
+        /* ── Modal ── */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #111; border: 1px solid #2a2a2a; border-radius: 12px; width: 100%; max-width: 520px; padding: 1.75rem; }
+        .modal h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .modal .sub { color: var(--dim); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .form-row { margin-bottom: 1rem; }
+        .form-row label { display: block; font-size: 0.85rem; margin-bottom: 5px; color: var(--text); }
+        .form-row input, .form-row select { width: 100%; padding: 9px 12px; background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 6px; color: var(--text); font-size: 0.9rem; }
+        .form-row input:focus, .form-row select:focus { outline: none; border-color: var(--accent); }
+        .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; justify-content: flex-end; }
+        .btn-primary { padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+        .btn-primary:hover { background: var(--accent-dark); }
+        .btn-cancel { padding: 9px 16px; background: transparent; color: var(--dim); border: 1px solid #2a2a2a; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+        .btn-cancel:hover { color: var(--text); border-color: #444; }
+        .alert { padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; border-left: 3px solid; }
+        .alert-success { background: rgba(90,175,175,0.1); border-color: var(--accent); color: var(--accent); }
+        .alert-error { background: rgba(239,68,68,0.1); border-color: var(--error); color: var(--error); }
+
+        /* ── Leeg staat ── */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--dim); }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state p { font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <span class="nav-brand">MVAI CONNEXX</span>
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/customer/logs">Logs</a>
+        <a href="/customer/analytics">Analytics</a>
+        <a href="/customer/integrations" class="active">Integraties</a>
+        <a href="/customer/api-keys">API Keys</a>
+        <a href="/customer/subscription">Abonnement</a>
+    </div>
+    <span class="nav-user">{{ customer.name }} &nbsp;|&nbsp; <a href="/logout" style="color:var(--dim);text-decoration:none;">Uitloggen</a></span>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Integraties</h1>
+        <p>Koppel uw ERP, WMS, webshop of andere systemen. Zowel cloud als on-premise (IP) verbindingen mogelijk.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Actieve integraties -->
+    <div class="section-title">Actieve koppelingen <span>{{ integrations|length }}</span></div>
+    <div class="active-list">
+        {% if integrations %}
+            {% for intg in integrations %}
+            <div class="active-item">
+                <span class="logo">{{ catalog[intg.integration_type].logo if intg.integration_type in catalog else '🔌' }}</span>
+                <div class="info">
+                    <div class="name">{{ intg.name }}</div>
+                    <div class="meta">
+                        {{ catalog[intg.integration_type].name if intg.integration_type in catalog else intg.integration_type }}
+                        &nbsp;·&nbsp;
+                        {% if intg.last_sync %}
+                            Laatste sync: {{ intg.last_sync[:16] }} &nbsp;·&nbsp; {{ intg.sync_count }} records
+                        {% else %}
+                            Nog niet gesynchroniseerd
+                        {% endif %}
+                        {% if intg.error_message %}
+                            &nbsp;·&nbsp; <span style="color:var(--error)">{{ intg.error_message[:60] }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="status-dot {{ intg.status }}"></div>
+                <form action="/customer/integrations/{{ intg.id }}/sync" method="post" style="display:inline">
+                    <button class="btn-sm btn-sync" type="submit">↻ Sync</button>
+                </form>
+                <form action="/customer/integrations/{{ intg.id }}/delete" method="post" style="display:inline">
+                    <button class="btn-sm btn-del" type="submit" onclick="return confirm('Integratie verwijderen?')">✕</button>
+                </form>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="icon">🔌</div>
+                <p>Nog geen integraties. Kies een systeem hieronder om te starten.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Catalogus -->
+    <div class="section-title">Beschikbare integraties</div>
+    <div class="filter-bar">
+        {% for cat in categories %}
+            <button class="filter-btn {% if loop.first %}active{% endif %}" onclick="filterCatalog('{{ cat }}', this)">{{ cat }}</button>
+        {% endfor %}
+    </div>
+    <div class="catalog-grid" id="catalogGrid">
+        {% for key, info in catalog.items() %}
+        <div class="catalog-card" data-cat="{{ info.category }}" onclick="openModal('{{ key }}')">
+            {% if info.popular %}<span class="popular-badge">Populair</span>{% endif %}
+            <div class="logo">{{ info.logo }}</div>
+            <span class="cat-badge cat-{{ info.category }}">{{ info.category }}</span>
+            <h3>{{ info.name }}</h3>
+            <p>{{ info.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal voor integratie verbinden -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 id="modalTitle">Integratie koppelen</h2>
+        <p class="sub" id="modalDesc"></p>
+        <div id="modalAlert" style="display:none"></div>
+        <form id="integrationForm" method="post" action="/customer/integrations/connect">
+            <input type="hidden" name="integration_type" id="modalType">
+            <div class="form-row">
+                <label>Naam / label</label>
+                <input type="text" name="name" placeholder="bijv. Productie Shopify" required>
+            </div>
+            <div id="dynamicFields"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Annuleren</button>
+                <button type="submit" class="btn-primary">Verbinden & testen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const catalog = {{ catalog_json | safe }};
+
+function filterCatalog(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.catalog-card').forEach(card => {
+        card.style.display = (cat === 'Alles' || card.dataset.cat === cat) ? '' : 'none';
+    });
+}
+
+function openModal(key) {
+    const info = catalog[key];
+    if (!info) return;
+    document.getElementById('modalTitle').textContent = info.name + ' koppelen';
+    document.getElementById('modalDesc').textContent = info.description;
+    document.getElementById('modalType').value = key;
+    document.getElementById('modalAlert').style.display = 'none';
+
+    const container = document.getElementById('dynamicFields');
+    container.innerHTML = '';
+    const labels = {
+        client_id: 'Client ID', client_secret: 'Client Secret', division: 'Divisie',
+        environment_url: 'Omgeving URL (bijv. https://12345.afasonlineconnector.nl)',
+        api_token: 'API Token', connector_name: 'Connector naam',
+        base_url: 'Basis URL', company_db: 'Company DB', username: 'Gebruikersnaam', password: 'Wachtwoord',
+        url: 'URL', database: 'Database', api_key: 'API Key', api_secret: 'API Secret',
+        shop_domain: 'Shop domein (bijv. mijnshop.myshopify.com)', access_token: 'Access Token',
+        tenant_id: 'Tenant ID', environment: 'Omgeving (bijv. production)',
+        ip_address: 'IP Adres', port: 'Poort', endpoint_path: 'Endpoint pad (bijv. /api/stock)',
+        store_url: 'Store URL (bijv. https://mijnshop.nl)', consumer_key: 'Consumer Key', consumer_secret: 'Consumer Secret',
+        smtp_host: 'SMTP Host', smtp_port: 'SMTP Poort', from_email: 'Afzender e-mail',
+        secret_header: 'Secret Header waarde', events: 'Events (all / new_log / export)',
+        printer_ip: 'Printer IP', printer_port: 'Printer Poort', print_format: 'Formaat (ZPL / PDF / PCL)',
+        site_id: 'Site ID', warehouse_id: 'Warehouse ID',
+    };
+    (info.fields || []).forEach(field => {
+        const label = labels[field] || field;
+        const isPassword = field.includes('password') || field.includes('secret') || field.includes('token') || field.includes('key');
+        container.innerHTML += `
+            <div class="form-row">
+                <label>${label}</label>
+                <input type="${isPassword ? 'password' : 'text'}" name="config_${field}" placeholder="${label}">
+            </div>`;
+    });
+    document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

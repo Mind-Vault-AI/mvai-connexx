@@ -9,13 +9,13 @@
         :root {
             --bg: #050505;
             --panel: #121212;
-            --accent: #00ff41;
+            --accent: #5aafaf;
             --text: #e0e0e0;
             --dim: #666;
             --border: #333;
             --critical: #ff4444;
             --warning: #ffaa00;
-            --success: #00ff41;
+            --success: #5aafaf;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,7 +42,7 @@
 
         .logo { font-weight: 800; font-size: 1.2rem; color: #fff; }
         .admin-badge {
-            background: linear-gradient(135deg, var(--accent), #00dd35);
+            background: linear-gradient(135deg, var(--accent), #3d8a8a);
             color: #000;
             padding: 4px 12px;
             border-radius: 4px;
@@ -65,7 +65,7 @@
         }
 
         .health-healthy {
-            background: rgba(0, 255, 65, 0.1);
+            background: rgba(90, 175, 175, 0.1);
             border-color: var(--success);
         }
 
@@ -151,7 +151,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--accent), #00dd35);
+            background: linear-gradient(90deg, var(--accent), #3d8a8a);
         }
 
         .metric-label {
@@ -215,7 +215,7 @@
         }
 
         .btn-primary:hover {
-            background: #00dd35;
+            background: #3d8a8a;
             transform: translateY(-1px);
         }
 
@@ -228,7 +228,7 @@
             font-size: 0.85rem;
         }
 
-        .grade-a { background: rgba(0, 255, 65, 0.2); color: var(--success); }
+        .grade-a { background: rgba(90, 175, 175, 0.2); color: var(--success); }
         .grade-b { background: rgba(0, 200, 255, 0.2); color: #00c8ff; }
         .grade-c { background: rgba(255, 170, 0, 0.2); color: var(--warning); }
         .grade-d { background: rgba(255, 100, 0, 0.2); color: #ff6400; }
@@ -261,7 +261,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent), #00dd35);
+            background: linear-gradient(90deg, var(--accent), #3d8a8a);
             transition: width 0.3s ease;
         }
 
@@ -471,7 +471,7 @@
                 <div class="item">
                     <div style="flex: 1;">
                         <div class="item-title">
-                            <span class="grade-badge" style="background: rgba(0,255,65,0.2); color: var(--success);">{{ strategy.priority.upper() }}</span>
+                            <span class="grade-badge" style="background: rgba(90,175,175,0.2); color: var(--success);">{{ strategy.priority.upper() }}</span>
                             {{ strategy.strategy }}
                         </div>
                         <div class="item-subtitle">{{ strategy.action }}</div>

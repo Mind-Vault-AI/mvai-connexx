@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard | {{ customer.name }}</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
         :root {
-            --bg: #050505;
-            --panel: #121212;
-            --accent: #00ff41;
-            --text: #e0e0e0;
-            --dim: #666;
-            --border: #333;
+            --bg: #0f1520;
+            --panel: rgba(12,12,12,0.9);
+            --accent: #5aafaf;
+            --accent-dim: #3d8a8a;
+            --text: #f0f0f0;
+            --dim: #555;
+            --border: rgba(255,255,255,0.06);
+            --border-green: rgba(90,175,175,0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,15 +23,30 @@
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* Subtle grid bg */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(90,175,175,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(90,175,175,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* HEADER */
         header {
-            background: rgba(18,18,18,0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
+            background: rgba(5,5,5,0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 14px 24px;
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
@@ -37,151 +56,209 @@
             align-items: center;
         }
 
+        .header-left { display: flex; align-items: center; gap: 12px; }
+
         .logo {
-            font-weight: 800;
+            font-weight: 900;
             font-size: 1.1rem;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
             color: #fff;
+            text-shadow: 0 0 20px rgba(90,175,175,0.3);
+        }
+
+        .sep {
+            width: 1px; height: 20px;
+            background: rgba(255,255,255,0.08);
         }
 
         .company-name {
-            font-size: 0.9rem;
-            color: var(--accent);
-            margin-left: 15px;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #5aafaf;
+            letter-spacing: 0.5px;
         }
 
         .btn-logout {
-            padding: 6px 12px;
+            padding: 7px 14px;
             background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+            border-radius: 7px;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 500;
             transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
         }
-
         .btn-logout:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: #5aafaf;
+            color: #5aafaf;
         }
 
         /* CONTAINER */
         .container {
+            position: relative;
+            z-index: 1;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 28px 20px;
         }
 
         /* STATS GRID */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 14px;
+            margin-bottom: 28px;
         }
 
         .stat-card {
-            background: var(--panel);
+            background: rgba(10,10,10,0.8);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.2s;
+            border-radius: 12px;
+            padding: 20px 22px;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
         }
-
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(90,175,175,0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
         .stat-card:hover {
+            border-color: var(--border-green);
             transform: translateY(-2px);
-            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(90,175,175,0.1);
         }
+        .stat-card:hover::before { opacity: 1; }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 600;
             color: var(--dim);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
         }
 
         .stat-value {
             font-size: 2rem;
-            font-weight: bold;
-            color: var(--accent);
+            font-weight: 800;
+            color: #5aafaf;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        /* NAV BUTTONS */
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .nav-btn {
+            padding: 9px 16px;
+            background: rgba(10,10,10,0.8);
+            border: 1px solid var(--border);
+            color: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .nav-btn:hover {
+            border-color: var(--border-green);
+            color: #5aafaf;
+            background: rgba(90,175,175,0.05);
+        }
+        .nav-btn.highlight {
+            background: rgba(90,175,175,0.08);
+            border-color: rgba(90,175,175,0.25);
+            color: #5aafaf;
         }
 
         /* TERMINAL */
         .terminal-section {
-            background: var(--panel);
+            background: rgba(6,6,6,0.9);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         .terminal-header {
-            background: #1a1a1a;
-            padding: 12px 20px;
-            font-size: 0.85rem;
-            color: var(--dim);
+            background: rgba(0,0,0,0.5);
+            padding: 12px 18px;
             border-bottom: 1px solid var(--border);
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
         }
 
-        .terminal-title {
+        .terminal-dots {
             display: flex;
+            gap: 7px;
             align-items: center;
-            gap: 10px;
         }
-
         .dot {
-            width: 10px;
-            height: 10px;
+            width: 11px; height: 11px;
             border-radius: 50%;
-            display: inline-block;
         }
-
         .dot-red { background: #ff5f56; }
         .dot-yellow { background: #ffbd2e; }
         .dot-green { background: #27c93f; }
 
+        .terminal-path {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.25);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
         textarea {
             width: 100%;
-            min-height: 150px;
+            min-height: 140px;
             background: #000;
-            color: var(--accent);
+            color: #5aafaf;
             border: none;
             padding: 20px;
             font-family: 'Courier New', monospace;
             resize: vertical;
             outline: none;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
+        textarea::placeholder { color: rgba(90,175,175,0.25); }
 
         .save-status {
-            padding: 12px 20px;
-            background: #0a0a0a;
+            padding: 10px 18px;
+            background: rgba(0,0,0,0.3);
             border-top: 1px solid var(--border);
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             color: var(--dim);
+            letter-spacing: 0.3px;
         }
 
-        /* LOGS TABLE */
-        .logs-section {
-            background: var(--panel);
+        /* SECTION */
+        .section {
+            background: rgba(10,10,10,0.8);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
+            margin-bottom: 24px;
         }
 
         .section-header {
-            padding: 20px;
+            padding: 18px 22px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -189,138 +266,92 @@
         }
 
         .section-header h2 {
-            font-size: 1.2rem;
+            font-size: 1rem;
+            font-weight: 700;
             color: #fff;
+            letter-spacing: 0.3px;
         }
 
         .btn-primary {
-            padding: 8px 16px;
-            background: var(--accent);
+            padding: 7px 16px;
+            background: linear-gradient(135deg, #5aafaf 0%, #3d8a8a 100%);
             color: #000;
             border: none;
-            border-radius: 4px;
+            border-radius: 7px;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
             transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 12px rgba(90,175,175,0.2);
         }
-
         .btn-primary:hover {
-            background: #00dd35;
             transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(90,175,175,0.35);
         }
 
-        .logs-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .logs-table th,
-        .logs-table td {
-            padding: 12px 20px;
+        /* TABLE */
+        .logs-table { width: 100%; border-collapse: collapse; }
+        .logs-table th, .logs-table td {
+            padding: 12px 22px;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
-
         .logs-table th {
-            background: #0a0a0a;
-            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            font-size: 0.7rem;
+            font-weight: 600;
             color: var(--dim);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
+            letter-spacing: 1px;
         }
-
-        .logs-table td {
-            font-size: 0.9rem;
-            color: var(--text);
-        }
-
-        .logs-table tr:hover td {
-            background: #0a0a0a;
-        }
+        .logs-table td { font-size: 0.875rem; }
+        .logs-table tr:last-child td { border-bottom: none; }
+        .logs-table tr:hover td { background: rgba(90,175,175,0.02); }
 
         .log-data {
-            max-width: 400px;
+            max-width: 360px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
         }
-
         .ip-address {
-            color: var(--accent);
+            color: #5aafaf;
             font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
         }
-
-        .timestamp {
-            color: var(--dim);
-            font-size: 0.85rem;
-        }
+        .timestamp { color: var(--dim); font-size: 0.82rem; }
 
         .no-logs {
-            padding: 40px 20px;
+            padding: 48px 20px;
             text-align: center;
             color: var(--dim);
-        }
-
-        /* ACTION BUTTONS */
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn-secondary {
-            padding: 10px 20px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            font-size: 0.875rem;
         }
 
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .logs-table {
-                font-size: 0.85rem;
-            }
-
-            .logs-table th,
-            .logs-table td {
-                padding: 10px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .logs-table { font-size: 0.82rem; }
+            .logs-table th, .logs-table td { padding: 10px 14px; }
         }
     </style>
 </head>
 <body>
     <header>
-        <div style="display: flex; align-items: center;">
+        <div class="header-left">
             <span class="logo">MVAI</span>
+            <div class="sep"></div>
             <span class="company-name">{{ customer.name }}</span>
         </div>
-        <div class="header-right">
-            <a href="{{ url_for('logout') }}" class="btn-logout">Uitloggen</a>
-        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout">Uitloggen</a>
     </header>
 
     <div class="container">
-        <!-- Stats Grid -->
+        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Totaal Logs</div>
@@ -336,50 +367,51 @@
             </div>
             <div class="stat-card">
                 <div class="stat-label">Account Status</div>
-                <div class="stat-value" style="font-size: 1.2rem;">
+                <div class="stat-value" style="font-size:1rem;font-weight:700;letter-spacing:0;padding-top:6px;">
                     {% if customer.status == 'active' %}
-                        ✓ ACTIEF
+                        <span style="color:#5aafaf;">● Actief</span>
                     {% else %}
-                        ✗ INACTIEF
+                        <span style="color:#ff4444;">● Inactief</span>
                     {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            <a href="{{ url_for('customer_ai_assistant') }}" class="btn-secondary"
-               style="background: linear-gradient(135deg, rgba(0,255,65,0.2), rgba(0,221,53,0.1)); border-color: var(--accent);">
-                🤖 AI Secretaresse
-            </a>
-            <a href="{{ url_for('customer_analytics') }}" class="btn-secondary">📊 Analytics</a>
-            <a href="{{ url_for('customer_logs') }}" class="btn-secondary">📋 Alle Logs</a>
-            <a href="{{ url_for('customer_api_keys') }}" class="btn-secondary">🔑 API Keys</a>
-            <a href="{{ url_for('customer_export_csv') }}" class="btn-secondary">💾 Export CSV</a>
-            <a href="{{ url_for('customer_search') }}" class="btn-secondary">🔍 Zoeken</a>
+        <!-- Nav buttons -->
+        <div class="nav-buttons">
+            <a href="{{ url_for('customer_ai_assistant') }}" class="nav-btn highlight">🤖 AI Secretaresse</a>
+            <a href="{{ url_for('customer_analytics') }}" class="nav-btn">📊 Analytics</a>
+            <a href="{{ url_for('customer_logs') }}" class="nav-btn">📋 Alle Logs</a>
+            <a href="{{ url_for('customer_api_keys') }}" class="nav-btn">🔑 API Keys</a>
+            <a href="{{ url_for('customer_integrations') }}" class="nav-btn">🔗 Integraties</a>
+            <a href="{{ url_for('customer_webhooks') }}" class="nav-btn">📡 Webhooks</a>
+            <a href="{{ url_for('customer_export_pdf') }}" class="nav-btn">📄 PDF Export</a>
+            <a href="{{ url_for('customer_export_csv') }}" class="nav-btn">💾 CSV Export</a>
+            <a href="{{ url_for('customer_search') }}" class="nav-btn">🔍 Zoeken</a>
         </div>
 
-        <!-- Data Input Terminal -->
+        <!-- Terminal -->
         <div class="terminal-section">
             <div class="terminal-header">
-                <div class="terminal-title">
+                <div class="terminal-dots">
                     <span class="dot dot-red"></span>
                     <span class="dot dot-yellow"></span>
                     <span class="dot dot-green"></span>
-                    <span>root@mvai-cloud:~/{{ customer.name }}</span>
                 </div>
+                <span class="terminal-path">root@mvai-cloud:~/{{ customer.name }}</span>
+                <span></span>
             </div>
             <textarea id="data-input" placeholder="> Typ hier uw logistieke data voor 1W5H borging..."></textarea>
             <div class="save-status">
-                Status: <span id="save-status">Standby</span>
+                Status: <span id="save-status" style="color:var(--dim);">Standby</span>
             </div>
         </div>
 
         <!-- Recent Logs -->
-        <div class="logs-section">
+        <div class="section">
             <div class="section-header">
                 <h2>Recente Logs</h2>
-                <a href="{{ url_for('customer_logs') }}" class="btn-primary">Alles Bekijken</a>
+                <a href="{{ url_for('customer_logs') }}" class="btn-primary">Alles bekijken</a>
             </div>
             {% if logs %}
                 <table class="logs-table">
@@ -387,14 +419,14 @@
                         <tr>
                             <th>ID</th>
                             <th>Timestamp</th>
-                            <th>IP Address</th>
+                            <th>IP</th>
                             <th>Data</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for log in logs %}
                         <tr>
-                            <td>{{ log.id }}</td>
+                            <td style="color:var(--dim);font-size:0.78rem;">{{ log.id }}</td>
                             <td class="timestamp">{{ log.timestamp }}</td>
                             <td class="ip-address">{{ log.ip_address }}</td>
                             <td class="log-data">{{ log.data }}</td>
@@ -403,9 +435,7 @@
                     </tbody>
                 </table>
             {% else %}
-                <div class="no-logs">
-                    Nog geen logs. Begin met typen in de terminal hierboven.
-                </div>
+                <div class="no-logs">Nog geen logs. Begin met typen in de terminal hierboven.</div>
             {% endif %}
         </div>
     </div>
@@ -418,7 +448,6 @@
         input.oninput = () => {
             status.innerText = "Typen...";
             status.style.color = "#ffbd2e";
-
             clearTimeout(timeout);
             timeout = setTimeout(() => {
                 fetch('/api/save', {
@@ -427,11 +456,11 @@
                     body: JSON.stringify({txt: input.value})
                 })
                 .then(res => res.json())
-                .then(data => {
-                    status.innerText = "✓ Veilig Geborgd (Cloud Synced)";
-                    status.style.color = "#00ff41";
+                .then(() => {
+                    status.innerText = "✓ Veilig Geborgd";
+                    status.style.color = "#5aafaf";
                 })
-                .catch(err => {
+                .catch(() => {
                     status.innerText = "✗ Fout bij opslaan";
                     status.style.color = "#ff4444";
                 });

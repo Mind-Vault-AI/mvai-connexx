@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | MVAI Connexx</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --teal: #5aafaf;
+            --teal-dim: #3d8a8a;
+            --bg: #0f1520;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: #eef0f4;
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(90,175,175,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(90,175,175,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+        }
+
+        .corner-glow {
+            position: fixed;
+            width: 380px; height: 380px;
+            border-radius: 50%;
+            filter: blur(100px);
+            background: radial-gradient(circle, #5aafaf, transparent 70%);
+            z-index: 0;
+        }
+        .tl { top: -150px; left: -100px; opacity: 0.06; }
+        .br { bottom: -150px; right: -100px; opacity: 0.05; animation: glow 7s ease-in-out infinite alternate; }
+
+        @keyframes glow {
+            from { opacity: 0.04; }
+            to { opacity: 0.09; }
+        }
+
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 380px;
+            background: rgba(16, 22, 34, 0.9);
+            border: 1px solid rgba(90,175,175,0.1);
+            border-radius: 18px;
+            padding: 40px 36px;
+            backdrop-filter: blur(20px);
+            box-shadow:
+                0 0 0 1px rgba(90,175,175,0.05),
+                0 24px 64px rgba(0,0,0,0.85);
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+
+        .shield-wrap {
+            width: 54px; height: 54px;
+            margin: 0 auto 15px;
+            background: rgba(90,175,175,0.07);
+            border: 1px solid rgba(90,175,175,0.18);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 20px rgba(90,175,175,0.08);
+        }
+
+        .header h1 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .header p {
+            color: rgba(255,255,255,0.28);
+            font-size: 0.73rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .warning {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,170,0,0.05);
+            border: 1px solid rgba(255,170,0,0.1);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 22px;
+            font-size: 0.73rem;
+            color: rgba(255,170,0,0.55);
+            letter-spacing: 0.3px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.32);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(8,12,20,0.7);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            color: #eef0f4;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.25s;
+            margin-bottom: 18px;
+            letter-spacing: 2px;
+        }
+        input[type="password"]:focus {
+            outline: none;
+            border-color: rgba(90,175,175,0.35);
+            background: rgba(90,175,175,0.03);
+            box-shadow: 0 0 0 3px rgba(90,175,175,0.06);
+        }
+        input::placeholder { letter-spacing: 3px; color: rgba(255,255,255,0.12); }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #5aafaf 0%, #3d8a8a 100%);
+            color: #0f1520;
+            border: none;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.87rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 18px rgba(90,175,175,0.18);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(90,175,175,0.3);
+        }
+        .btn:active { transform: translateY(0); }
+
+        .alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.82rem;
+            border-left: 3px solid #ff5555;
+            background: rgba(255,68,68,0.07);
+            color: #ff6b6b;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.74rem;
+            color: rgba(255,255,255,0.18);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .back:hover { color: rgba(255,255,255,0.45); }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="corner-glow tl"></div>
+    <div class="corner-glow br"></div>
+
+    <div class="card">
+        <div class="header">
+            <div class="shield-wrap">🔐</div>
+            <h1>Admin Toegang</h1>
+            <p>MVAI Connexx — Beheerportaal</p>
+        </div>
+
+        <div class="warning">
+            <span>⚠</span> Beperkte toegang — alleen geautoriseerd personeel
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}{% for category, message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}{% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <label for="access_code">Admin Access Code</label>
+            <input
+                type="password"
+                id="access_code"
+                name="access_code"
+                placeholder="••••••••••••••••"
+                required autofocus autocomplete="off"
+            >
+            <button type="submit" class="btn">Inloggen als Admin</button>
+        </form>
+
+        <a href="/login" class="back">← Terug naar klant login</a>
+    </div>
+</body>
+</html>
