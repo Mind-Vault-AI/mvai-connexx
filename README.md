@@ -1,6 +1,16 @@
-# MVAI Connexx - Multi-Tenant Enterprise Platform
+# MVAI Connexx — Multi-Tenant Enterprise Platform
 
-## 📋 Overzicht
+> **Live demo:** [connexx.mindvault-ai.com](https://connexx.mindvault-ai.com)
+
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.x-black?logo=flask)
+![SQLite](https://img.shields.io/badge/Database-SQLite-lightgrey?logo=sqlite)
+![Hostinger VPS](https://img.shields.io/badge/Hosted-Hostinger_VPS-orange)
+![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen)
+
+---
+
+## Overzicht
 
 MVAI Connexx is een **production-ready multi-tenant platform** voor logistieke data borging en procesoptimalisatie. Het systeem biedt veilige, geïsoleerde omgevingen voor meerdere klanten met professioneel dashboard, analytics en export functionaliteit.
 
