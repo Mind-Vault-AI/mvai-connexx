@@ -276,6 +276,20 @@ def init_db():
             )
         ''')
 
+        # Multi-AI provider configuratie per klant (BYOK)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS customer_ai_providers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL UNIQUE,
+                provider TEXT NOT NULL DEFAULT 'openai',
+                model TEXT,
+                api_key_encrypted TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (customer_id) REFERENCES customers(id)
+            )
+        ''')
+
         # ═══════════════════════════════════════════════════════
         # ICT MONITORING & ERROR REPORTING TABLES
         # ═══════════════════════════════════════════════════════

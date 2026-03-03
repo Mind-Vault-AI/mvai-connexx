@@ -497,6 +497,98 @@ def customer_ai_assistant():
                          suggestions=suggestions,
                          conversations=conversations)
 
+@app.route('/customer/ai/providers')
+@login_required
+def customer_ai_providers():
+    """AI Provider beheer pagina voor klant (BYOK)"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    import json as _json
+    from ai_providers import PROVIDERS, get_customer_provider_config
+
+    customer_id = session['customer_id']
+    customer = db.get_customer_by_id(customer_id)
+    current_config = get_customer_provider_config(customer_id)
+
+    return render_template(
+        'customer_ai_providers.html',
+        customer=customer,
+        providers=PROVIDERS,
+        providers_json=_json.dumps(PROVIDERS),
+        current_config=current_config
+    )
+
+
+@app.route('/customer/ai/providers/save', methods=['POST'])
+@login_required
+def customer_ai_providers_save():
+    """Sla AI provider configuratie op voor klant"""
+    if 'admin' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    from ai_providers import save_customer_provider_config
+
+    customer_id = session['customer_id']
+    provider = request.form.get('provider', 'openai')
+    model = request.form.get('model', '')
+    api_key = request.form.get('api_key', '').strip() or None
+
+    try:
+        save_customer_provider_config(customer_id, provider, model, api_key)
+        flash('AI provider instellingen opgeslagen!', 'success')
+    except Exception as e:
+        flash(f'Fout bij opslaan: {str(e)}', 'error')
+
+    return redirect(url_for('customer_ai_providers'))
+
+
+@app.route('/customer/ai/providers/test', methods=['POST'])
+@login_required
+def customer_ai_providers_test():
+    """Test AI provider verbinding"""
+    if 'admin' in session:
+        return jsonify({"success": False, "message": "Admin heeft geen AI providers"}), 403
+
+    from ai_providers import test_provider_config, get_customer_provider_config, decrypt_api_key
+
+    customer_id = session['customer_id']
+    data = request.get_json() or {}
+
+    provider = data.get('provider', 'openai')
+    model = data.get('model', '')
+    api_key = data.get('api_key', '').strip()
+
+    # Als geen key opgegeven, gebruik opgeslagen klant key
+    if not api_key:
+        config_row = get_customer_provider_config(customer_id)
+        if config_row and config_row.get('api_key_encrypted'):
+            try:
+                api_key = decrypt_api_key(config_row['api_key_encrypted'])
+            except Exception:
+                pass
+
+    if not api_key:
+        return jsonify({"success": False, "message": "Geen API key beschikbaar om te testen"}), 400
+
+    result = test_provider_config(provider, api_key, model)
+    return jsonify(result)
+
+
+@app.route('/customer/ai/providers/delete-key', methods=['POST'])
+@login_required
+def customer_ai_providers_delete_key():
+    """Verwijder klant API key"""
+    if 'admin' in session:
+        return jsonify({"success": False}), 403
+
+    from ai_providers import delete_customer_api_key
+
+    customer_id = session['customer_id']
+    delete_customer_api_key(customer_id)
+    return jsonify({"success": True})
+
+
 @app.route('/customer/ai/activate', methods=['POST'])
 @login_required
 def customer_ai_activate():

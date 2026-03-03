@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Providers | {{ customer.name }}</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #121212;
+            --accent: #5aafaf;
+            --text: #e0e0e0;
+            --dim: #666;
+            --border: #333;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: rgba(18,18,18,0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 800; font-size: 1.1rem; color: #fff; }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+        .badge-ai { background: linear-gradient(135deg, #5aafaf, #3d8a8a); color: #000; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+
+        h1 { font-size: 1.8rem; color: #fff; margin-bottom: 8px; }
+        .subtitle { color: var(--dim); margin-bottom: 30px; font-size: 0.95rem; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent);
+            text-decoration: none;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        /* ── Current provider status ── */
+        .current-status {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            flex-shrink: 0;
+            box-shadow: 0 0 8px var(--success);
+        }
+        .status-dot.inactive { background: var(--dim); box-shadow: none; }
+
+        /* ── Provider cards ── */
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .provider-card {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .provider-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .provider-card.selected {
+            border-color: var(--accent);
+            background: rgba(90, 175, 175, 0.08);
+        }
+
+        .provider-icon { font-size: 2rem; margin-bottom: 10px; }
+        .provider-name { font-weight: 700; color: #fff; font-size: 1rem; margin-bottom: 4px; }
+        .provider-desc { color: var(--dim); font-size: 0.8rem; }
+
+        .provider-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 8px;
+        }
+
+        /* ── Configuration form ── */
+        .config-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .config-panel h2 { color: #fff; margin-bottom: 20px; font-size: 1.1rem; }
+
+        .form-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            color: var(--text);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .api-key-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .api-key-row input { flex: 1; }
+
+        .btn {
+            padding: 11px 22px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary:hover { background: #4d9999; }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        .btn-danger:hover { background: rgba(239,68,68,0.1); }
+
+        .btn-sm { padding: 8px 14px; font-size: 0.8rem; }
+
+        .action-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        /* ── Alert messages ── */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-success { background: rgba(34,197,94,0.1); border: 1px solid var(--success); color: var(--success); }
+        .alert-error { background: rgba(239,68,68,0.1); border: 1px solid var(--error); color: var(--error); }
+        .alert-info { background: rgba(90,175,175,0.08); border: 1px solid rgba(90,175,175,0.4); color: var(--accent); }
+
+        /* ── Test result ── */
+        #testResult { display: none; margin-top: 15px; }
+
+        /* ── Info box ── */
+        .info-box {
+            background: rgba(90,175,175,0.05);
+            border: 1px solid rgba(90,175,175,0.2);
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .info-box h4 { color: var(--accent); margin-bottom: 8px; font-size: 0.9rem; }
+        .info-box p, .info-box li { color: var(--dim); font-size: 0.85rem; line-height: 1.6; }
+        .info-box ul { padding-left: 18px; }
+
+        .hidden { display: none; }
+
+        @media (max-width: 600px) {
+            .providers-grid { grid-template-columns: 1fr 1fr; }
+            .api-key-row { flex-direction: column; }
+            .action-row { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <span class="logo">MVAI</span>
+            <span class="badge badge-ai">🤖 AI HUB</span>
+        </div>
+        <a href="{{ url_for('customer_dashboard') }}" style="color: var(--text); text-decoration: none;">← Dashboard</a>
+    </header>
+
+    <div class="container">
+        <a href="{{ url_for('customer_ai_assistant') }}" class="back-link">← Terug naar AI Secretaresse</a>
+
+        <h1>🔌 AI Provider Beheer</h1>
+        <p class="subtitle">Kies uw AI provider en koppel uw eigen API key (BYOK)</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for cat, msg in messages %}
+            <div class="alert alert-{{ 'success' if cat == 'success' else 'error' }}">
+                {{ '✅' if cat == 'success' else '❌' }} {{ msg }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Current status -->
+        <div class="current-status">
+            {% if current_config %}
+            <div class="status-dot"></div>
+            <div>
+                <div style="font-weight: 600; color: #fff;">
+                    {{ providers[current_config.provider].icon }} {{ providers[current_config.provider].name }}
+                    — {{ current_config.model or providers[current_config.provider].default_model }}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--dim); margin-top: 2px;">
+                    {% if current_config.api_key_encrypted %}
+                    Eigen API key actief (BYOK)
+                    {% else %}
+                    Platform key in gebruik
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="status-dot inactive"></div>
+            <div style="color: var(--dim);">Geen provider geconfigureerd — platform fallback actief</div>
+            {% endif %}
+        </div>
+
+        <!-- BYOK info box -->
+        <div class="info-box">
+            <h4>🔑 Wat is BYOK (Bring Your Own Key)?</h4>
+            <ul>
+                <li>U gebruikt uw eigen API key van OpenAI, Anthropic, Google of Cohere</li>
+                <li>Kosten gaan direct naar uw eigen account — geen markup</li>
+                <li>Uw key wordt versleuteld opgeslagen (AES-256)</li>
+                <li>U kunt uw key op elk moment verwijderen</li>
+            </ul>
+        </div>
+
+        <!-- Provider selector -->
+        <div class="config-panel">
+            <h2>Stap 1 — Kies uw AI Provider</h2>
+            <div class="providers-grid">
+                {% for key, info in providers.items() %}
+                <div class="provider-card {{ 'selected' if current_config and current_config.provider == key else '' }}"
+                     id="card-{{ key }}"
+                     onclick="selectProvider('{{ key }}')">
+                    <div class="provider-icon">{{ info.icon }}</div>
+                    <div class="provider-name">{{ info.name }}</div>
+                    <div class="provider-desc">{{ info.models[0] }}</div>
+                    <div class="provider-badge" style="background: {{ info.badge_color }};">
+                        {{ key.upper() }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h2>Stap 2 — Kies Model & API Key</h2>
+
+            <form method="POST" action="{{ url_for('customer_ai_providers_save') }}" id="providerForm">
+                <input type="hidden" name="provider" id="selectedProvider"
+                       value="{{ current_config.provider if current_config else 'openai' }}">
+
+                <div class="form-group">
+                    <label>Model</label>
+                    <select name="model" id="modelSelect">
+                        {% set cur_provider = current_config.provider if current_config else 'openai' %}
+                        {% for model in providers[cur_provider].models %}
+                        <option value="{{ model }}"
+                            {{ 'selected' if current_config and current_config.model == model else '' }}>
+                            {{ model }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="apiKeyLabel">API Key (optioneel — laat leeg om platform key te gebruiken)</label>
+                    <div class="api-key-row">
+                        <input type="password"
+                               name="api_key"
+                               id="apiKeyInput"
+                               placeholder="{{ providers[cur_provider].api_key_placeholder }}"
+                               autocomplete="off">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility()">
+                            👁 Toon
+                        </button>
+                    </div>
+                    {% if current_config and current_config.api_key_encrypted %}
+                    <p style="color: var(--dim); font-size: 0.8rem; margin-top: 6px;">
+                        ✅ Er is al een API key opgeslagen. Laat leeg om de huidige te bewaren.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Test result -->
+                <div id="testResult">
+                    <div class="alert" id="testAlert"></div>
+                </div>
+
+                <div class="action-row">
+                    <button type="button" class="btn btn-secondary" onclick="testConnection()">
+                        🔍 Test Verbinding
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Opslaan
+                    </button>
+                    {% if current_config and current_config.api_key_encrypted %}
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteKey()">
+                        🗑 API Key Verwijderen
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- Provider docs links -->
+        <div class="config-panel">
+            <h2>📚 API Key Aanmaken</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                {% for key, info in providers.items() %}
+                <a href="#" onclick="openDocs('{{ key }}'); return false;"
+                   style="display:block; padding: 14px; background:#1a1a1a; border:1px solid var(--border);
+                          border-radius: 6px; text-decoration: none; color: var(--text);
+                          transition: all 0.2s;"
+                   onmouseover="this.style.borderColor='var(--accent)'"
+                   onmouseout="this.style.borderColor='var(--border)'">
+                    <div style="font-size: 1.3rem; margin-bottom: 5px;">{{ info.icon }}</div>
+                    <div style="font-weight: 600; font-size: 0.9rem;">{{ info.name }}</div>
+                    <div style="color: var(--accent); font-size: 0.8rem; margin-top: 4px;">
+                        {{ info.api_key_label }} →
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Provider data from server
+        const PROVIDERS = {{ providers_json | safe }};
+
+        function selectProvider(key) {
+            // Update cards
+            document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-' + key).classList.add('selected');
+
+            // Update hidden input
+            document.getElementById('selectedProvider').value = key;
+
+            // Update model dropdown
+            const modelSelect = document.getElementById('modelSelect');
+            modelSelect.innerHTML = '';
+            PROVIDERS[key].models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                if (m === PROVIDERS[key].default_model) opt.selected = true;
+                modelSelect.appendChild(opt);
+            });
+
+            // Update API key label & placeholder
+            document.getElementById('apiKeyLabel').textContent =
+                PROVIDERS[key].api_key_label + ' (optioneel — laat leeg om platform key te gebruiken)';
+            document.getElementById('apiKeyInput').placeholder = PROVIDERS[key].api_key_placeholder;
+
+            // Reset test result
+            document.getElementById('testResult').style.display = 'none';
+        }
+
+        function toggleKeyVisibility() {
+            const input = document.getElementById('apiKeyInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function testConnection() {
+            const provider = document.getElementById('selectedProvider').value;
+            const model = document.getElementById('modelSelect').value;
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+
+            const testDiv = document.getElementById('testResult');
+            const alertDiv = document.getElementById('testAlert');
+            testDiv.style.display = 'block';
+            alertDiv.className = 'alert alert-info';
+            alertDiv.textContent = '⏳ Verbinding testen...';
+
+            fetch('/customer/ai/providers/test', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({provider, model, api_key: apiKey})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.textContent = '✅ ' + data.message;
+                } else {
+                    alertDiv.className = 'alert alert-error';
+                    alertDiv.textContent = '❌ ' + data.message;
+                }
+            })
+            .catch(e => {
+                alertDiv.className = 'alert alert-error';
+                alertDiv.textContent = '❌ Netwerkfout: ' + e.message;
+            });
+        }
+
+        function deleteKey() {
+            if (!confirm('Weet u zeker dat u de API key wilt verwijderen? Dit kan niet ongedaan worden gemaakt.')) return;
+
+            fetch('/customer/ai/providers/delete-key', {method: 'POST'})
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) location.reload();
+            });
+        }
+
+        function openDocs(provider) {
+            const urls = {
+                openai:    'https://platform.openai.com/api-keys',
+                anthropic: 'https://console.anthropic.com/',
+                gemini:    'https://aistudio.google.com/app/apikey',
+                cohere:    'https://dashboard.cohere.com/api-keys'
+            };
+            window.open(urls[provider], '_blank');
+        }
+    </script>
+</body>
+</html>
