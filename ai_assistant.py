@@ -37,9 +37,17 @@ class AIAssistant:
         self.conversation_history = []
         self.learned_patterns = {}
 
-        # Initialize OpenAI client
+        # Multi-provider AI client (BYOK of platform key)
+        self._provider = None
+        try:
+            from ai_providers import get_provider_for_customer
+            self._provider = get_provider_for_customer(customer_id)
+        except Exception as e:
+            print(f"⚠️ AI provider kon niet worden geladen: {e}")
+
+        # Legacy OpenAI client als fallback (backward compat)
         self.openai_client = None
-        if OPENAI_AVAILABLE and config.Config.OPENAI_API_KEY:
+        if OPENAI_AVAILABLE and config.Config.OPENAI_API_KEY and not self._provider:
             try:
                 self.openai_client = OpenAI(api_key=config.Config.OPENAI_API_KEY)
             except Exception as e:
@@ -108,20 +116,90 @@ class AIAssistant:
                 'message': 'AI Assistant is niet geactiveerd. Ga naar instellingen om te activeren.'
             }
 
-        # Als OpenAI beschikbaar is, gebruik GPT
+        # Multi-provider: gebruik klant's gekozen provider (BYOK of platform key)
+        if self._provider:
+            try:
+                return self._chat_with_provider(user_message, context)
+            except Exception as e:
+                print(f"AI provider error: {e}")
+                # Fallback naar rule-based system
+                return self.process_command(user_message)
+
+        # Legacy OpenAI fallback
         if self.openai_client:
             try:
                 return self._chat_with_openai(user_message, context)
             except Exception as e:
                 print(f"OpenAI error: {e}")
-                # Fallback naar rule-based system
                 return self.process_command(user_message)
 
         # Fallback: gebruik bestaande rule-based system
         return self.process_command(user_message)
 
+    def _chat_with_provider(self, user_message, context=None):
+        """Gebruik de multi-provider AI layer (BYOK of platform key)"""
+
+        customer = self._get_customer_data()
+        recent_logs = self._get_recent_logs(limit=10)
+
+        system_prompt = f"""Je bent een persoonlijke AI Secretaresse voor MVAI Connexx, een logistiek data platform.
+
+Klant informatie:
+- Naam: {customer.get('name', 'Onbekend')}
+- Pricing tier: {customer.get('pricing_tier', 'demo')}
+- Taal voorkeur: {self.preferences['language']}
+- Toon: {self.preferences['tone']}
+
+Je taak:
+- Beantwoord vragen over logistieke data, statistieken, en trends
+- Geef proactieve suggesties voor optimalisatie
+- Wees {self.preferences['tone']} en spreek {self.preferences['language']}
+- Focus op logistiek, transport, kosten, en efficiency
+
+Beschikbare data:
+- Recente logs: {len(recent_logs)} entries
+- Totaal aantal logs: {customer.get('total_logs', 0)}
+
+Geef altijd concrete, actionable antwoorden gebaseerd op de data."""
+
+        if context:
+            system_prompt += f"\n\nExtra context: {json.dumps(context)}"
+
+        if recent_logs:
+            logs_summary = "\n".join([
+                f"- {log['timestamp']}: {log.get('action', 'N/A')}"
+                for log in recent_logs[:5]
+            ])
+            system_prompt += f"\n\nRecentste logs:\n{logs_summary}"
+
+        # Bouw berichten lijst (laatste 5 uit history)
+        messages = [
+            {"role": msg["role"], "content": msg["content"]}
+            for msg in self.conversation_history[-5:]
+        ]
+        messages.append({"role": "user", "content": user_message})
+
+        result = self._provider.chat(system_prompt, messages, max_tokens=1000)
+
+        if result.get('success'):
+            ai_response = result['message']
+            self.conversation_history.append({
+                "role": "user",
+                "content": user_message,
+                "timestamp": datetime.now().isoformat()
+            })
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": ai_response,
+                "timestamp": datetime.now().isoformat()
+            })
+            if len(self.conversation_history) > 20:
+                self.conversation_history = self.conversation_history[-20:]
+
+        return result
+
     def _chat_with_openai(self, user_message, context=None):
-        """Gebruik OpenAI GPT voor intelligente responses"""
+        """Gebruik OpenAI GPT voor intelligente responses (legacy fallback)"""
 
         # Haal klant data op voor context
         customer = self._get_customer_data()

@@ -297,7 +297,13 @@
             <span class="logo">MVAI</span>
             <span class="ai-badge">🤖 AI SECRETARESSE</span>
         </div>
-        <a href="{{ url_for('customer_dashboard') }}" style="color: var(--text); text-decoration: none;">← Dashboard</a>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="{{ url_for('customer_ai_providers') }}"
+               style="color: var(--accent); text-decoration: none; font-size: 0.85rem;">
+                🔌 Provider beheren
+            </a>
+            <a href="{{ url_for('customer_dashboard') }}" style="color: var(--text); text-decoration: none;">← Dashboard</a>
+        </div>
     </header>
 
     <div class="container">

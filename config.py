@@ -72,6 +72,12 @@ class Config:
     OPENAI_MAX_TOKENS = int(os.getenv('OPENAI_MAX_TOKENS', 1000))
     OPENAI_TEMPERATURE = float(os.getenv('OPENAI_TEMPERATURE', 0.7))
 
+    # Multi-AI Provider keys (platform-brede fallback)
+    # Klanten kunnen hun eigen keys opgeven via BYOK (Bring Your Own Key)
+    ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+    COHERE_API_KEY = os.getenv('COHERE_API_KEY', '')
+
     # Pricing
     DEFAULT_PRICING_TIER = os.getenv('DEFAULT_PRICING_TIER', 'demo')
     ALLOW_TIER_UPGRADE = True
