@@ -7,7 +7,7 @@ import sys
 import json
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_file, send_from_directory
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import database as db
@@ -173,6 +173,11 @@ def index():
 
     # Toon luxury landing page voor nieuwe bezoekers
     return render_template('landing.html')
+
+@app.route('/demo/darts501')
+def darts501_demo():
+    """Darts 501 Luxury Edition — live demo"""
+    return send_from_directory(app.root_path, 'darts501-luxury.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
