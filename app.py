@@ -90,6 +90,10 @@ if app.secret_key == Config.DEFAULT_SECRET_KEY and environment != 'production':
     )
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+# SECURE alleen in production (vereist HTTPS)
+app.config['SESSION_COOKIE_SECURE'] = (environment == 'production')
 
 # Rate limiting voor API protection
 limiter = Limiter(

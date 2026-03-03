@@ -19,12 +19,12 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', DEFAULT_SECRET_KEY)
     SESSION_LIFETIME_HOURS = int(os.getenv('SESSION_LIFETIME_HOURS', 24))
 
-    # Database
-    # Fly.io uses /app/data volume, local uses current directory
-    _default_db_path = '/app/data/mvai_connexx.db' if os.path.exists('/app/data') else 'mvai_connexx.db'
+    # Database - pad relatief aan deze config.py (zodat gunicorn vanuit elke dir kan starten)
+    _app_dir = os.path.dirname(os.path.abspath(__file__))
+    _default_db_path = os.path.join(_app_dir, 'mvai_connexx.db')
     DATABASE_PATH = os.getenv('DATABASE_PATH', _default_db_path)
 
-    _default_backup_dir = '/app/data/backups' if os.path.exists('/app/data') else 'backups'
+    _default_backup_dir = os.path.join(_app_dir, 'backups')
     BACKUP_DIR = os.getenv('BACKUP_DIR', _default_backup_dir)
     BACKUP_RETENTION_DAYS = int(os.getenv('BACKUP_RETENTION_DAYS', 30))
 
