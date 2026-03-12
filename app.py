@@ -256,6 +256,60 @@ def customer_dashboard():
                          stats=stats,
                          logs=logs)
 
+@app.route('/api/newsletter/subscribe', methods=['POST', 'OPTIONS'])
+def newsletter_subscribe():
+    """Public endpoint — mindvault-ai.com email capture"""
+    if request.method == 'OPTIONS':
+        resp = app.make_default_options_response()
+        resp.headers['Access-Control-Allow-Origin'] = 'https://mindvault-ai.com'
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return resp
+
+    data = request.get_json(silent=True) or {}
+    email = (data.get('email') or '').strip().lower()
+    source = (data.get('source') or 'mindvault-ai.com')[:100]
+    language = (data.get('language') or 'en')[:10]
+
+    # Basic validation
+    import re as _re
+    if not email or not _re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+        return jsonify({'error': 'Invalid email'}), 400
+
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr or '')[:45]
+
+    try:
+        with db.get_db() as conn:
+            conn.execute(
+                '''INSERT OR IGNORE INTO newsletter_subscribers
+                   (email, source, language, ip_address)
+                   VALUES (?, ?, ?, ?)''',
+                (email, source, language, ip)
+            )
+        return jsonify({'ok': True, 'message': 'Subscribed!'}), 200
+    except Exception as e:
+        logger.error(f'Newsletter subscribe error: {e}')
+        return jsonify({'error': 'Server error'}), 500
+
+
+@app.route('/admin/newsletter/export')
+def admin_newsletter_export():
+    """Admin only — CSV export of newsletter subscribers"""
+    if 'admin' not in session:
+        return redirect(url_for('admin_login'))
+    with db.get_db() as conn:
+        rows = conn.execute(
+            'SELECT email, source, language, status, subscribed_at, ip_address FROM newsletter_subscribers ORDER BY subscribed_at DESC'
+        ).fetchall()
+    output = io.StringIO()
+    w = csv.writer(output)
+    w.writerow(['email', 'source', 'language', 'status', 'subscribed_at', 'ip_address'])
+    for row in rows:
+        w.writerow(row)
+    resp = app.response_class(output.getvalue(), mimetype='text/csv')
+    resp.headers['Content-Disposition'] = 'attachment; filename=newsletter_subscribers.csv'
+    return resp
+
+
 @app.route('/api/save', methods=['POST'])
 @login_required
 def save_entry():

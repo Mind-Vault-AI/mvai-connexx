@@ -555,6 +555,22 @@ def init_db():
 
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_webhooks_customer ON customer_webhooks(customer_id)')
 
+        # Newsletter subscribers tabel (mindvault-ai.com email capture)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL UNIQUE,
+                source TEXT DEFAULT 'mindvault-ai.com',
+                language TEXT DEFAULT 'en',
+                status TEXT DEFAULT 'active',
+                subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                unsubscribed_at TIMESTAMP,
+                ip_address TEXT
+            )
+        ''')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscribers(email)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_newsletter_status ON newsletter_subscribers(status)')
+
         conn.commit()
 
         # Maak standaard admin aan als er nog geen admins zijn

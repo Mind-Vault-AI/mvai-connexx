@@ -1,0 +1,14 @@
+/*
+Theme Name:  Mind Vault AI
+Theme URI:   https://mindvault-ai.com
+Description: Mind Vault AI — Official product showcase site. Astra child theme.
+Author:      Mind Vault AI
+Author URI:  https://mindvault-ai.com
+Template:    astra
+Version:     1.0.0
+License:     GNU General Public License v2 or later
+Text Domain: mindvault-ai
+*/
+
+/* All styling is in front-page.php (self-contained) */
+body { background: #0f1520 !important; }
