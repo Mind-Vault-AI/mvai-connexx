@@ -17,9 +17,37 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -e
             cd /var/www/mvai-connexx
+
+            echo "=== Git pull ==="
             git pull origin main
+
+            echo "=== Install dependencies ==="
             source venv/bin/activate
             pip install -r requirements.txt --quiet
+
+            echo "=== Ensure data directory exists ==="
+            mkdir -p /var/www/mvai-connexx/data
+
+            echo "=== Ensure .env has SECRET_KEY ==="
+            if [ ! -f .env ]; then touch .env; fi
+            if ! grep -q "^SECRET_KEY=" .env; then
+              echo "SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_hex(32))')" >> .env
+              echo "Generated new SECRET_KEY"
+            fi
+            if ! grep -q "^FLASK_ENV=" .env; then
+              echo "FLASK_ENV=production" >> .env
+            fi
+            if ! grep -q "^DATABASE_PATH=" .env; then
+              echo "DATABASE_PATH=/var/www/mvai-connexx/data/mvai_connexx.db" >> .env
+            fi
+
+            echo "=== Restart service ==="
             sudo systemctl restart mvai-connexx
-            echo "Deployed to connexx.mindvault-ai.com"
+
+            echo "=== Verify service is running ==="
+            sleep 3
+            sudo systemctl is-active mvai-connexx && echo "✅ Service is running" || (sudo journalctl -u mvai-connexx -n 20 --no-pager && exit 1)
+
+            echo "✅ Deployed to connexx.mindvault-ai.com"
