@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mind Vault AI — AI tools die werken. Koop, gebruik, verdien. Connexx platform, Darts 501 Luxury, Process Tools en meer.">
+    <title>Mind Vault AI — Shop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #0f1520;
+            --bg-card:   #12181e;
+            --bg-alt:    #0b1018;
+            --border:    rgba(90,175,175,0.12);
+            --border-hard: #1e2535;
+            --text:      #f0f2f5;
+            --muted:     #7a8fa6;
+            --dim:       #4a5a70;
+
+            /* product accent colours — connexx = MVAI teal */
+            --connexx:   #5aafaf;
+            --connexx-d: #3d8a8a;
+            --darts:     #c9a962;
+            --process:   #00c96e;
+            --intel:     #a855f7;
+            --mobile:    #f97316;
+
+            --transition: 0.35s cubic-bezier(.4,0,.2,1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ─── NAV ─────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(5,5,5,.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
+        .nav-inner {
+            max-width: 1400px; margin: 0 auto;
+            padding: .9rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo {
+            font-size: 1.25rem; font-weight: 900; letter-spacing: -1px;
+            background: linear-gradient(135deg,#5aafaf,#3d8a8a);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-links { display: flex; gap: 1.75rem; list-style: none; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none;
+            font-size: .9rem; font-weight: 500;
+            transition: color .2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-actions { display: flex; gap: .75rem; align-items: center; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: .6rem 1.4rem; border-radius: 8px;
+            font-weight: 600; font-size: .9rem;
+            text-decoration: none; border: none; cursor: pointer;
+            transition: all .25s;
+        }
+        .btn-ghost {
+            color: var(--muted); background: transparent;
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { color: var(--text); border-color: #444; }
+        .btn-primary {
+            background: linear-gradient(135deg,#5aafaf,#3d8a8a);
+            color: #fff;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(90,175,175,.35); }
+
+        /* ─── HERO ────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 8rem 2rem 5rem;
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(90,175,175,.1) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 100%, rgba(168,85,247,.07) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .hero-inner { max-width: 900px; text-align: center; position: relative; z-index: 1; }
+        .hero-label {
+            display: inline-block; padding: .4rem 1rem;
+            background: rgba(90,175,175,.1); border: 1px solid rgba(90,175,175,.25);
+            border-radius: 50px; color: var(--connexx);
+            font-size: .8rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 2rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 900; line-height: 1.05; letter-spacing: -3px;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #5aafaf 0%, #3d8a8a 40%, #a855f7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.2rem; color: var(--muted);
+            max-width: 600px; margin: 0 auto 2.5rem;
+        }
+        .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-big {
+            padding: .85rem 2.2rem; font-size: 1rem; border-radius: 10px;
+        }
+        .btn-shop {
+            background: linear-gradient(135deg,#5aafaf,#3d8a8a);
+            color: #fff; font-weight: 700;
+        }
+        .btn-shop:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(90,175,175,.35); }
+        .btn-demo-hero {
+            background: transparent; color: var(--text);
+            border: 1px solid var(--border); font-weight: 600;
+        }
+        .btn-demo-hero:hover { border-color: #555; background: rgba(255,255,255,.04); }
+
+        .payment-badges {
+            margin-top: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+            gap: 1.5rem; flex-wrap: wrap;
+        }
+        .payment-badges span {
+            color: var(--dim); font-size: .8rem;
+        }
+        .badge-item {
+            display: flex; align-items: center; gap: .4rem;
+            padding: .4rem .9rem; border-radius: 6px;
+            background: rgba(255,255,255,.04); border: 1px solid var(--border);
+            font-size: .8rem; font-weight: 600; color: var(--muted);
+        }
+
+        /* ─── BUSINESS LINES (VMI tiles) ──────────── */
+        #shop { padding-top: 5rem; }
+        .section-label {
+            text-align: center;
+            color: var(--muted); font-size: .8rem; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase;
+            margin-bottom: 3rem;
+        }
+
+        .tiles-row {
+            display: flex; width: 100%;
+            min-height: 280px;
+            overflow: hidden;
+        }
+        .tile {
+            flex: 1; position: relative;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 2.5rem 2rem;
+            text-decoration: none;
+            transition: flex var(--transition), opacity var(--transition);
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .tile::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: inherit;
+            opacity: .12;
+            transition: opacity .3s;
+        }
+        .tile:hover { flex: 2.2; }
+        .tile:hover::before { opacity: .22; }
+        .tile-connexx  { background: linear-gradient(160deg, rgba(10,132,255,.15) 0%, rgba(0,80,200,.08) 100%); border-right: 1px solid rgba(10,132,255,.2); }
+        .tile-darts    { background: linear-gradient(160deg, rgba(201,169,98,.15) 0%, rgba(160,130,70,.08) 100%); border-right: 1px solid rgba(201,169,98,.2); }
+        .tile-process  { background: linear-gradient(160deg, rgba(0,201,110,.15) 0%, rgba(0,160,80,.08) 100%); border-right: 1px solid rgba(0,201,110,.2); }
+        .tile-intel    { background: linear-gradient(160deg, rgba(168,85,247,.15) 0%, rgba(120,50,200,.08) 100%); border-right: 1px solid rgba(168,85,247,.2); }
+        .tile-mobile   { background: linear-gradient(160deg, rgba(249,115,22,.15) 0%, rgba(200,80,0,.08) 100%); }
+
+        .tile-content { position: relative; z-index: 1; }
+        .tile-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+        .tile-name {
+            font-size: 1.5rem; font-weight: 800; letter-spacing: -.5px;
+            margin-bottom: .3rem;
+        }
+        .tile-connexx  .tile-name { color: var(--connexx); }
+        .tile-darts    .tile-name { color: var(--darts); }
+        .tile-process  .tile-name { color: var(--process); }
+        .tile-intel    .tile-name { color: var(--intel); }
+        .tile-mobile   .tile-name { color: var(--mobile); }
+
+        .tile-sub { font-size: .85rem; color: var(--muted); font-weight: 500; }
+        .tile-cta {
+            margin-top: 1.2rem;
+            display: inline-flex; align-items: center; gap: .4rem;
+            font-size: .8rem; font-weight: 700;
+            letter-spacing: .5px; text-transform: uppercase;
+            opacity: 0; transform: translateY(8px);
+            transition: opacity .3s, transform .3s;
+        }
+        .tile:hover .tile-cta { opacity: 1; transform: translateY(0); }
+        .tile-connexx .tile-cta { color: var(--connexx); }
+        .tile-darts   .tile-cta { color: var(--darts); }
+        .tile-process .tile-cta { color: var(--process); }
+        .tile-intel   .tile-cta { color: var(--intel); }
+        .tile-mobile  .tile-cta { color: var(--mobile); }
+
+        /* ─── PRODUCT SECTIONS ────────────────────── */
+        .product-section {
+            padding: 7rem 2rem;
+            max-width: 1300px; margin: 0 auto;
+        }
+        .product-section + .product-section {
+            border-top: 1px solid var(--border);
+        }
+        .ps-header {
+            display: flex; align-items: center; gap: 1.2rem;
+            margin-bottom: .75rem;
+        }
+        .ps-dot {
+            width: 14px; height: 14px; border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .ps-title {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 900; letter-spacing: -1.5px;
+        }
+        .ps-tagline {
+            color: var(--muted); font-size: 1.1rem;
+            margin-bottom: 3.5rem; padding-left: 2rem;
+        }
+
+        .ps-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem; align-items: start;
+        }
+        .ps-grid-full { grid-template-columns: 1fr; }
+
+        .ps-features { list-style: none; }
+        .ps-features li {
+            display: flex; align-items: flex-start; gap: .8rem;
+            padding: .7rem 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--muted); font-size: .95rem;
+        }
+        .ps-features li:last-child { border-bottom: none; }
+        .ps-features li::before {
+            content: '✓'; font-weight: 800; font-size: 1rem;
+            flex-shrink: 0; margin-top: .05rem;
+        }
+
+        /* buy panel */
+        .buy-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 2.5rem;
+            position: sticky; top: 7rem;
+        }
+        .buy-panel-title {
+            font-size: 1.1rem; font-weight: 700;
+            margin-bottom: .3rem;
+        }
+        .buy-panel-sub {
+            color: var(--muted); font-size: .85rem;
+            margin-bottom: 2rem;
+        }
+        .price-tag {
+            font-size: 3rem; font-weight: 900; letter-spacing: -2px;
+            line-height: 1; margin-bottom: .3rem;
+        }
+        .price-sub {
+            color: var(--muted); font-size: .85rem; margin-bottom: 2rem;
+        }
+        .buy-btn {
+            display: block; width: 100%; text-align: center;
+            padding: 1rem; border-radius: 10px; font-size: 1rem;
+            font-weight: 700; text-decoration: none;
+            transition: all .25s; border: none; cursor: pointer;
+            margin-bottom: .75rem;
+        }
+        .buy-btn-main {
+            color: #fff;
+        }
+        .buy-btn-paypal {
+            background: #003087; color: #fff;
+        }
+        .buy-btn-paypal:hover { background: #00257d; transform: translateY(-1px); }
+        .buy-btn-crypto {
+            background: var(--bg-alt); color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .buy-btn-crypto:hover { border-color: #444; }
+        .pay-icons {
+            display: flex; gap: .5rem; margin-top: 1.5rem;
+            justify-content: center; flex-wrap: wrap;
+        }
+        .pay-icon {
+            padding: .3rem .7rem; border-radius: 5px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--border);
+            font-size: .75rem; color: var(--muted); font-weight: 600;
+        }
+
+        /* tiers grid */
+        .tiers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+            gap: 1.5rem; margin-top: 3rem;
+        }
+        .tier-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 2rem;
+            transition: border-color .3s, transform .3s;
+            position: relative;
+        }
+        .tier-card:hover { border-color: #333; transform: translateY(-4px); }
+        .tier-card.popular {
+            border-color: var(--connexx);
+            box-shadow: 0 0 40px rgba(90,175,175,.1);
+        }
+        .tier-popular-badge {
+            position: absolute; top: -12px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--connexx); color: #fff;
+            padding: .25rem 1rem; border-radius: 50px;
+            font-size: .7rem; font-weight: 700; white-space: nowrap;
+        }
+        .tier-name {
+            font-size: .8rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--muted); margin-bottom: .75rem;
+        }
+        .tier-price {
+            font-size: 2.2rem; font-weight: 900; letter-spacing: -1px;
+            line-height: 1; margin-bottom: .25rem;
+        }
+        .tier-price span { font-size: .9rem; font-weight: 500; color: var(--muted); }
+        .tier-desc { font-size: .82rem; color: var(--muted); margin-bottom: 1.5rem; }
+        .tier-features { list-style: none; margin-bottom: 1.5rem; }
+        .tier-features li {
+            font-size: .82rem; color: var(--muted);
+            padding: .35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,.04);
+            display: flex; gap: .5rem;
+        }
+        .tier-features li:last-child { border-bottom: none; }
+        .tier-features li::before {
+            content: '✓'; font-weight: 800;
+            color: var(--connexx); flex-shrink: 0;
+        }
+        .tier-btn {
+            display: block; width: 100%; text-align: center;
+            padding: .7rem; border-radius: 8px;
+            font-size: .85rem; font-weight: 700; text-decoration: none;
+            border: 1px solid var(--connexx); color: var(--connexx);
+            transition: all .2s;
+        }
+        .tier-card.popular .tier-btn {
+            background: var(--connexx); color: #fff; border-color: var(--connexx);
+        }
+        .tier-btn:hover {
+            background: var(--connexx); color: #fff; border-color: var(--connexx);
+        }
+
+        /* demo embed */
+        .demo-embed {
+            border-radius: 20px; overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            margin-top: 3rem;
+        }
+        .demo-embed-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-alt); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: .75rem;
+        }
+        .demo-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .demo-embed-title {
+            font-size: .85rem; font-weight: 600; color: var(--muted);
+            margin-left: .5rem;
+        }
+        .demo-embed iframe {
+            display: block; width: 100%;
+            height: 600px; border: none;
+        }
+        .demo-placeholder {
+            height: 300px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 1rem; color: var(--dim);
+        }
+        .demo-placeholder .big-icon { font-size: 4rem; }
+
+        /* coming soon badge */
+        .coming-soon {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .35rem .9rem; border-radius: 50px;
+            background: rgba(249,115,22,.1); border: 1px solid rgba(249,115,22,.25);
+            color: var(--mobile); font-size: .78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .5px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* screenshots / mockups */
+        .mockup-box {
+            border-radius: 16px; overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            padding: 2rem;
+            font-family: 'Inter', monospace;
+            font-size: .82rem; color: #0f0; line-height: 1.8;
+        }
+        .mockup-box .line-dim { color: var(--dim); }
+        .mockup-box .line-accent { color: #5aafaf; }
+        .mockup-box .line-warn { color: var(--darts); }
+        .mockup-box .line-err { color: #f87171; }
+
+        /* ─── PAYMENT SECTION ─────────────────────── */
+        .payment-section {
+            padding: 5rem 2rem;
+            background: var(--bg-alt);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        .payment-section h2 {
+            font-size: 1.75rem; font-weight: 800;
+            margin-bottom: .5rem;
+        }
+        .payment-section p { color: var(--muted); margin-bottom: 2.5rem; }
+        .payment-methods {
+            display: flex; justify-content: center;
+            gap: 1.5rem; flex-wrap: wrap;
+        }
+        .pm-card {
+            padding: 1.5rem 2rem; border-radius: 14px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            min-width: 160px; text-align: center;
+            transition: border-color .3s, transform .3s;
+        }
+        .pm-card:hover { border-color: #444; transform: translateY(-3px); }
+        .pm-icon { font-size: 2.2rem; margin-bottom: .75rem; display: block; }
+        .pm-name { font-weight: 700; margin-bottom: .25rem; }
+        .pm-sub { font-size: .8rem; color: var(--muted); }
+
+        /* ─── FOOTER ──────────────────────────────── */
+        footer {
+            padding: 4rem 2rem 2rem;
+            background: var(--bg-alt); border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1300px; margin: 0 auto;
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem; margin-bottom: 3rem;
+        }
+        .footer-logo {
+            font-size: 1.5rem; font-weight: 900; letter-spacing: -1px;
+            background: linear-gradient(135deg,#5aafaf,#3d8a8a);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 1rem;
+        }
+        .footer-desc { color: var(--muted); font-size: .9rem; line-height: 1.8; }
+        footer h4 { font-size: .9rem; font-weight: 700; margin-bottom: 1.2rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: .6rem; }
+        .footer-links a {
+            color: var(--muted); text-decoration: none; font-size: .88rem;
+            transition: color .2s;
+        }
+        .footer-links a:hover { color: var(--text); }
+        .footer-bottom {
+            max-width: 1300px; margin: 0 auto;
+            padding-top: 2rem; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
+            color: var(--dim); font-size: .82rem;
+        }
+
+        /* ─── RESPONSIVE ──────────────────────────── */
+        @media (max-width: 1024px) {
+            .ps-grid { grid-template-columns: 1fr; }
+            .buy-panel { position: static; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .tiles-row { flex-direction: column; min-height: auto; }
+            .tile { min-height: 140px; flex: none; }
+            .tile:hover { flex: none; }
+            .tile-cta { opacity: 1; transform: translateY(0); }
+            .tiers-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+
+        /* ─── ANIMATIONS ──────────────────────────── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp .7s ease-out both; }
+        .delay-1 { animation-delay: .1s; }
+        .delay-2 { animation-delay: .2s; }
+        .delay-3 { animation-delay: .3s; }
+
+        /* scroll indicator */
+        .scroll-hint {
+            margin-top: 4rem; display: flex; flex-direction: column;
+            align-items: center; gap: .5rem;
+            color: var(--dim); font-size: .78rem;
+        }
+        .scroll-hint-arrow {
+            width: 1.5rem; height: 1.5rem; border-right: 2px solid var(--dim);
+            border-bottom: 2px solid var(--dim); transform: rotate(45deg);
+            animation: bounce 1.5s infinite;
+        }
+        @keyframes bounce {
+            0%,100% { transform: rotate(45deg) translateY(0); }
+            50%      { transform: rotate(45deg) translateY(4px); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav>
+    <div class="nav-inner">
+        <div class="logo">MIND VAULT AI</div>
+        <ul class="nav-links">
+            <li><a href="#connexx">Connexx</a></li>
+            <li><a href="#darts501">Darts 501</a></li>
+            <li><a href="#process-tools">Process Tools</a></li>
+            <li><a href="#business-intel">Business Intel</a></li>
+            <li><a href="#mobile">Mobile App</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="/login" class="btn btn-ghost">Login</a>
+            <a href="#shop" class="btn btn-primary">Shop Nu</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-label fade-up">Mind Vault AI — Officiële Shop</div>
+        <h1 class="fade-up delay-1">
+            AI tools<br>
+            <span>die werken.</span>
+        </h1>
+        <p class="fade-up delay-2">
+            Koop, gebruik, verdien. Professionele tools voor MKB,
+            logistiek &amp; ondernemers. Direct te gebruiken.
+        </p>
+        <div class="hero-ctas fade-up delay-3">
+            <a href="#shop" class="btn btn-big btn-shop">Bekijk alle producten</a>
+            <a href="#darts501" class="btn btn-big btn-demo-hero">Gratis demo proberen</a>
+        </div>
+        <div class="payment-badges fade-up delay-3">
+            <span>Betalen via:</span>
+            <div class="badge-item">💳 Gumroad</div>
+            <div class="badge-item">🅿️ PayPal</div>
+            <div class="badge-item">₿ Crypto</div>
+            <div class="badge-item">🔒 Veilig &amp; direct</div>
+        </div>
+        <div class="scroll-hint">
+            <span>Scroll voor producten</span>
+            <div class="scroll-hint-arrow"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════ BUSINESS LINES (VMI-style) ══════════════ -->
+<section id="shop">
+    <p class="section-label">Onze producten</p>
+    <div class="tiles-row">
+        <a href="#connexx" class="tile tile-connexx">
+            <div class="tile-content">
+                <span class="tile-icon">⚡</span>
+                <div class="tile-name">Connexx</div>
+                <div class="tile-sub">SaaS Platform · €19–€299/mo</div>
+                <div class="tile-cta">Bekijk plans →</div>
+            </div>
+        </a>
+        <a href="#darts501" class="tile tile-darts">
+            <div class="tile-content">
+                <span class="tile-icon">🎯</span>
+                <div class="tile-name">Darts 501</div>
+                <div class="tile-sub">Luxury Edition · eenmalig</div>
+                <div class="tile-cta">Live demo →</div>
+            </div>
+        </a>
+        <a href="#process-tools" class="tile tile-process">
+            <div class="tile-content">
+                <span class="tile-icon">⚙️</span>
+                <div class="tile-name">Process Tools</div>
+                <div class="tile-sub">Lean · Six Sigma · standalone</div>
+                <div class="tile-cta">Meer info →</div>
+            </div>
+        </a>
+        <a href="#business-intel" class="tile tile-intel">
+            <div class="tile-content">
+                <span class="tile-icon">📊</span>
+                <div class="tile-name">Business Intel</div>
+                <div class="tile-sub">Marketing · Unit Economics</div>
+                <div class="tile-cta">Meer info →</div>
+            </div>
+        </a>
+        <a href="#mobile" class="tile tile-mobile">
+            <div class="tile-content">
+                <span class="tile-icon">📱</span>
+                <div class="tile-name">Android App</div>
+                <div class="tile-sub">Google Play · binnenkort</div>
+                <div class="tile-cta">Aanmelden →</div>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- ══════════════ CONNEXX ══════════════ -->
+<section id="connexx" class="product-section">
+    <div class="ps-header">
+        <div class="ps-dot" style="background:var(--connexx)"></div>
+        <h2 class="ps-title" style="color:var(--connexx)">Connexx</h2>
+    </div>
+    <p class="ps-tagline">Multi-tenant AI data platform voor logistiek &amp; MKB</p>
+
+    <div class="ps-grid">
+        <div>
+            <ul class="ps-features">
+                <li>AI-assistent in het Nederlands — stel vragen over je data</li>
+                <li>Multi-tenant: elke klant ziet alleen eigen data</li>
+                <li>Real-time analytics dashboard met grafieken</li>
+                <li>REST API + webhooks voor eigen integraties</li>
+                <li>Koppelingen: SAP, Exact Online, AFAS, Shopify, WooCommerce</li>
+                <li>CSV/PDF export + automatische e-mailrapporten</li>
+                <li>Lean Six Sigma &amp; marketing intelligence ingebouwd</li>
+                <li>99.9% uptime SLA (Enterprise)</li>
+                <li>Android app inbegrepen (binnenkort)</li>
+                <li>AVG/GDPR compliant, IP-whitelisting, honeypot</li>
+            </ul>
+
+            <!-- Connexx demo mockup -->
+            <div class="demo-embed" style="margin-top:2.5rem;">
+                <div class="demo-embed-header">
+                    <div class="demo-dot" style="background:#ef4444"></div>
+                    <div class="demo-dot" style="background:var(--darts)"></div>
+                    <div class="demo-dot" style="background:var(--process)"></div>
+                    <span class="demo-embed-title">MVAI Connexx — Live Platform</span>
+                </div>
+                <div class="mockup-box">
+                    <div class="line-dim">$ mvai connexx --status</div>
+                    <div class="line-accent">✓ Platform: ONLINE · Hostinger VPS Amsterdam</div>
+                    <div class="line-accent">✓ DB: 5 klanten actief · 2.847 logs vandaag</div>
+                    <div class="line-dim">$ mvai ai-assistant "Hoeveel routes gisteren?"</div>
+                    <div style="color:#f0f0f0">→ Gisteren zijn 47 routes verwerkt.</div>
+                    <div style="color:#f0f0f0">&nbsp;&nbsp;Gemiddelde doorlooptijd: 2u 14min.</div>
+                    <div style="color:#f0f0f0">&nbsp;&nbsp;Route 12 was het drukst (8 ritten).</div>
+                    <div class="line-dim">$ mvai analytics --today</div>
+                    <div class="line-warn">⚡ Piekmoment: 08:00-09:30 (312 logs/uur)</div>
+                    <div class="line-accent">📈 Week-over-week: +23% groei</div>
+                    <div class="line-dim">_</div>
+                </div>
+                <div style="padding:1.5rem;text-align:center">
+                    <a href="/login" class="btn btn-primary">
+                        Probeer gratis demo (100 logs)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing tiers in buy panel -->
+        <div>
+            <div class="buy-panel">
+                <div class="buy-panel-title">Kies je plan</div>
+                <div class="buy-panel-sub">Maandelijks opzegbaar · geen KVK nodig</div>
+
+                <div style="display:flex;flex-direction:column;gap:.75rem">
+                    <a href="/login"
+                       class="buy-btn buy-btn-main"
+                       style="background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)">
+                        🎁 Demo — Gratis (100 logs)
+                    </a>
+                    <a href="https://mindvault-ai.gumroad.com/l/mvai-particulier"
+                       target="_blank" rel="noopener"
+                       class="buy-btn buy-btn-main"
+                       style="background:rgba(90,175,175,.1);color:var(--connexx);border:1px solid rgba(90,175,175,.3)">
+                        Particulier — €19/mo
+                    </a>
+                    <a href="https://mindvault-ai.gumroad.com/l/mvai-starter"
+                       target="_blank" rel="noopener"
+                       class="buy-btn buy-btn-main"
+                       style="background:rgba(90,175,175,.1);color:var(--connexx);border:1px solid rgba(90,175,175,.3)">
+                        Starter — €29/mo
+                    </a>
+                    <a href="https://mindvault-ai.gumroad.com/l/mvai-mkb"
+                       target="_blank" rel="noopener"
+                       class="buy-btn buy-btn-main"
+                       style="background:var(--connexx);color:#fff">
+                        ⭐ MKB — €49/mo (populairste)
+                    </a>
+                    <a href="https://mindvault-ai.gumroad.com/l/mvai-professional"
+                       target="_blank" rel="noopener"
+                       class="buy-btn buy-btn-main"
+                       style="background:rgba(90,175,175,.1);color:var(--connexx);border:1px solid rgba(90,175,175,.3)">
+                        Professional — €99/mo
+                    </a>
+                    <a href="https://mindvault-ai.gumroad.com/l/mvai-enterprise"
+                       target="_blank" rel="noopener"
+                       class="buy-btn buy-btn-main"
+                       style="background:rgba(90,175,175,.1);color:var(--connexx);border:1px solid rgba(90,175,175,.3)">
+                        Enterprise — €299/mo
+                    </a>
+                </div>
+
+                <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+                    <div style="font-size:.8rem;color:var(--dim);text-align:center;margin-bottom:.75rem">
+                        Of betaal direct via
+                    </div>
+                    <a href="https://www.paypal.com/paypalme/mindvaultai"
+                       target="_blank" rel="noopener"
+                       class="buy-btn buy-btn-paypal">
+                        🅿️ Betalen via PayPal
+                    </a>
+                    <a href="mailto:info@mindvault-ai.com?subject=Crypto betaling Connexx"
+                       class="buy-btn buy-btn-crypto">
+                        ₿ Betalen met Crypto
+                    </a>
+                </div>
+                <div class="pay-icons">
+                    <span class="pay-icon">iDEAL</span>
+                    <span class="pay-icon">Visa</span>
+                    <span class="pay-icon">Mastercard</span>
+                    <span class="pay-icon">BTC</span>
+                    <span class="pay-icon">ETH</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full tier comparison -->
+    <div class="tiers-grid">
+        <div class="tier-card">
+            <div class="tier-name">Demo</div>
+            <div class="tier-price">€0<span>/mo</span></div>
+            <div class="tier-desc">Probeer zonder risico</div>
+            <ul class="tier-features">
+                <li>100 logs/maand</li>
+                <li>Basic analytics</li>
+                <li>CSV export</li>
+            </ul>
+            <a href="/login" class="tier-btn">Start gratis</a>
+        </div>
+        <div class="tier-card">
+            <div class="tier-name">Particulier</div>
+            <div class="tier-price">€19<span>/mo</span></div>
+            <div class="tier-desc">Zelfstandigen &amp; freelancers</div>
+            <ul class="tier-features">
+                <li>500 logs/maand</li>
+                <li>Basic analytics</li>
+                <li>CSV export</li>
+                <li>Mobile app</li>
+            </ul>
+            <a href="https://mindvault-ai.gumroad.com/l/mvai-particulier"
+               target="_blank" rel="noopener" class="tier-btn">Kopen</a>
+        </div>
+        <div class="tier-card">
+            <div class="tier-name">Starter</div>
+            <div class="tier-price">€29<span>/mo</span></div>
+            <div class="tier-desc">Kleine bedrijven</div>
+            <ul class="tier-features">
+                <li>1.000 logs/maand</li>
+                <li>Analytics dashboard</li>
+                <li>CSV export</li>
+            </ul>
+            <a href="https://mindvault-ai.gumroad.com/l/mvai-starter"
+               target="_blank" rel="noopener" class="tier-btn">Kopen</a>
+        </div>
+        <div class="tier-card popular">
+            <div class="tier-popular-badge">POPULAIRSTE</div>
+            <div class="tier-name">MKB</div>
+            <div class="tier-price">€49<span>/mo</span></div>
+            <div class="tier-desc">MKB · 1–50 medewerkers</div>
+            <ul class="tier-features">
+                <li>5.000 logs/maand</li>
+                <li>Advanced analytics</li>
+                <li>API access</li>
+                <li>Priority support</li>
+            </ul>
+            <a href="https://mindvault-ai.gumroad.com/l/mvai-mkb"
+               target="_blank" rel="noopener" class="tier-btn">Kopen</a>
+        </div>
+        <div class="tier-card">
+            <div class="tier-name">Professional</div>
+            <div class="tier-price">€99<span>/mo</span></div>
+            <div class="tier-desc">Groeiende bedrijven</div>
+            <ul class="tier-features">
+                <li>10.000 logs/maand</li>
+                <li>AI Assistant</li>
+                <li>Full API</li>
+                <li>White-label</li>
+            </ul>
+            <a href="https://mindvault-ai.gumroad.com/l/mvai-professional"
+               target="_blank" rel="noopener" class="tier-btn">Kopen</a>
+        </div>
+        <div class="tier-card">
+            <div class="tier-name">Enterprise</div>
+            <div class="tier-price">€299<span>/mo</span></div>
+            <div class="tier-desc">99.9% SLA garantie</div>
+            <ul class="tier-features">
+                <li>100.000 logs/maand</li>
+                <li>Dedicated support</li>
+                <li>Custom integraties</li>
+                <li>SLA garantie</li>
+            </ul>
+            <a href="https://mindvault-ai.gumroad.com/l/mvai-enterprise"
+               target="_blank" rel="noopener" class="tier-btn">Kopen</a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════ DARTS 501 ══════════════ -->
+<section id="darts501" class="product-section" style="background:var(--bg-alt)">
+    <div class="ps-header">
+        <div class="ps-dot" style="background:var(--darts)"></div>
+        <h2 class="ps-title" style="color:var(--darts)">Darts 501</h2>
+    </div>
+    <p class="ps-tagline">Luxury Edition — professionele scorekeeping app voor darters</p>
+
+    <div class="ps-grid">
+        <div>
+            <ul class="ps-features">
+                <li>Volledig in-browser — geen installatie nodig</li>
+                <li>Luxury dark design met gouden accenten</li>
+                <li>Meerdere spelers — toernooimodus</li>
+                <li>Automatische berekeningen &amp; checkout suggesties</li>
+                <li>Statistieken per speler (gemiddelden, three-dart avg)</li>
+                <li>Mobile-first: geoptimaliseerd voor telefoon &amp; tablet</li>
+                <li>Offline bruikbaar na eerste load (PWA-ready)</li>
+                <li>Eenmalige aankoop — voor altijd te gebruiken</li>
+            </ul>
+
+            <!-- Live demo embed -->
+            <div class="demo-embed" style="margin-top:2.5rem;">
+                <div class="demo-embed-header">
+                    <div class="demo-dot" style="background:#ef4444"></div>
+                    <div class="demo-dot" style="background:var(--darts)"></div>
+                    <div class="demo-dot" style="background:var(--process)"></div>
+                    <span class="demo-embed-title">Darts 501 Luxury — Live Demo</span>
+                    <a href="/demo/darts501" target="_blank" rel="noopener"
+                       style="margin-left:auto;color:var(--darts);font-size:.78rem;font-weight:600;text-decoration:none">
+                        Openen in nieuw tabblad ↗
+                    </a>
+                </div>
+                <iframe
+                    src="/demo/darts501"
+                    title="Darts 501 Luxury Demo"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin">
+                </iframe>
+            </div>
+        </div>
+
+        <div>
+            <div class="buy-panel" style="border-color:rgba(201,169,98,.3)">
+                <div class="buy-panel-title">Darts 501 Luxury Edition</div>
+                <div class="buy-panel-sub">Eenmalige aankoop · voor altijd je eigendom</div>
+                <div class="price-tag" style="color:var(--darts)">€9<span style="font-size:1.5rem">,99</span></div>
+                <div class="price-sub">eenmalig — geen abonnement</div>
+
+                <a href="https://mindvault-ai.gumroad.com/l/darts501-luxury"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-main"
+                   style="background:linear-gradient(135deg,#c9a962,#a08a4a);color:#000;margin-bottom:.75rem">
+                    Kopen via Gumroad — €9,99
+                </a>
+                <a href="https://www.paypal.com/paypalme/mindvaultai/9.99"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-paypal">
+                    🅿️ Betalen via PayPal
+                </a>
+                <a href="mailto:info@mindvault-ai.com?subject=Crypto betaling Darts 501"
+                   class="buy-btn buy-btn-crypto">
+                    ₿ Betalen met Crypto
+                </a>
+
+                <div style="margin-top:1.5rem;padding:1rem;background:rgba(201,169,98,.06);border-radius:10px;border:1px solid rgba(201,169,98,.15)">
+                    <p style="font-size:.82rem;color:var(--muted)">
+                        Na aankoop ontvang je de link per e-mail.
+                        Sla op als bookmark — voor altijd toegang.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════ PROCESS TOOLS ══════════════ -->
+<section id="process-tools" class="product-section">
+    <div class="ps-header">
+        <div class="ps-dot" style="background:var(--process)"></div>
+        <h2 class="ps-title" style="color:var(--process)">Process Tools</h2>
+    </div>
+    <p class="ps-tagline">Lean Six Sigma toolkit voor procesoptimalisatie &amp; kwaliteitsborging</p>
+
+    <div class="ps-grid">
+        <div>
+            <ul class="ps-features">
+                <li>DMAIC projectmanagement (Define, Measure, Analyse, Improve, Control)</li>
+                <li>Control charts — statistical process control</li>
+                <li>Sigma level berekeningen en benchmarks</li>
+                <li>Verspilling identificeren (8 Lean wastes)</li>
+                <li>Value stream mapping templates</li>
+                <li>Real-time dashboard met KPI's</li>
+                <li>Export naar PDF/CSV voor managementrapportage</li>
+                <li>Ingebouwd in Connexx Professional &amp; Enterprise</li>
+            </ul>
+
+            <div class="demo-embed" style="margin-top:2.5rem;">
+                <div class="demo-embed-header">
+                    <div class="demo-dot" style="background:#ef4444"></div>
+                    <div class="demo-dot" style="background:var(--darts)"></div>
+                    <div class="demo-dot" style="background:var(--process)"></div>
+                    <span class="demo-embed-title">Process Tools — Preview</span>
+                </div>
+                <div class="demo-placeholder">
+                    <span class="big-icon">⚙️</span>
+                    <p style="color:var(--muted)">Demo beschikbaar via Connexx Professional</p>
+                    <a href="/login" class="btn btn-primary"
+                       style="background:linear-gradient(135deg,var(--process),#009950)">
+                        Probeer gratis via Connexx Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="buy-panel" style="border-color:rgba(0,201,110,.3)">
+                <div class="buy-panel-title">Process Tools</div>
+                <div class="buy-panel-sub">Standalone of inbegrepen bij Connexx Pro</div>
+
+                <div class="price-tag" style="color:var(--process)">€29<span style="font-size:1.2rem">/eenmalig</span></div>
+                <div class="price-sub">of inbegrepen bij Professional (€99/mo) &amp; Enterprise</div>
+
+                <a href="https://mindvault-ai.gumroad.com/l/mvai-process-tools"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-main"
+                   style="background:linear-gradient(135deg,var(--process),#009950);color:#000;margin-bottom:.75rem">
+                    Kopen via Gumroad — €29
+                </a>
+                <a href="https://mindvault-ai.gumroad.com/l/mvai-professional"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-main"
+                   style="background:rgba(0,201,110,.1);color:var(--process);border:1px solid rgba(0,201,110,.3)">
+                    Of: Connexx Professional (inclusief) →
+                </a>
+                <a href="https://www.paypal.com/paypalme/mindvaultai/29"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-paypal" style="margin-top:.75rem">
+                    🅿️ Betalen via PayPal
+                </a>
+                <a href="mailto:info@mindvault-ai.com?subject=Crypto betaling Process Tools"
+                   class="buy-btn buy-btn-crypto">
+                    ₿ Betalen met Crypto
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════ BUSINESS INTEL ══════════════ -->
+<section id="business-intel" class="product-section" style="background:var(--bg-alt)">
+    <div class="ps-header">
+        <div class="ps-dot" style="background:var(--intel)"></div>
+        <h2 class="ps-title" style="color:var(--intel)">Business Intel</h2>
+    </div>
+    <p class="ps-tagline">Marketing intelligence &amp; unit economics — weet wat je verdient en waarom</p>
+
+    <div class="ps-grid">
+        <div>
+            <ul class="ps-features">
+                <li>Unit economics dashboard — LTV, CAC, payback period</li>
+                <li>Customer profitability grading (A/B/C/D klanten)</li>
+                <li>Marketing funnel analyse &amp; kanaalperformance</li>
+                <li>Cohort analyse — klantretentie over tijd</li>
+                <li>Break-even calculator per product/dienst</li>
+                <li>Churn prediction &amp; early warning signals</li>
+                <li>MRR/ARR tracking voor SaaS bedrijven</li>
+                <li>Ingebouwd in Connexx Professional &amp; Enterprise</li>
+            </ul>
+
+            <div class="demo-embed" style="margin-top:2.5rem;">
+                <div class="demo-embed-header">
+                    <div class="demo-dot" style="background:#ef4444"></div>
+                    <div class="demo-dot" style="background:var(--darts)"></div>
+                    <div class="demo-dot" style="background:var(--process)"></div>
+                    <span class="demo-embed-title">Business Intel — Preview</span>
+                </div>
+                <div class="mockup-box">
+                    <div class="line-dim">Unit Economics Dashboard · Q1 2026</div>
+                    <div class="line-accent">─────────────────────────────────</div>
+                    <div style="color:var(--text)">LTV (gem.)      <span style="color:var(--process)">€ 847</span></div>
+                    <div style="color:var(--text)">CAC             <span style="color:var(--intel)">€  62</span></div>
+                    <div style="color:var(--text)">LTV/CAC ratio   <span style="color:var(--process)">13.7x  ✓ Uitstekend</span></div>
+                    <div style="color:var(--text)">Payback period  <span style="color:var(--darts)">1.3 maanden</span></div>
+                    <div style="color:var(--text)">Churn           <span style="color:var(--process)">2.1%  ✓ Laag</span></div>
+                    <div class="line-accent">─────────────────────────────────</div>
+                    <div class="line-warn">▲ MRR groei +18% MoM · Sterk momentum</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="buy-panel" style="border-color:rgba(168,85,247,.3)">
+                <div class="buy-panel-title">Business Intel</div>
+                <div class="buy-panel-sub">Standalone of inbegrepen bij Connexx Pro</div>
+
+                <div class="price-tag" style="color:var(--intel)">€29<span style="font-size:1.2rem">/eenmalig</span></div>
+                <div class="price-sub">of inbegrepen bij Professional (€99/mo) &amp; Enterprise</div>
+
+                <a href="https://mindvault-ai.gumroad.com/l/mvai-business-intel"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-main"
+                   style="background:linear-gradient(135deg,var(--intel),#7c3aed);color:#fff;margin-bottom:.75rem">
+                    Kopen via Gumroad — €29
+                </a>
+                <a href="https://mindvault-ai.gumroad.com/l/mvai-professional"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-main"
+                   style="background:rgba(168,85,247,.1);color:var(--intel);border:1px solid rgba(168,85,247,.3)">
+                    Of: Connexx Professional (inclusief) →
+                </a>
+                <a href="https://www.paypal.com/paypalme/mindvaultai/29"
+                   target="_blank" rel="noopener"
+                   class="buy-btn buy-btn-paypal" style="margin-top:.75rem">
+                    🅿️ Betalen via PayPal
+                </a>
+                <a href="mailto:info@mindvault-ai.com?subject=Crypto betaling Business Intel"
+                   class="buy-btn buy-btn-crypto">
+                    ₿ Betalen met Crypto
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════ MOBILE APP ══════════════ -->
+<section id="mobile" class="product-section">
+    <div class="ps-header">
+        <div class="ps-dot" style="background:var(--mobile)"></div>
+        <h2 class="ps-title" style="color:var(--mobile)">Android App</h2>
+    </div>
+    <div class="coming-soon">⏳ Binnenkort beschikbaar</div>
+    <p class="ps-tagline">MVAI Connexx native Android app — Google Play Store</p>
+
+    <div class="ps-grid">
+        <div>
+            <ul class="ps-features">
+                <li>Volledige Connexx functionaliteit op je telefoon</li>
+                <li>Splash screen &amp; native Android look &amp; feel</li>
+                <li>Offline detectie met duidelijke melding</li>
+                <li>Push notificaties (na launch)</li>
+                <li>Pull-to-refresh &amp; back-button navigatie</li>
+                <li>Getest op Samsung S23 Plus (en andere Android toestellen)</li>
+                <li>Gratis te downloaden voor actieve Connexx abonnees</li>
+                <li>Min SDK: Android 5.0 · Target: Android 14</li>
+            </ul>
+
+            <div class="demo-embed" style="margin-top:2.5rem;">
+                <div class="demo-embed-header">
+                    <div class="demo-dot" style="background:#ef4444"></div>
+                    <div class="demo-dot" style="background:var(--darts)"></div>
+                    <div class="demo-dot" style="background:var(--mobile)"></div>
+                    <span class="demo-embed-title">Android App — Coming Soon</span>
+                </div>
+                <div class="demo-placeholder">
+                    <span class="big-icon">📱</span>
+                    <p style="color:var(--muted)">App is in ontwikkeling · verwacht lancering binnenkort</p>
+                    <p style="color:var(--dim);font-size:.85rem">Meld je aan voor vroege toegang</p>
+                    <a href="mailto:info@mindvault-ai.com?subject=Early access Android app"
+                       class="btn"
+                       style="background:linear-gradient(135deg,var(--mobile),#d14d00);color:#fff;margin-top:.5rem">
+                        Aanmelden voor vroege toegang
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="buy-panel" style="border-color:rgba(249,115,22,.3)">
+                <div class="buy-panel-title">Android App</div>
+                <div class="buy-panel-sub">Gratis voor Connexx abonnees</div>
+                <div class="price-tag" style="color:var(--mobile)">Gratis</div>
+                <div class="price-sub">inbegrepen bij elk betaald Connexx plan</div>
+
+                <a href="/login"
+                   class="buy-btn buy-btn-main"
+                   style="background:linear-gradient(135deg,var(--mobile),#d14d00);color:#fff;margin-bottom:.75rem">
+                    Start met Connexx — app inbegrepen
+                </a>
+                <a href="mailto:info@mindvault-ai.com?subject=Early access Android app"
+                   class="buy-btn buy-btn-crypto">
+                    Aanmelden voor vroege toegang
+                </a>
+
+                <div style="margin-top:1.5rem;padding:1rem;background:rgba(249,115,22,.06);border-radius:10px;border:1px solid rgba(249,115,22,.15)">
+                    <p style="font-size:.82rem;color:var(--muted)">
+                        Package: <code style="color:var(--mobile)">com.mindvault.mvaiconnexz</code><br>
+                        Status: In ontwikkeling · lancering Q2 2026
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════ PAYMENT METHODS ══════════════ -->
+<section class="payment-section">
+    <h2>Meerdere betaalopties</h2>
+    <p>Koop zoals jij wil — veilig, snel en zonder gedoe</p>
+    <div class="payment-methods">
+        <div class="pm-card">
+            <span class="pm-icon">🟠</span>
+            <div class="pm-name">Gumroad</div>
+            <div class="pm-sub">iDEAL · creditcard · PayPal<br>Automatische factuur</div>
+        </div>
+        <div class="pm-card">
+            <span class="pm-icon">🅿️</span>
+            <div class="pm-name">PayPal Business</div>
+            <div class="pm-sub">info@mindvault-ai.com<br>Geverifieerd account</div>
+        </div>
+        <div class="pm-card">
+            <span class="pm-icon">₿</span>
+            <div class="pm-name">Bitcoin / Crypto</div>
+            <div class="pm-sub">BTC · ETH · USDT<br>Mail voor wallet adres</div>
+        </div>
+        <div class="pm-card">
+            <span class="pm-icon">📧</span>
+            <div class="pm-name">Direct contact</div>
+            <div class="pm-sub">info@mindvault-ai.com<br>Maatwerk afspraken</div>
+        </div>
+    </div>
+    <div style="margin-top:2rem;color:var(--dim);font-size:.82rem">
+        Geen KVK vereist voor aankoop · Gumroad handelt BTW af · AVG/GDPR compliant
+    </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-logo">MIND VAULT AI</div>
+            <p class="footer-desc">
+                Professionele AI tools voor MKB, logistiek &amp; ondernemers.
+                Koop wat je nodig hebt. Gebruik direct. Verdien meer.
+            </p>
+            <div style="margin-top:1.5rem">
+                <a href="mailto:info@mindvault-ai.com"
+                   style="color:var(--muted);font-size:.88rem;text-decoration:none">
+                    info@mindvault-ai.com
+                </a>
+            </div>
+        </div>
+        <div>
+            <h4>Producten</h4>
+            <ul class="footer-links">
+                <li><a href="#connexx">Connexx Platform</a></li>
+                <li><a href="#darts501">Darts 501 Luxury</a></li>
+                <li><a href="#process-tools">Process Tools</a></li>
+                <li><a href="#business-intel">Business Intel</a></li>
+                <li><a href="#mobile">Android App</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Platform</h4>
+            <ul class="footer-links">
+                <li><a href="/login">Login / Demo</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="mailto:info@mindvault-ai.com">Support</a></li>
+                <li><a href="/legal">Legal</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Betalen</h4>
+            <ul class="footer-links">
+                <li><a href="https://gumroad.com/mindvault-ai" target="_blank" rel="noopener">Gumroad Shop</a></li>
+                <li><a href="https://www.paypal.com/paypalme/mindvaultai" target="_blank" rel="noopener">PayPal</a></li>
+                <li><a href="mailto:info@mindvault-ai.com?subject=Crypto betaling">Crypto</a></li>
+                <li><a href="/legal#privacy">Privacy Policy</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>&copy; 2026 Mind Vault AI. Alle rechten voorbehouden.</span>
+        <span>Gebouwd met focus op wat telt: jouw resultaten.</span>
+    </div>
+</footer>
+
+<script>
+    // smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) { e.preventDefault(); target.scrollIntoView({ behavior:'smooth', block:'start' }); }
+        });
+    });
+
+    // scroll-triggered fade-up for cards/sections
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.tier-card, .pm-card, .buy-panel').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity .6s ease, transform .6s ease';
+        io.observe(el);
+    });
+
+    // active nav link on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(s => {
+            if (window.scrollY >= s.offsetTop - 200) current = s.id;
+        });
+        navLinks.forEach(a => {
+            a.style.color = a.getAttribute('href') === '#' + current ? '#f0f0f0' : '';
+        });
+    });
+</script>
+</body>
+</html>
