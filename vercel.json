@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "github": {
+    "silent": true
+  },
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://connexx.mindvault-ai.com/$1",
+      "permanent": true
+    }
+  ]
+}
