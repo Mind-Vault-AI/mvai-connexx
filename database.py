@@ -13,36 +13,15 @@ from contextlib import contextmanager
 from functools import wraps
 
 # Database path: gebruik environment variabele of fallback naar lokale directory
-# In productie (Fly.io): DATABASE_PATH=/app/data/mvai_connexx.db
+# In productie (Render): DATABASE_PATH=/app/data/mvai_connexx.db
 # In development: mvai_connexx.db in current directory
 DATABASE = os.environ.get('DATABASE_PATH', 'mvai_connexx.db')
 
-def retry_on_locked(max_retries=3, delay=0.5):
-    """
-    Decorator to retry database operations when encountering OperationalError: database is locked
-    
-    Args:
-        max_retries: Maximum number of retry attempts (default: 3)
-        delay: Delay in seconds between retries (default: 0.5)
-    """
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            last_exception = None
-            for attempt in range(max_retries):
-                try:
-                    return func(*args, **kwargs)
-                except sqlite3.OperationalError as e:
-                    if "database is locked" in str(e):
-                        last_exception = e
-                        if attempt < max_retries - 1:
-                            time.sleep(delay * (attempt + 1))  # Exponential backoff
-                            continue
-                    raise
-            if last_exception:
-                raise last_exception
-        return wrapper
-    return decorator
+# Ensure the database directory exists.
+# render.yaml startCommand calls gunicorn directly (bypassing start.sh which does
+# mkdir -p /app/data), so the directory must be created here at module load time.
+_db_dir = os.path.dirname(os.path.abspath(DATABASE))
+os.makedirs(_db_dir, exist_ok=True)
 
 def retry_on_locked(max_retries=5, initial_delay=0.1):
     """
