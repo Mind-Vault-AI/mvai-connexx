@@ -1,5 +1,43 @@
 # CLAUDE.md — MVAI Connexx
 
+## SESSIE-START CHECKLIST (LEES DIT EERST)
+
+De eigenaar werkt op **telefoon** (Samsung S23 Plus). Houd antwoorden kort en actionable.
+
+### Hostinger API Token
+De `.mcp.json` gebruikt `${HOSTINGER_API_TOKEN}`. Deze is NIET persistent tussen sessies.
+Als Hostinger MCP calls falen met Cloudflare 1003 error:
+1. **Vraag de gebruiker NIET om de token** — hij werkt op telefoon, dat is onwerkbaar
+2. **Deploy via de GitHub Actions pipeline** — push naar `main` triggert auto-deploy naar VPS
+3. **DNS/domein wijzigingen** moeten via hPanel handmatig (of vraag token alleen als het echt moet)
+
+### Wat WEL werkt zonder tokens
+- Git push/pull (authenticated via session)
+- Code wijzigen, testen, committen
+- Push naar `main` → auto-deploy naar Hostinger VPS via SSH (GitHub Actions)
+- Alles in de repo
+
+### Infra overzicht (niet aanraken tenzij gevraagd)
+| Service | Platform | URL | Status |
+|---------|----------|-----|--------|
+| Connexx | Hostinger VPS | connexx.mindvault-ai.com | Actief |
+| ApexFlash | Render + Hostinger | apexflash.pro | Actief |
+| Mind Vault AI | Hostinger WordPress | mindvault-ai.com | In build |
+
+### Werkwijze (MVAI Godmode Protocol)
+Research → Spar → Spec → Build (99.9 SLA) → Test → Deploy → Monitor → Crash Report → Lessons Learned → Verbeter
+
+### Deploy flow (de snelle route)
+```bash
+# 1. Maak wijzigingen
+# 2. Commit + push naar main
+git push origin main
+# 3. GitHub Actions doet de rest: SSH → git pull → pip install → systemctl restart
+# 4. Live op connexx.mindvault-ai.com
+```
+
+---
+
 ## Project Overview
 
 MVAI Connexx is a **multi-tenant enterprise platform** for logistics data validation and process optimization, built by Mind Vault AI. It runs as a Python/Flask web application with SQLite storage, deployed on a Hostinger VPS at `connexx.mindvault-ai.com`.
