@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Mind Vault AI — Enterprise AI tools built from 23 years of real-world experience. Connexx Platform, Trading Tools, Process Automation & more.">
-  <title>Mind Vault AI — Enterprise AI Tools</title>
+  <meta name="description" content="Mind Vault AI — AI tools, e-books, trade tools, templates &amp; custom development. Digital products that work. 30% affiliate program. Buy, use, earn.">
+  <title>Mind Vault AI — Digital Products, AI Tools &amp; E-books</title>
   <!-- GA4 — replace G-XXXXXXXXXX with your property ID -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
@@ -415,6 +415,118 @@
     .footer-bottom a { color: var(--dim); text-decoration: none; }
     .footer-bottom a:hover { color: var(--connexx); }
 
+    /* ─── DIGITAL PRODUCTS / EBOOKS ────────────── */
+    .ebook-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
+    .ebook-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem; transition: all .3s;
+      display: flex; flex-direction: column;
+    }
+    .ebook-card:hover { border-color: rgba(90,175,175,.35); transform: translateY(-3px); }
+    .ebook-cover {
+      height: 140px; border-radius: 10px; margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; position: relative; overflow: hidden;
+    }
+    .ebook-format {
+      position: absolute; top: .5rem; right: .5rem;
+      font-size: .65rem; font-weight: 700; padding: .2rem .5rem;
+      border-radius: 4px; background: rgba(0,0,0,.5); color: #fff;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .ebook-title { font-size: .95rem; font-weight: 800; margin-bottom: .25rem; }
+    .ebook-desc { font-size: .8rem; color: var(--muted); line-height: 1.6; flex: 1; margin-bottom: .8rem; }
+    .ebook-price-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: .8rem; border-top: 1px solid var(--border);
+    }
+    .ebook-price { font-size: 1.1rem; font-weight: 900; color: var(--connexx); }
+    .ebook-price .old { text-decoration: line-through; color: var(--dim); font-size: .8rem; font-weight: 400; margin-right: .3rem; }
+
+    /* ─── AFFILIATE PROGRAM ────────────────────── */
+    .affiliate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .aff-steps { display: flex; flex-direction: column; gap: 1rem; }
+    .aff-step {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.2rem; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 12px;
+      transition: border-color .2s;
+    }
+    .aff-step:hover { border-color: rgba(90,175,175,.3); }
+    .aff-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--connexx), var(--connexx-d));
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: .9rem; flex-shrink: 0;
+    }
+    .aff-step-title { font-weight: 700; font-size: .92rem; margin-bottom: .2rem; }
+    .aff-step-desc { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+    .aff-highlight {
+      background: linear-gradient(135deg, rgba(90,175,175,.08), rgba(168,85,247,.05));
+      border: 1px solid var(--border-h); border-radius: 16px;
+      padding: 2rem; text-align: center;
+    }
+    .aff-commission { font-size: 3.5rem; font-weight: 900; color: var(--connexx); line-height: 1; }
+    .aff-commission-label { font-size: .9rem; color: var(--muted); margin-top: .5rem; }
+    .aff-perks { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: 1.5rem; text-align: left; }
+    .aff-perk {
+      font-size: .8rem; color: var(--muted); padding: .5rem .75rem;
+      background: rgba(0,0,0,.2); border-radius: 8px;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .aff-perk::before { content: '✓'; color: var(--connexx); font-weight: 700; }
+
+    /* ─── DEVELOPMENT SERVICES ─────────────────── */
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
+    .service-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem; transition: all .3s;
+    }
+    .service-card:hover { border-color: rgba(90,175,175,.3); transform: translateY(-3px); }
+    .service-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .service-title { font-size: 1rem; font-weight: 800; margin-bottom: .5rem; }
+    .service-desc { font-size: .85rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+    .service-from { font-size: .82rem; font-weight: 700; color: var(--connexx); }
+
+    /* ─── DEMO HUB ─────────────────────────────── */
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; }
+    .demo-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; transition: all .3s;
+    }
+    .demo-card:hover { border-color: rgba(90,175,175,.3); transform: translateY(-2px); }
+    .demo-preview {
+      height: 160px; display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem; position: relative;
+    }
+    .demo-live-badge {
+      position: absolute; top: .75rem; right: .75rem;
+      font-size: .68rem; font-weight: 700; padding: .2rem .6rem;
+      border-radius: 20px; background: rgba(0,201,110,.15);
+      color: var(--process); border: 1px solid rgba(0,201,110,.25);
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .demo-info { padding: 1.2rem; }
+    .demo-name { font-weight: 800; font-size: .95rem; margin-bottom: .3rem; }
+    .demo-desc { font-size: .8rem; color: var(--muted); margin-bottom: .8rem; }
+
+    /* ─── TRADE TOOLS ──────────────────────────── */
+    .trade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
+    .trade-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem; transition: all .3s;
+    }
+    .trade-card:hover { border-color: rgba(201,169,98,.35); transform: translateY(-3px); }
+    .trade-icon { font-size: 2rem; margin-bottom: .75rem; }
+    .trade-title { font-size: .95rem; font-weight: 800; margin-bottom: .3rem; color: var(--apex); }
+    .trade-desc { font-size: .8rem; color: var(--muted); line-height: 1.5; margin-bottom: .8rem; }
+    .trade-price { font-size: .88rem; font-weight: 700; color: var(--apex); }
+
+    @media (max-width: 768px) {
+      .affiliate-grid { grid-template-columns: 1fr; }
+      .aff-perks { grid-template-columns: 1fr; }
+    }
+
     /* ─── FADE-UP ANIMATIONS ────────────────────── */
     .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .6s var(--tr), transform .6s var(--tr); }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
@@ -474,9 +586,11 @@
     <a href="#" class="logo">MIND VAULT AI</a>
     <ul class="nav-links">
       <li><a href="#products">Products</a></li>
-      <li><a href="#connexx">Connexx</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#ebooks">E-books</a></li>
+      <li><a href="#trade-tools">Trade Tools</a></li>
+      <li><a href="#demos">Demos</a></li>
+      <li><a href="#development">Development</a></li>
+      <li><a href="#affiliate">Affiliate</a></li>
     </ul>
     <div class="nav-actions">
       <a href="https://connexx.mindvault-ai.com/login" class="btn btn-ghost">Login</a>
@@ -489,18 +603,18 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-badge fade-up">Mind Vault AI — Enterprise Tools</div>
+    <div class="hero-badge fade-up">Mind Vault AI — Digital Products &amp; AI Tools</div>
     <h1 class="fade-up delay-1">
-      AI tools<br>
-      <span class="grad">that actually work.</span>
+      Buy. Use.<br>
+      <span class="grad">Earn more.</span>
     </h1>
     <p class="fade-up delay-2">
-      Built from 23 years of real enterprise experience — ERP, Supply Chain, Lean Six Sigma.
-      Now delivering AI-powered software for traders, businesses &amp; teams worldwide.
+      AI tools, e-books, trade tools, templates &amp; custom development.
+      Built from 23 years enterprise experience. Ready to use today.
     </p>
     <div class="hero-ctas fade-up delay-3">
-      <a href="#products" class="btn btn-primary btn-big">Explore All Products ↓</a>
-      <a href="https://connexx.mindvault-ai.com" class="btn btn-ghost btn-big">Try Connexx Free</a>
+      <a href="#ebooks" class="btn btn-primary btn-big">Shop Digital Products &#8595;</a>
+      <a href="#demos" class="btn btn-ghost btn-big">Try Free Demos</a>
     </div>
     <div class="trust-badges fade-up delay-4">
       <span class="trust-badge">💳 <span>Gumroad</span></span>
@@ -515,10 +629,10 @@
 <!-- STATS BAR -->
 <div class="stats-bar">
   <div class="stats-grid">
-    <div class="fade-up"><div class="stat-num">23+</div><div class="stat-label">Years Enterprise Experience</div></div>
-    <div class="fade-up delay-1"><div class="stat-num">Tier 1</div><div class="stat-label">Automotive Clients</div></div>
-    <div class="fade-up delay-2"><div class="stat-num">5</div><div class="stat-label">AI Products Available</div></div>
-    <div class="fade-up delay-3"><div class="stat-num">Global</div><div class="stat-label">Active Deployment</div></div>
+    <div class="fade-up"><div class="stat-num">10+</div><div class="stat-label">Digital Products</div></div>
+    <div class="fade-up delay-1"><div class="stat-num">23+</div><div class="stat-label">Years Experience</div></div>
+    <div class="fade-up delay-2"><div class="stat-num">30%</div><div class="stat-label">Affiliate Commission</div></div>
+    <div class="fade-up delay-3"><div class="stat-num">EU</div><div class="stat-label">Hosted &amp; GDPR</div></div>
   </div>
 </div>
 
@@ -781,6 +895,252 @@
   </div>
 </section>
 
+<!-- ══════════════ E-BOOKS & DIGITAL PRODUCTS ══════════════ -->
+<section id="ebooks" style="background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Digital Products</div>
+    <h2 class="fade-up">E-books &amp; Templates.<br>Learn. Apply. Earn.</h2>
+    <p class="section-sub fade-up delay-1">Practical guides built from real enterprise experience. No fluff — actionable knowledge you can use today.</p>
+
+    <div class="ebook-grid">
+      <div class="ebook-card fade-up">
+        <div class="ebook-cover" style="background:linear-gradient(135deg,rgba(90,175,175,.15),rgba(61,138,138,.08))">
+          <span class="ebook-format">PDF</span>
+          &#128218;
+        </div>
+        <div class="ebook-title">AI Automation for Business</div>
+        <div class="ebook-desc">Step-by-step guide to implementing AI in your business. From ChatGPT prompts to full workflow automation. 80+ pages of actionable strategies.</div>
+        <div class="ebook-price-row">
+          <div class="ebook-price"><span class="old">&euro;29</span> &euro;19</div>
+          <a href="https://mindvault-ai.gumroad.com/l/ai-automation-guide" target="_blank" rel="noopener" class="btn btn-sm btn-primary">Get E-book</a>
+        </div>
+      </div>
+
+      <div class="ebook-card fade-up delay-1">
+        <div class="ebook-cover" style="background:linear-gradient(135deg,rgba(0,201,110,.15),rgba(0,160,80,.08))">
+          <span class="ebook-format">PDF</span>
+          &#9881;&#65039;
+        </div>
+        <div class="ebook-title">Lean Six Sigma Handbook</div>
+        <div class="ebook-desc">From DMAIC to control charts — a practical handbook for process optimization. Includes templates, checklists and real-world case studies.</div>
+        <div class="ebook-price-row">
+          <div class="ebook-price">&euro;24</div>
+          <a href="https://mindvault-ai.gumroad.com/l/lean-six-sigma-handbook" target="_blank" rel="noopener" class="btn btn-sm btn-outline-green">Get E-book</a>
+        </div>
+      </div>
+
+      <div class="ebook-card fade-up delay-2">
+        <div class="ebook-cover" style="background:linear-gradient(135deg,rgba(201,169,98,.15),rgba(160,130,70,.08))">
+          <span class="ebook-format">PDF</span>
+          &#128200;
+        </div>
+        <div class="ebook-title">Trading Psychology &amp; Risk</div>
+        <div class="ebook-desc">Master your mind, master the market. Risk management frameworks, position sizing, and the psychology behind consistent profits.</div>
+        <div class="ebook-price-row">
+          <div class="ebook-price">&euro;14</div>
+          <a href="https://mindvault-ai.gumroad.com/l/trading-psychology" target="_blank" rel="noopener" class="btn btn-sm btn-outline-apex">Get E-book</a>
+        </div>
+      </div>
+
+      <div class="ebook-card fade-up delay-3">
+        <div class="ebook-cover" style="background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(120,50,200,.08))">
+          <span class="ebook-format">BUNDLE</span>
+          &#128230;
+        </div>
+        <div class="ebook-title">Business Templates Bundle</div>
+        <div class="ebook-desc">50+ ready-to-use templates: unit economics calculators, KPI dashboards, project trackers, invoice templates. Notion + Excel + Google Sheets.</div>
+        <div class="ebook-price-row">
+          <div class="ebook-price"><span class="old">&euro;49</span> &euro;29</div>
+          <a href="https://mindvault-ai.gumroad.com/l/business-templates" target="_blank" rel="noopener" class="btn btn-sm" style="border:1px solid rgba(168,85,247,.3);color:#a855f7;background:transparent">Get Bundle</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TRADE TOOLS ══════════════ -->
+<section id="trade-tools">
+  <div class="section-inner">
+    <div class="section-label">Trade Tools</div>
+    <h2 class="fade-up">Smarter trading.<br>Better decisions.</h2>
+    <p class="section-sub fade-up delay-1">Professional-grade tools for traders who take their craft seriously. Built by traders, for traders.</p>
+
+    <div class="trade-grid">
+      <div class="trade-card fade-up">
+        <div class="trade-icon">&#128202;</div>
+        <div class="trade-title">Portfolio Tracker Pro</div>
+        <div class="trade-desc">Track all your positions across exchanges. P&amp;L calculations, allocation view, performance history. Excel + Google Sheets.</div>
+        <div class="trade-price">&euro;19 — one-time</div>
+        <a href="https://mindvault-ai.gumroad.com/l/portfolio-tracker" target="_blank" rel="noopener" class="btn btn-sm btn-outline-apex" style="margin-top:.8rem">Get Tool</a>
+      </div>
+
+      <div class="trade-card fade-up delay-1">
+        <div class="trade-icon">&#9878;&#65039;</div>
+        <div class="trade-title">Risk Management Kit</div>
+        <div class="trade-desc">Position sizing calculator, risk/reward ratio tool, stop-loss optimizer. Never risk more than you should.</div>
+        <div class="trade-price">&euro;14 — one-time</div>
+        <a href="https://mindvault-ai.gumroad.com/l/risk-management-kit" target="_blank" rel="noopener" class="btn btn-sm btn-outline-apex" style="margin-top:.8rem">Get Tool</a>
+      </div>
+
+      <div class="trade-card fade-up delay-2">
+        <div class="trade-icon">&#128209;</div>
+        <div class="trade-title">Trade Journal Template</div>
+        <div class="trade-desc">Professional trade journal with auto-calculated stats. Track entries, exits, emotions, and patterns. Notion + Spreadsheet versions.</div>
+        <div class="trade-price">&euro;9 — one-time</div>
+        <a href="https://mindvault-ai.gumroad.com/l/trade-journal" target="_blank" rel="noopener" class="btn btn-sm btn-outline-apex" style="margin-top:.8rem">Get Tool</a>
+      </div>
+
+      <div class="trade-card fade-up delay-3">
+        <div class="trade-icon">&#128640;</div>
+        <div class="trade-title">Market Analysis Templates</div>
+        <div class="trade-desc">Technical &amp; fundamental analysis frameworks. Pre-built charts, indicator checklists, and market screening templates.</div>
+        <div class="trade-price">&euro;19 — one-time</div>
+        <a href="https://mindvault-ai.gumroad.com/l/market-analysis" target="_blank" rel="noopener" class="btn btn-sm btn-outline-apex" style="margin-top:.8rem">Get Tool</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ DEMO HUB ══════════════ -->
+<section id="demos" style="background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Try Before You Buy</div>
+    <h2 class="fade-up">Live demos.<br>No signup required.</h2>
+    <p class="section-sub fade-up delay-1">Experience our products first-hand. Click, explore, decide.</p>
+
+    <div class="demo-grid">
+      <a href="https://connexx.mindvault-ai.com" target="_blank" rel="noopener" class="demo-card fade-up" style="text-decoration:none;color:inherit">
+        <div class="demo-preview" style="background:linear-gradient(135deg,rgba(90,175,175,.1),rgba(61,138,138,.05))">
+          <div class="demo-live-badge">Live</div>
+          &#9889;
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Connexx Platform</div>
+          <div class="demo-desc">Full AI platform demo — 100 free logs, analytics dashboard, AI assistant.</div>
+          <span class="btn btn-sm btn-primary" style="width:100%;justify-content:center">Try Free Demo &#8594;</span>
+        </div>
+      </a>
+
+      <a href="https://connexx.mindvault-ai.com/demo/darts501" target="_blank" rel="noopener" class="demo-card fade-up delay-1" style="text-decoration:none;color:inherit">
+        <div class="demo-preview" style="background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(120,50,200,.05))">
+          <div class="demo-live-badge">Live</div>
+          &#127919;
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Darts 501 Luxury</div>
+          <div class="demo-desc">Full game experience — multiplayer, statistics, luxury design. Play now!</div>
+          <span class="btn btn-sm btn-outline-darts" style="width:100%;justify-content:center">Play Demo &#8594;</span>
+        </div>
+      </a>
+
+      <div class="demo-card fade-up delay-2">
+        <div class="demo-preview" style="background:linear-gradient(135deg,rgba(0,201,110,.1),rgba(0,160,80,.05))">
+          &#128736;&#65039;
+        </div>
+        <div class="demo-info">
+          <div class="demo-name">Process Tools Preview</div>
+          <div class="demo-desc">DMAIC workflow, control charts, sigma calculations. Available via Connexx Professional.</div>
+          <a href="https://connexx.mindvault-ai.com" target="_blank" rel="noopener" class="btn btn-sm btn-outline-green" style="width:100%;justify-content:center">Access via Connexx &#8594;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ MVAI DEVELOPMENT SERVICES ══════════════ -->
+<section id="development">
+  <div class="section-inner">
+    <div class="section-label">MVAI Development</div>
+    <h2 class="fade-up">Custom AI solutions.<br>Built for your business.</h2>
+    <p class="section-sub fade-up delay-1">23 years enterprise experience + AI expertise = solutions that actually work. From concept to production.</p>
+
+    <div class="services-grid">
+      <div class="service-card fade-up">
+        <div class="service-icon">&#129302;</div>
+        <div class="service-title">Custom AI Integration</div>
+        <div class="service-desc">AI assistants, chatbots, data analysis pipelines — tailored to your workflow. Multi-provider (OpenAI, Anthropic, local models).</div>
+        <div class="service-from">From &euro;2,500</div>
+      </div>
+
+      <div class="service-card fade-up delay-1">
+        <div class="service-icon">&#128187;</div>
+        <div class="service-title">SaaS Development</div>
+        <div class="service-desc">Full-stack SaaS platforms with multi-tenant architecture, payment integration, API design. Python/Flask or Node.js.</div>
+        <div class="service-from">From &euro;5,000</div>
+      </div>
+
+      <div class="service-card fade-up delay-2">
+        <div class="service-icon">&#9881;&#65039;</div>
+        <div class="service-title">Process Automation</div>
+        <div class="service-desc">Eliminate manual work. ERP integrations (SAP, Exact, AFAS), workflow automation, Lean Six Sigma optimization.</div>
+        <div class="service-from">From &euro;1,500</div>
+      </div>
+
+      <div class="service-card fade-up delay-3">
+        <div class="service-icon">&#127912;</div>
+        <div class="service-title">White-Label Solutions</div>
+        <div class="service-desc">Rebrand our tools as your own. Connexx platform, analytics dashboards, AI assistants — your brand, our tech.</div>
+        <div class="service-from">From &euro;3,000</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:2.5rem" class="fade-up delay-3">
+      <a href="#contact" class="btn btn-primary btn-big">Discuss Your Project &#8594;</a>
+      <p style="color:var(--dim);font-size:.82rem;margin-top:.8rem">Free 30-minute consultation &middot; NDA on request &middot; EU based</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ AFFILIATE PROGRAM ══════════════ -->
+<section id="affiliate" style="background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Partner Program</div>
+    <h2 class="fade-up">Earn with MVAI.<br>30% recurring commission.</h2>
+    <p class="section-sub fade-up delay-1">Promote our tools, earn on every sale. Recurring commissions on subscriptions. Real products, real payouts.</p>
+
+    <div class="affiliate-grid">
+      <div class="aff-steps fade-up delay-1">
+        <div class="aff-step">
+          <div class="aff-num">1</div>
+          <div>
+            <div class="aff-step-title">Sign up as partner</div>
+            <div class="aff-step-desc">Quick application — get your unique referral link and marketing materials within 24 hours.</div>
+          </div>
+        </div>
+        <div class="aff-step">
+          <div class="aff-num">2</div>
+          <div>
+            <div class="aff-step-title">Share &amp; promote</div>
+            <div class="aff-step-desc">Share on your blog, social media, YouTube, newsletter. We provide banners, copy, and landing pages.</div>
+          </div>
+        </div>
+        <div class="aff-step">
+          <div class="aff-num">3</div>
+          <div>
+            <div class="aff-step-title">Earn recurring revenue</div>
+            <div class="aff-step-desc">30% commission on every sale. Recurring for subscription products. Paid monthly via PayPal or crypto.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="aff-highlight fade-up delay-2">
+        <div class="aff-commission">30%</div>
+        <div class="aff-commission-label">Recurring Commission</div>
+        <div style="font-size:.82rem;color:var(--dim);margin-top:.3rem">on all Connexx subscriptions &amp; product sales</div>
+        <div class="aff-perks">
+          <div class="aff-perk">Real-time dashboard</div>
+          <div class="aff-perk">90-day cookie</div>
+          <div class="aff-perk">Monthly payouts</div>
+          <div class="aff-perk">Marketing materials</div>
+          <div class="aff-perk">Dedicated support</div>
+          <div class="aff-perk">No minimum payout</div>
+        </div>
+        <a href="mailto:info@mindvault-ai.com?subject=Affiliate Program Application" class="btn btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center">Apply as Partner &#8594;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- LOGIN SECTION -->
 <section class="login-section">
   <div class="section-inner">
@@ -1001,28 +1361,28 @@
       <h4>Products</h4>
       <ul>
         <li><a href="#connexx">Connexx Platform</a></li>
-        <li><a href="https://apexflash.pro">ApexFlash</a></li>
+        <li><a href="#ebooks">E-books &amp; Templates</a></li>
+        <li><a href="#trade-tools">Trade Tools</a></li>
         <li><a href="#darts">Darts 501 Luxury</a></li>
         <li><a href="#process">Process Tools</a></li>
-        <li><a href="#mobile">Android App</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Platform</h4>
       <ul>
         <li><a href="https://connexx.mindvault-ai.com">Login / Demo</a></li>
+        <li><a href="#demos">Live Demos</a></li>
+        <li><a href="#development">MVAI Development</a></li>
+        <li><a href="#affiliate">Affiliate Program</a></li>
         <li><a href="#newsletter">Newsletter</a></li>
-        <li><a href="#contact">Support</a></li>
-        <li><a href="#">Legal</a></li>
-        <li><a href="#">Privacy Policy</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Pay &amp; Buy</h4>
       <ul>
-        <li><a href="#">Gumroad Shop</a></li>
-        <li><a href="#">PayPal</a></li>
-        <li><a href="#">Crypto</a></li>
+        <li><a href="https://mindvault-ai.gumroad.com" target="_blank" rel="noopener">Gumroad Shop</a></li>
+        <li><a href="https://www.paypal.com/paypalme/mindvaultai" target="_blank" rel="noopener">PayPal</a></li>
+        <li><a href="mailto:info@mindvault-ai.com?subject=Crypto payment">Crypto</a></li>
         <li><a href="#contact">Enterprise Invoice</a></li>
       </ul>
     </div>
