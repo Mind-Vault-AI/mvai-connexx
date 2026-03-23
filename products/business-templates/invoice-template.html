@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factuur — Mind Vault AI</title>
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .invoice-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #12121a;
+    min-height: 100vh;
+    padding: 48px;
+  }
+
+  /* Header */
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #6c63ff;
+  }
+  .company-brand h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+  }
+  .company-brand .tagline {
+    font-size: 12px;
+    color: #6c63ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+  .invoice-title {
+    text-align: right;
+  }
+  .invoice-title h2 {
+    font-size: 36px;
+    font-weight: 300;
+    color: #6c63ff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+  .invoice-title .invoice-number {
+    font-size: 14px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  /* Info sections */
+  .invoice-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    gap: 40px;
+  }
+  .info-block {
+    flex: 1;
+  }
+  .info-block h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #6c63ff;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .info-block p {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 2px;
+  }
+  .info-block .name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  /* Invoice meta */
+  .invoice-meta {
+    display: flex;
+    justify-content: flex-end;
+    gap: 32px;
+    margin-bottom: 40px;
+  }
+  .meta-item {
+    text-align: right;
+  }
+  .meta-item .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #888;
+  }
+  .meta-item .value {
+    font-size: 15px;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* Line items table */
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+  }
+  .items-table thead th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #6c63ff;
+    padding: 12px 16px;
+    border-bottom: 1px solid #2a2a3a;
+    font-weight: 600;
+  }
+  .items-table thead th:last-child,
+  .items-table thead th:nth-child(3),
+  .items-table thead th:nth-child(4) {
+    text-align: right;
+  }
+  .items-table tbody td {
+    padding: 16px;
+    border-bottom: 1px solid #1a1a2a;
+    font-size: 14px;
+    color: #ccc;
+    vertical-align: top;
+  }
+  .items-table tbody td:last-child,
+  .items-table tbody td:nth-child(3),
+  .items-table tbody td:nth-child(4) {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .items-table tbody td:first-child {
+    color: #fff;
+    font-weight: 500;
+  }
+  .item-desc {
+    font-size: 12px;
+    color: #777;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  /* Totals */
+  .totals-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 48px;
+  }
+  .totals-table {
+    width: 280px;
+  }
+  .totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #ccc;
+  }
+  .totals-row.subtotal {
+    border-bottom: 1px solid #2a2a3a;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+  }
+  .totals-row.total {
+    border-top: 2px solid #6c63ff;
+    padding-top: 12px;
+    margin-top: 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .totals-row.total .amount {
+    color: #6c63ff;
+  }
+
+  /* Payment info */
+  .payment-section {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+    padding: 24px;
+    background: #1a1a2a;
+    border-radius: 8px;
+    border-left: 3px solid #6c63ff;
+  }
+  .payment-block {
+    flex: 1;
+  }
+  .payment-block h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #6c63ff;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .payment-block p {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 2px;
+  }
+  .payment-block .highlight {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .invoice-footer {
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid #1a1a2a;
+  }
+  .invoice-footer p {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  .invoice-footer .thanks {
+    font-size: 16px;
+    color: #6c63ff;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  /* Print styles */
+  @media print {
+    body {
+      background: #0a0a0f;
+    }
+    .invoice-container {
+      padding: 32px;
+      min-height: auto;
+    }
+  }
+
+  /* Editable field styling */
+  [contenteditable="true"] {
+    outline: none;
+    border-bottom: 1px dashed #333;
+    padding-bottom: 1px;
+    transition: border-color 0.2s;
+  }
+  [contenteditable="true"]:hover {
+    border-color: #6c63ff;
+  }
+  [contenteditable="true"]:focus {
+    border-color: #6c63ff;
+    border-bottom-style: solid;
+  }
+  @media print {
+    [contenteditable="true"] {
+      border: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="invoice-container">
+
+  <!-- Header -->
+  <div class="invoice-header">
+    <div class="company-brand">
+      <h1>Mind Vault AI</h1>
+      <div class="tagline">Intelligent Data Solutions</div>
+    </div>
+    <div class="invoice-title">
+      <h2>Factuur</h2>
+      <div class="invoice-number"># <span contenteditable="true">MVAI-2026-0042</span></div>
+    </div>
+  </div>
+
+  <!-- Company + Client Info -->
+  <div class="invoice-info">
+    <div class="info-block">
+      <h3>Van</h3>
+      <p class="name">Mind Vault AI</p>
+      <p contenteditable="true">Keizersgracht 123</p>
+      <p contenteditable="true">1015 CJ Amsterdam</p>
+      <p contenteditable="true">Nederland</p>
+      <p style="margin-top: 8px;" contenteditable="true">info@mindvault-ai.com</p>
+      <p contenteditable="true">+31 (0)20 123 4567</p>
+      <p contenteditable="true">KVK: 12345678</p>
+      <p contenteditable="true">BTW: NL123456789B01</p>
+    </div>
+    <div class="info-block">
+      <h3>Aan</h3>
+      <p class="name" contenteditable="true">Acme Logistics B.V.</p>
+      <p contenteditable="true">Havenstraat 45</p>
+      <p contenteditable="true">3011 AK Rotterdam</p>
+      <p contenteditable="true">Nederland</p>
+      <p style="margin-top: 8px;" contenteditable="true">finance@acmelogistics.nl</p>
+      <p contenteditable="true">KVK: 87654321</p>
+      <p contenteditable="true">BTW: NL987654321B01</p>
+    </div>
+  </div>
+
+  <!-- Invoice Meta -->
+  <div class="invoice-meta">
+    <div class="meta-item">
+      <div class="label">Factuurdatum</div>
+      <div class="value" contenteditable="true">23 maart 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Vervaldatum</div>
+      <div class="value" contenteditable="true">22 april 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Referentie</div>
+      <div class="value" contenteditable="true">PO-2026-1089</div>
+    </div>
+  </div>
+
+  <!-- Line Items -->
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th style="width: 45%">Omschrijving</th>
+        <th style="width: 10%">Aantal</th>
+        <th style="width: 20%">Tarief</th>
+        <th style="width: 25%">Bedrag</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span contenteditable="true">Connexx Professional Plan — Maandlicentie</span>
+          <div class="item-desc" contenteditable="true">Data validatie platform, onbeperkt gebruikers, API toegang, prioriteit support</div>
+        </td>
+        <td contenteditable="true">1</td>
+        <td contenteditable="true">&euro; 299,00</td>
+        <td contenteditable="true">&euro; 299,00</td>
+      </tr>
+      <tr>
+        <td>
+          <span contenteditable="true">Extra data verwerking — 50.000 records</span>
+          <div class="item-desc" contenteditable="true">Aanvullend recordvolume boven het standaard pakket van 25.000 records/maand</div>
+        </td>
+        <td contenteditable="true">2</td>
+        <td contenteditable="true">&euro; 75,00</td>
+        <td contenteditable="true">&euro; 150,00</td>
+      </tr>
+      <tr>
+        <td>
+          <span contenteditable="true">Lean Six Sigma consultancy</span>
+          <div class="item-desc" contenteditable="true">Procesoptimalisatie workshop: order fulfilment flow analyse en verbeterplan</div>
+        </td>
+        <td contenteditable="true">4 uur</td>
+        <td contenteditable="true">&euro; 125,00</td>
+        <td contenteditable="true">&euro; 500,00</td>
+      </tr>
+      <tr>
+        <td>
+          <span contenteditable="true">Custom API integratie — WMS koppeling</span>
+          <div class="item-desc" contenteditable="true">Eenmalige setup: koppeling met bestaand Warehouse Management Systeem via REST API</div>
+        </td>
+        <td contenteditable="true">1</td>
+        <td contenteditable="true">&euro; 450,00</td>
+        <td contenteditable="true">&euro; 450,00</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Totals -->
+  <div class="totals-section">
+    <div class="totals-table">
+      <div class="totals-row subtotal">
+        <span>Subtotaal</span>
+        <span contenteditable="true">&euro; 1.399,00</span>
+      </div>
+      <div class="totals-row">
+        <span>BTW (21%)</span>
+        <span contenteditable="true">&euro; 293,79</span>
+      </div>
+      <div class="totals-row total">
+        <span>Totaal</span>
+        <span class="amount" contenteditable="true">&euro; 1.692,79</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Info -->
+  <div class="payment-section">
+    <div class="payment-block">
+      <h3>Betalingsgegevens</h3>
+      <p><span class="highlight" contenteditable="true">Mind Vault AI</span></p>
+      <p>IBAN: <span class="highlight" contenteditable="true">NL91 ABNA 0417 1643 00</span></p>
+      <p>BIC: <span contenteditable="true">ABNANL2A</span></p>
+      <p>Bank: <span contenteditable="true">ABN AMRO</span></p>
+    </div>
+    <div class="payment-block">
+      <h3>Betalingsvoorwaarden</h3>
+      <p contenteditable="true">Betaling binnen 30 dagen na factuurdatum.</p>
+      <p contenteditable="true">Vermeld het factuurnummer bij uw betaling.</p>
+      <p style="margin-top: 8px;" contenteditable="true">Bij vragen over deze factuur kunt u contact opnemen via finance@mindvault-ai.com</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="invoice-footer">
+    <p class="thanks">Bedankt voor uw vertrouwen in Mind Vault AI</p>
+    <p>Mind Vault AI &mdash; KVK 12345678 &mdash; BTW NL123456789B01</p>
+    <p>mindvault-ai.com &mdash; info@mindvault-ai.com &mdash; +31 (0)20 123 4567</p>
+  </div>
+
+</div>
+
+</body>
+</html>

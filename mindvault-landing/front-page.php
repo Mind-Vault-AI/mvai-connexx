@@ -144,65 +144,64 @@
     <p class="hero-sub">AI tools, e-books, trade tools, templates &amp; custom development. Built from 23 years enterprise experience.</p>
   </div>
 
-  <!-- ALLE PRODUCTEN — direct zichtbaar -->
+  <!-- ALLE PRODUCTEN — direct zichtbaar, prijzen op sweet spot -->
   <div class="grid" id="products">
 
-    <!-- E-BOOKS -->
-    <a href="https://mindvault-ai.gumroad.com/l/ai-automation-guide" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#128218;</span><span class="card-badge badge-ebook">E-book</span></div>
-      <div class="card-title">AI Automation for Business</div>
-      <div class="card-desc">80+ pages. ChatGPT/Claude prompts, workflow automation, ROI calculations. No fluff.</div>
-      <div class="card-foot"><span class="card-price"><span class="old">$29</span>$19</span><span class="card-btn">Buy</span></div>
-    </a>
-
-    <a href="https://mindvault-ai.gumroad.com/l/lean-six-sigma-handbook" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#9881;&#65039;</span><span class="card-badge badge-ebook">E-book</span></div>
-      <div class="card-title">Lean Six Sigma Handbook</div>
-      <div class="card-desc">DMAIC, control charts, sigma calcs. From real Tier 1 automotive experience.</div>
-      <div class="card-foot"><span class="card-price">$24</span><span class="card-btn green">Buy</span></div>
+    <!-- BEST SELLERS EERST — laagste drempel, hoogste conversie -->
+    <a href="https://mindvault-ai.gumroad.com/l/trade-journal" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#128209;</span><span class="card-badge badge-tool">Best Seller</span></div>
+      <div class="card-title">Trade Journal Template</div>
+      <div class="card-desc">Auto-calculated win rate, profit factor, streaks. Notion + Excel.</div>
+      <div class="card-foot"><span class="card-price">$9</span><span class="card-btn gold">Get It</span></div>
     </a>
 
     <a href="https://mindvault-ai.gumroad.com/l/trading-psychology" class="card gumroad-button">
       <div class="card-top"><span class="card-icon">&#128200;</span><span class="card-badge badge-ebook">E-book</span></div>
       <div class="card-title">Trading Psychology &amp; Risk</div>
       <div class="card-desc">Position sizing, stop-loss strategies, emotional traps. 60+ pages.</div>
-      <div class="card-foot"><span class="card-price">$14</span><span class="card-btn gold">Buy</span></div>
-    </a>
-
-    <a href="https://mindvault-ai.gumroad.com/l/business-templates" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#128230;</span><span class="card-badge badge-bundle">50+ Bundle</span></div>
-      <div class="card-title">Business Templates Bundle</div>
-      <div class="card-desc">Unit economics, KPI dashboards, invoices, OKRs. Notion + Excel + Sheets.</div>
-      <div class="card-foot"><span class="card-price"><span class="old">$49</span>$29</span><span class="card-btn purple">Buy</span></div>
-    </a>
-
-    <!-- TRADE TOOLS -->
-    <a href="https://mindvault-ai.gumroad.com/l/portfolio-tracker" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#128202;</span><span class="card-badge badge-tool">Trade Tool</span></div>
-      <div class="card-title">Portfolio Tracker Pro</div>
-      <div class="card-desc">Multi-exchange P&amp;L tracking. Allocation view. Tax-ready export.</div>
-      <div class="card-foot"><span class="card-price">$19</span><span class="card-btn gold">Buy</span></div>
+      <div class="card-foot"><span class="card-price"><span class="old">$19</span>$11</span><span class="card-btn gold">Get It</span></div>
     </a>
 
     <a href="https://mindvault-ai.gumroad.com/l/risk-management-kit" class="card gumroad-button">
       <div class="card-top"><span class="card-icon">&#9878;&#65039;</span><span class="card-badge badge-tool">Trade Tool</span></div>
       <div class="card-title">Risk Management Kit</div>
       <div class="card-desc">Position sizing calculator, R:R tool, drawdown tracker. Never overexpose.</div>
-      <div class="card-foot"><span class="card-price">$14</span><span class="card-btn gold">Buy</span></div>
+      <div class="card-foot"><span class="card-price">$9</span><span class="card-btn gold">Get It</span></div>
     </a>
 
-    <a href="https://mindvault-ai.gumroad.com/l/trade-journal" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#128209;</span><span class="card-badge badge-tool">Trade Tool</span></div>
-      <div class="card-title">Trade Journal Template</div>
-      <div class="card-desc">Auto-calculated win rate, profit factor, streaks. Notion + Excel.</div>
-      <div class="card-foot"><span class="card-price">$9</span><span class="card-btn gold">Buy</span></div>
+    <a href="https://mindvault-ai.gumroad.com/l/ai-automation-guide" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#128218;</span><span class="card-badge badge-ebook">E-book</span></div>
+      <div class="card-title">AI Automation for Business</div>
+      <div class="card-desc">80+ pages. ChatGPT/Claude prompts, workflow automation, ROI calculations.</div>
+      <div class="card-foot"><span class="card-price"><span class="old">$29</span>$14</span><span class="card-btn">Get It</span></div>
+    </a>
+
+    <a href="https://mindvault-ai.gumroad.com/l/portfolio-tracker" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#128202;</span><span class="card-badge badge-tool">Trade Tool</span></div>
+      <div class="card-title">Portfolio Tracker Pro</div>
+      <div class="card-desc">Multi-exchange P&amp;L tracking. Allocation view. Tax-ready export.</div>
+      <div class="card-foot"><span class="card-price">$14</span><span class="card-btn gold">Get It</span></div>
     </a>
 
     <a href="https://mindvault-ai.gumroad.com/l/market-analysis" class="card gumroad-button">
       <div class="card-top"><span class="card-icon">&#128640;</span><span class="card-badge badge-tool">Trade Tool</span></div>
       <div class="card-title">Market Analysis Templates</div>
       <div class="card-desc">TA + fundamental frameworks. Screeners, watchlists, correlation maps.</div>
-      <div class="card-foot"><span class="card-price">$19</span><span class="card-btn gold">Buy</span></div>
+      <div class="card-foot"><span class="card-price">$14</span><span class="card-btn gold">Get It</span></div>
+    </a>
+
+    <a href="https://mindvault-ai.gumroad.com/l/lean-six-sigma-handbook" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#9881;&#65039;</span><span class="card-badge badge-ebook">E-book</span></div>
+      <div class="card-title">Lean Six Sigma Handbook</div>
+      <div class="card-desc">DMAIC, control charts, sigma calcs. From real Tier 1 automotive experience.</div>
+      <div class="card-foot"><span class="card-price">$19</span><span class="card-btn green">Get It</span></div>
+    </a>
+
+    <a href="https://mindvault-ai.gumroad.com/l/business-templates" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#128230;</span><span class="card-badge badge-bundle">50+ Bundle</span></div>
+      <div class="card-title">Business Templates Bundle</div>
+      <div class="card-desc">Unit economics, KPI dashboards, invoices, OKRs. Notion + Excel + Sheets.</div>
+      <div class="card-foot"><span class="card-price"><span class="old">$49</span>$24</span><span class="card-btn purple">Get It</span></div>
     </a>
 
     <!-- SAAS / PLATFORM -->
@@ -214,26 +213,47 @@
     </a>
 
     <a href="https://connexx.mindvault-ai.com/demo/darts501" target="_blank" rel="noopener" class="card">
-      <div class="card-top"><span class="card-icon">&#127919;</span><span class="card-badge badge-free">Live Demo</span></div>
+      <div class="card-top"><span class="card-icon">&#127919;</span><span class="card-badge badge-free">Play Now</span></div>
       <div class="card-title">Darts 501 Luxury</div>
-      <div class="card-desc">Premium scorekeeping. Multiplayer, stats, luxury design. Play now.</div>
+      <div class="card-desc">Premium scorekeeping. Multiplayer, stats, luxury design.</div>
       <div class="card-foot"><span class="card-price">$9.99</span><span class="card-btn purple">Play &amp; Buy</span></div>
     </a>
 
     <a href="https://mindvault-ai.gumroad.com/l/mvai-process-tools" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#128736;&#65039;</span><span class="card-badge badge-saas">Standalone</span></div>
+      <div class="card-top"><span class="card-icon">&#128736;&#65039;</span><span class="card-badge badge-saas">Pro Tool</span></div>
       <div class="card-title">Process Tools</div>
-      <div class="card-desc">Lean Six Sigma toolkit. DMAIC, control charts, 8 wastes. Or incl. in Pro.</div>
-      <div class="card-foot"><span class="card-price">$29</span><span class="card-btn green">Buy</span></div>
+      <div class="card-desc">Lean Six Sigma toolkit. DMAIC, control charts, 8 wastes.</div>
+      <div class="card-foot"><span class="card-price">$24</span><span class="card-btn green">Get It</span></div>
     </a>
 
     <a href="https://mindvault-ai.gumroad.com/l/mvai-business-intel" class="card gumroad-button">
-      <div class="card-top"><span class="card-icon">&#128202;</span><span class="card-badge badge-saas">Standalone</span></div>
+      <div class="card-top"><span class="card-icon">&#128202;</span><span class="card-badge badge-saas">Pro Tool</span></div>
       <div class="card-title">Business Intelligence</div>
       <div class="card-desc">Unit economics. LTV, CAC, churn prediction, MRR tracking.</div>
-      <div class="card-foot"><span class="card-price">$29</span><span class="card-btn purple">Buy</span></div>
+      <div class="card-foot"><span class="card-price">$24</span><span class="card-btn purple">Get It</span></div>
     </a>
 
+  </div>
+
+  <!-- SOCIAL PROOF — direct onder producten -->
+  <div style="margin-top:1.5rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;text-align:center">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem 1.2rem;max-width:280px">
+      <div style="font-size:.78rem;color:var(--muted);line-height:1.5;font-style:italic">"Saved me 6 hours a week on reporting. The templates just work."</div>
+      <div style="font-size:.7rem;color:var(--dim);margin-top:.3rem">— Operations Manager, Logistics NL</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem 1.2rem;max-width:280px">
+      <div style="font-size:.78rem;color:var(--muted);line-height:1.5;font-style:italic">"The risk management kit paid for itself on my first trade."</div>
+      <div style="font-size:.7rem;color:var(--dim);margin-top:.3rem">— Crypto Trader, Germany</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem 1.2rem;max-width:280px">
+      <div style="font-size:.78rem;color:var(--muted);line-height:1.5;font-style:italic">"Finally a Lean Six Sigma guide from someone who actually did it on the floor."</div>
+      <div style="font-size:.7rem;color:var(--dim);margin-top:.3rem">— Quality Engineer, Automotive</div>
+    </div>
+  </div>
+
+  <!-- GUARANTEE -->
+  <div style="text-align:center;margin-top:1.2rem;padding:.8rem;font-size:.78rem;color:var(--muted)">
+    &#128274; Secure checkout via Gumroad &middot; Instant download &middot; Lifetime updates &middot; 30-day money back
   </div>
 </div>
 
