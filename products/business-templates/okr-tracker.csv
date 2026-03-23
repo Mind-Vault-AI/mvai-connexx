@@ -1,13 +1,13 @@
 objective,key_result,target,current,progress_pct,owner,quarter,status,last_updated,notes
-Accelerate Revenue Growth to Reach Profitability,Increase MRR from 22k to 35k,35000,22800,42,CEO,Q2 2026,On Track,2026-03-15,Enterprise pipeline has 4 deals in negotiation stage
-Accelerate Revenue Growth to Reach Profitability,Close 3 enterprise contracts (>2k MRR each),3,1,33,VP Sales,Q2 2026,At Risk,2026-03-15,LogiCorp signed — TechFlow and DataBridge in final review
-Accelerate Revenue Growth to Reach Profitability,Reduce CAC below 700 through organic channel optimization,700,820,59,VP Marketing,Q2 2026,On Track,2026-03-15,SEO content driving 28% of new leads — up from 18%
-Build a World-Class Product Experience,Achieve NPS score of 55 or higher,55,42,76,VP Product,Q2 2026,On Track,2026-03-15,New onboarding flow live — early feedback very positive
-Build a World-Class Product Experience,Reduce average onboarding time from 14 days to 5 days,5,9,56,Product Lead,Q2 2026,On Track,2026-03-15,Automated setup wizard deployed — measuring impact
-Build a World-Class Product Experience,Ship 3 most-requested features from customer feedback board,3,1,33,Engineering Lead,Q2 2026,On Track,2026-03-15,Bulk import shipped — API v2 and dashboards in sprint
-Scale Customer Success to Reduce Churn,Reduce monthly churn rate from 2.4% to below 1.5%,1.5,2.4,0,VP CS,Q2 2026,Behind,2026-03-15,Health scoring model deployed — proactive outreach started
-Scale Customer Success to Reduce Churn,Increase net revenue retention to 115%,115,108,62,VP CS,Q2 2026,On Track,2026-03-15,Upsell playbook showing results with MKB segment
-Scale Customer Success to Reduce Churn,Achieve 95% customer health score across active accounts,95,78,58,CS Team Lead,Q2 2026,At Risk,2026-03-15,12 accounts flagged red — dedicated recovery plans assigned
-Establish Market Leadership in Logistics AI,Publish 12 thought leadership pieces (blog/whitepaper/case study),12,4,33,Content Lead,Q2 2026,On Track,2026-03-15,Case study with LogiCorp performing well — 2 more drafted
-Establish Market Leadership in Logistics AI,Secure 3 media mentions or industry conference speaking slots,3,1,33,VP Marketing,Q2 2026,On Track,2026-03-15,Supply Chain Summit presentation confirmed for May
-Establish Market Leadership in Logistics AI,Grow LinkedIn company following from 1200 to 3000,3000,1650,25,Social Media Manager,Q2 2026,At Risk,2026-03-15,Engagement rate strong but follower growth needs paid boost
+Accelerate revenue growth to reach Series A readiness,Increase MRR from 25K to 50K,50000,35800,62,CEO,Q2 2026,On Track,2026-03-20,Strong pipeline; enterprise deals closing faster
+Accelerate revenue growth to reach Series A readiness,Close 3 enterprise contracts (>5K MRR each),3,1,33,VP Sales,Q2 2026,At Risk,2026-03-18,2 in late-stage negotiation - need executive push
+Accelerate revenue growth to reach Series A readiness,Reduce CAC below 600 through organic channels,600,610,97,CMO,Q2 2026,On Track,2026-03-21,Content SEO strategy delivering 40% of leads organically
+Build a world-class product experience,Achieve NPS score of 55+,55,52,85,VP Product,Q2 2026,On Track,2026-03-15,New onboarding flow increased activation by 22%
+Build a world-class product experience,Reduce time-to-value below 15 minutes for new users,15,18,73,VP Product,Q2 2026,At Risk,2026-03-19,Interactive tutorial in development - launch ETA April 5
+Build a world-class product experience,Ship 3 most-requested features from customer feedback,3,2,67,CTO,Q2 2026,On Track,2026-03-22,API v2 and bulk import shipped; advanced reporting in QA
+Scale operations for 10x growth,Achieve 99.95% platform uptime,99.95,99.95,100,CTO,Q2 2026,Completed,2026-03-23,Auto-scaling and redundancy fully deployed
+Scale operations for 10x growth,Automate 80% of customer onboarding steps,80,55,69,VP Product,Q2 2026,On Track,2026-03-20,Self-serve provisioning live; automated compliance checks next
+Scale operations for 10x growth,Hire 4 key roles (2 eng + 1 sales + 1 CS),4,2,50,HR Lead,Q2 2026,At Risk,2026-03-17,2 engineers started; sales candidate in final round; CS posting live
+Establish thought leadership in AI-powered logistics,Publish 12 high-quality blog posts / case studies,12,7,58,CMO,Q2 2026,On Track,2026-03-21,3 case studies with named customers performing very well
+Establish thought leadership in AI-powered logistics,Secure 3 speaking slots at industry conferences,3,1,33,CEO,Q2 2026,At Risk,2026-03-14,Logistics Summit confirmed; applied to 4 more - follow up needed
+Establish thought leadership in AI-powered logistics,Grow LinkedIn company page followers to 5000,5000,3200,64,CMO,Q2 2026,On Track,2026-03-22,Employee advocacy program driving 30% of new followers

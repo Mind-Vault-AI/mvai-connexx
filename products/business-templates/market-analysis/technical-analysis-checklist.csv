@@ -1,0 +1,21 @@
+check_item,category,timeframe,signal,value,confidence,weight,action_implication,notes
+Trend Direction (Primary),Trend,Weekly,Bullish,Higher highs and higher lows since Feb 2026,High,10,Hold / Add on dips,200-day MA sloping upward at 12 degrees
+Trend Direction (Secondary),Trend,Daily,Bullish,Price above 20-day and 50-day MA,High,8,Confirms primary uptrend,Minor pullback to 20-MA as buying opportunity
+Support Level (Nearest),Key Levels,Daily,Support at 142.50,142.50,High,9,Stop-loss zone below 140.00,Tested 3 times in last 30 days - held each time
+Resistance Level (Nearest),Key Levels,Daily,Resistance at 158.00,158.00,Medium,9,Take profit zone or breakout watch,Previous all-time high from Jan 2026
+50-Day Moving Average,Moving Averages,Daily,Bullish - Price above,148.30,High,7,Trend confirmation,Golden cross occurred 6 weeks ago
+200-Day Moving Average,Moving Averages,Weekly,Bullish - Price above,135.20,High,8,Long-term trend intact,Consistently above since September 2025
+Golden/Death Cross Status,Moving Averages,Daily,Golden Cross active,50-MA above 200-MA,High,9,Strong bullish signal,Crossover date: Feb 12 2026 - still early in signal
+RSI (14-period),Momentum,Daily,Neutral-Bullish,62.4,Medium,7,Room to run before overbought,Not yet in overbought (>70) territory
+MACD Signal,Momentum,Daily,Bullish,MACD above signal line,Medium,8,Momentum accelerating,Histogram bars increasing for 5 consecutive days
+MACD Histogram Trend,Momentum,Daily,Bullish,Increasing,Medium,6,Strengthening momentum,Watch for divergence if price makes new highs
+Stochastic Oscillator (14/3/3),Momentum,Daily,Neutral,K:58 D:54,Medium,5,No extreme reading,Both lines rising - mild bullish bias
+Volume Analysis,Volume,Daily,Confirming,Above 20-day avg volume,High,8,Volume supports price move,Up days showing 1.4x average volume; healthy accumulation
+Volume Price Trend,Volume,Weekly,Bullish,Rising price + rising volume,High,7,Institutional buying likely,OBV making new highs alongside price
+Bollinger Bands Position,Volatility,Daily,Neutral-Bullish,Price in upper half,Medium,5,Trending within bands,Band width expanding - expect volatility increase
+Average True Range (ATR),Volatility,Daily,Expanding,ATR: 3.20 (14-day),Medium,4,Wider stops needed,Increased from 2.40 to 3.20 over past month
+Fibonacci Retracement,Key Levels,Daily,38.2% held as support,144.80 (38.2% level),High,8,Shallow pullback - bullish,Measured from Oct 2025 low to Mar 2026 high
+Candlestick Pattern (Latest),Price Action,Daily,Bullish engulfing,Mar 20 session,Medium,6,Short-term buy signal,Engulfed previous 2 bearish candles on high volume
+Divergence Check (RSI vs Price),Momentum,Daily,No divergence,Price and RSI aligned,High,7,Trend health confirmed,No bearish divergence present - trend has legs
+Sector Relative Strength,Relative,Weekly,Outperforming,1.18 vs sector index,High,7,Sector leader,Outperforming sector by 18% over past 13 weeks
+Overall Technical Score,Summary,Multi,Bullish,Score: 78/100,High,N/A,Favorable setup for long entry on pullback,15 of 19 checks bullish; 3 neutral; 1 N/A. Primary risk: resistance at 158 and expanded ATR
