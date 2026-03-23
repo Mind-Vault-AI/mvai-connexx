@@ -1,0 +1,31 @@
+sample_number,date,measurement,UCL,CL,LCL,out_of_control,shift,operator,notes
+1,2026-03-01,50.2,53.5,50.0,46.5,No,Day,Operator A,Process start - stable
+2,2026-03-02,49.8,53.5,50.0,46.5,No,Day,Operator B,Within control limits
+3,2026-03-03,50.5,53.5,50.0,46.5,No,Night,Operator C,Normal variation
+4,2026-03-04,49.1,53.5,50.0,46.5,No,Day,Operator A,Slight low - acceptable
+5,2026-03-05,51.3,53.5,50.0,46.5,No,Day,Operator B,Normal variation
+6,2026-03-06,50.7,53.5,50.0,46.5,No,Night,Operator C,Stable operation
+7,2026-03-07,48.9,53.5,50.0,46.5,No,Day,Operator A,Lower range - monitor
+8,2026-03-08,50.0,53.5,50.0,46.5,No,Day,Operator B,Dead center
+9,2026-03-09,51.8,53.5,50.0,46.5,No,Night,Operator C,Upper range - normal
+10,2026-03-10,50.4,53.5,50.0,46.5,No,Day,Operator A,Stable
+11,2026-03-11,49.6,53.5,50.0,46.5,No,Day,Operator B,Normal variation
+12,2026-03-12,52.1,53.5,50.0,46.5,No,Night,Operator C,Trending up slightly
+13,2026-03-13,52.8,53.5,50.0,46.5,No,Day,Operator A,Approaching UCL - watch
+14,2026-03-14,54.1,53.5,50.0,46.5,Yes,Day,Operator B,ABOVE UCL - investigate: raw material batch change
+15,2026-03-15,53.2,53.5,50.0,46.5,No,Night,Operator C,Corrective action: reverted material batch
+16,2026-03-16,51.5,53.5,50.0,46.5,No,Day,Operator A,Returning to normal after correction
+17,2026-03-17,50.3,53.5,50.0,46.5,No,Day,Operator B,Back to center
+18,2026-03-18,50.1,53.5,50.0,46.5,No,Night,Operator C,Stable
+19,2026-03-19,49.5,53.5,50.0,46.5,No,Day,Operator A,Normal variation
+20,2026-03-20,48.2,53.5,50.0,46.5,No,Day,Operator B,Lower range
+21,2026-03-21,47.1,53.5,50.0,46.5,No,Night,Operator C,Trend downward - 3 consecutive below CL
+22,2026-03-22,46.8,53.5,50.0,46.5,No,Day,Operator A,Near LCL - run rule trigger (7 below CL)
+23,2026-03-23,45.9,53.5,50.0,46.5,Yes,Day,Operator B,BELOW LCL - investigate: calibration drift detected
+24,2026-03-24,47.5,53.5,50.0,46.5,No,Night,Operator C,Recalibrated equipment - improving
+25,2026-03-25,49.2,53.5,50.0,46.5,No,Day,Operator A,Recovery after recalibration
+26,2026-03-26,50.1,53.5,50.0,46.5,No,Day,Operator B,Back to center - stable
+27,2026-03-27,50.6,53.5,50.0,46.5,No,Night,Operator C,Normal operation resumed
+28,2026-03-28,49.8,53.5,50.0,46.5,No,Day,Operator A,Stable
+29,2026-03-29,50.3,53.5,50.0,46.5,No,Day,Operator B,Consistent performance
+30,2026-03-30,50.0,53.5,50.0,46.5,No,Night,Operator C,Process centered and stable - control maintained
