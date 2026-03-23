@@ -1,0 +1,9 @@
+date,pair_ticker,direction,entry_price,exit_price,stop_loss,take_profit,position_size,fees,pnl,r_multiple,strategy,setup_quality,emotion_before,emotion_after,process_score,notes,screenshot_link
+2026-01-06,EUR/USD,LONG,1.0850,1.0920,1.0800,1.0950,20000,2.40,137.60,1.40,Trend Pullback,A+,Calm,Satisfied,23,"Clean pullback to 50 EMA with bullish engulfing. Held to T1, trailed rest. Followed plan perfectly.",
+2026-01-07,BTC/USD,LONG,62000,61200,60500,65000,0.033,-800.00,-1.00,Breakout,B+,Excited,Frustrated,18,"Entered breakout too early before confirmation. FOMO entry — need to wait for retest. Lesson learned.",
+2026-01-08,ASML,SHORT,740.00,752.00,755.00,720.00,25,3.50,-303.50,-1.01,Mean Reversion,A,Calm,Neutral,22,"Setup was valid but market momentum was too strong. Stopped out correctly. Good process despite loss.",
+2026-01-09,GBP/USD,LONG,1.2720,1.2790,1.2680,1.2840,15000,1.80,103.20,1.75,Support Bounce,A,Calm,Calm,24,"Textbook support bounce with volume confirmation. Took partial at T1, trailing remainder.",
+2026-01-10,SPY,LONG,482.50,485.20,480.00,488.00,40,1.60,106.40,1.08,Gap Fill,B,Anxious,Relieved,19,"Entered gap fill but was anxious about position. Took profit too early at 1R instead of holding to target. Work on patience.",
+2026-01-13,EUR/USD,SHORT,1.0900,1.0860,1.0940,1.0820,25000,2.20,97.80,1.00,Resistance Rejection,A+,Calm,Satisfied,25,"Perfect execution. Double top at resistance with bearish divergence. Followed plan to the letter.",
+2026-01-14,ETH/USD,LONG,3400,3250,3300,3600,0.5,5.00,-80.00,-0.75,Breakout,C,FOMO,Angry,12,"Revenge trade after missing the BTC move. Entered without proper analysis. Clear rule violation. Taking rest of day off.",
+2026-01-15,AAPL,LONG,185.50,189.75,183.00,192.00,20,2.00,83.00,1.70,Earnings Momentum,A,Neutral,Satisfied,21,"Post-earnings momentum play. Good entry on pullback to VWAP. Took partial profits per plan.",

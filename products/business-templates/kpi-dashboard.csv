@@ -1,0 +1,16 @@
+kpi_name,category,target,actual,variance,variance_pct,status,trend,owner,frequency,notes
+Monthly Recurring Revenue (MRR),Revenue,35000,35800,800,2.3%,On Track,Up,CFO,Monthly,Exceeded target by expansion revenue
+Annual Recurring Revenue (ARR),Revenue,420000,429600,9600,2.3%,On Track,Up,CFO,Monthly,Projected to hit 500K by Q4
+Gross Profit Margin,Revenue,80%,82.8%,2.8%,3.5%,Exceeding,Up,CFO,Monthly,Infrastructure optimization paying off
+Net Profit Margin,Revenue,15%,18.2%,3.2%,21.3%,Exceeding,Up,CFO,Monthly,Operating leverage improving
+Customer Acquisition Cost (CAC),Sales,700,610,-90,-12.9%,Exceeding,Down,VP Sales,Monthly,Content marketing reducing paid spend
+Customer Lifetime Value (LTV),Sales,6000,7000,1000,16.7%,Exceeding,Up,VP Sales,Monthly,Lower churn driving LTV up
+Monthly Churn Rate,Customer Success,3.5%,3.0%,-0.5%,-14.3%,Exceeding,Down,CS Lead,Monthly,Onboarding improvements working
+Net Promoter Score (NPS),Customer Success,45,52,7,15.6%,Exceeding,Up,CS Lead,Quarterly,Survey response rate 68%
+Customer Satisfaction (CSAT),Customer Success,4.2,4.4,0.2,4.8%,On Track,Stable,CS Lead,Monthly,Based on post-interaction surveys
+Support Ticket Resolution Time,Customer Success,4h,3.2h,-0.8h,-20.0%,Exceeding,Down,Support Lead,Weekly,New KB articles reducing volume
+Website Conversion Rate,Marketing,3.5%,3.8%,0.3%,8.6%,On Track,Up,CMO,Weekly,Landing page A/B test winner deployed
+Lead-to-Customer Rate,Marketing,12%,14.2%,2.2%,18.3%,Exceeding,Up,CMO,Monthly,Sales enablement content improving close rate
+Employee Satisfaction (eNPS),HR,40,38,-2,-5.0%,At Risk,Down,HR Lead,Quarterly,Action plan: flexible hours + learning budget
+Revenue Per Employee,Operations,85000,89500,4500,5.3%,On Track,Up,COO,Quarterly,Automation initiatives improving efficiency
+Uptime SLA,Engineering,99.9%,99.95%,0.05%,0.05%,On Track,Stable,CTO,Daily,One 12-min incident in reporting period

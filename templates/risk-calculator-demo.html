@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Position Size & Risk Calculator — Mind Vault AI</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border: #30363d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent: #58a6ff;
+    --accent-hover: #79c0ff;
+    --green: #3fb950;
+    --green-bg: rgba(63, 185, 80, 0.1);
+    --red: #f85149;
+    --red-bg: rgba(248, 81, 73, 0.1);
+    --yellow: #d29922;
+    --yellow-bg: rgba(210, 153, 34, 0.1);
+    --purple: #bc8cff;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .brand {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 700px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+  }
+
+  .form-group input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .results-card {
+    grid-column: 1 / -1;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .result-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .result-item.highlight {
+    border-color: var(--accent);
+    background: rgba(88, 166, 255, 0.05);
+  }
+
+  .result-item.positive {
+    border-color: var(--green);
+    background: var(--green-bg);
+  }
+
+  .result-item.negative {
+    border-color: var(--red);
+    background: var(--red-bg);
+  }
+
+  .result-item.warning {
+    border-color: var(--yellow);
+    background: var(--yellow-bg);
+  }
+
+  .result-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--text-primary);
+  }
+
+  .result-value.green { color: var(--green); }
+  .result-value.red { color: var(--red); }
+  .result-value.yellow { color: var(--yellow); }
+  .result-value.blue { color: var(--accent); }
+  .result-value.purple { color: var(--purple); }
+
+  .result-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .risk-bar-container {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+
+  .risk-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .risk-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .risk-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+  }
+
+  .checklist {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .checklist h3 {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 0.85rem;
+  }
+
+  .check-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .check-pass {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+
+  .check-fail {
+    background: var(--red-bg);
+    color: var(--red);
+    border: 1px solid var(--red);
+  }
+
+  .check-warn {
+    background: var(--yellow-bg);
+    color: var(--yellow);
+    border: 1px solid var(--yellow);
+  }
+
+  .check-na {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .formula-display {
+    grid-column: 1 / -1;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .formula-display span {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  footer {
+    text-align: center;
+    padding: 30px 0 20px;
+    margin-top: 30px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .direction-toggle {
+    display: flex;
+    gap: 8px;
+  }
+
+  .direction-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .direction-btn:hover {
+    border-color: var(--text-secondary);
+  }
+
+  .direction-btn.active-long {
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .direction-btn.active-short {
+    background: var(--red-bg);
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .btn-reset {
+    width: 100%;
+    padding: 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-reset:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Position Size & Risk Calculator</h1>
+    <p>Calculate your position size, dollar risk, and R:R ratio &mdash; by <span class="brand">Mind Vault AI</span></p>
+  </header>
+
+  <div class="grid">
+    <!-- Account Settings -->
+    <div class="card">
+      <h2>Account Settings</h2>
+      <div class="form-group">
+        <label>Account Balance</label>
+        <input type="number" id="accountSize" placeholder="10000" step="any" oninput="calculate()">
+      </div>
+      <div class="form-group">
+        <label>Risk Per Trade (%)</label>
+        <input type="number" id="riskPercent" placeholder="1.0" step="0.1" min="0.1" max="100" oninput="calculate()">
+      </div>
+      <div class="form-group">
+        <label>Currency</label>
+        <select id="currency" onchange="calculate()">
+          <option value="EUR">EUR (€)</option>
+          <option value="USD">USD ($)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="CHF">CHF (Fr)</option>
+          <option value="JPY">JPY (¥)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Trade Parameters -->
+    <div class="card">
+      <h2>Trade Parameters</h2>
+      <div class="form-group">
+        <label>Direction</label>
+        <div class="direction-toggle">
+          <button class="direction-btn active-long" id="btnLong" onclick="setDirection('LONG')">LONG</button>
+          <button class="direction-btn" id="btnShort" onclick="setDirection('SHORT')">SHORT</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Entry Price</label>
+        <input type="number" id="entryPrice" placeholder="0.00" step="any" oninput="calculate()">
+      </div>
+      <div class="input-row">
+        <div class="form-group">
+          <label>Stop Loss</label>
+          <input type="number" id="stopLoss" placeholder="0.00" step="any" oninput="calculate()">
+        </div>
+        <div class="form-group">
+          <label>Take Profit (optional)</label>
+          <input type="number" id="takeProfit" placeholder="0.00" step="any" oninput="calculate()">
+        </div>
+      </div>
+      <button class="btn-reset" onclick="resetAll()">Reset All Fields</button>
+    </div>
+
+    <!-- Results -->
+    <div class="card results-card">
+      <h2>Results</h2>
+      <div class="result-grid">
+        <div class="result-item highlight" id="positionSizeCard">
+          <div class="result-label">Position Size</div>
+          <div class="result-value blue" id="positionSize">—</div>
+          <div class="result-sub" id="positionValue"></div>
+        </div>
+        <div class="result-item" id="dollarRiskCard">
+          <div class="result-label">Dollar Risk</div>
+          <div class="result-value red" id="dollarRisk">—</div>
+          <div class="result-sub" id="riskPercentDisplay"></div>
+        </div>
+        <div class="result-item" id="dollarRewardCard">
+          <div class="result-label">Potential Reward</div>
+          <div class="result-value green" id="dollarReward">—</div>
+          <div class="result-sub" id="rewardPercentDisplay"></div>
+        </div>
+        <div class="result-item" id="rrRatioCard">
+          <div class="result-label">Risk : Reward</div>
+          <div class="result-value purple" id="rrRatio">—</div>
+          <div class="result-sub" id="rrQuality"></div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Stop Distance</div>
+          <div class="result-value" id="stopDistance">—</div>
+          <div class="result-sub" id="stopDistancePct"></div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Break-Even Win Rate</div>
+          <div class="result-value yellow" id="breakEvenWR">—</div>
+          <div class="result-sub">Required to be profitable</div>
+        </div>
+
+        <!-- Risk Bar -->
+        <div class="risk-bar-container">
+          <div class="risk-bar-label">
+            <span>Account Risk</span>
+            <span id="riskBarPct">0%</span>
+          </div>
+          <div class="risk-bar">
+            <div class="risk-bar-fill" id="riskBarFill" style="width: 0%; background: var(--green);"></div>
+          </div>
+        </div>
+
+        <!-- Formula Display -->
+        <div class="formula-display" id="formulaDisplay">
+          Position Size = (<span>Account</span> &times; <span>Risk %</span>) &divide; |<span>Entry</span> &minus; <span>Stop</span>|
+        </div>
+
+        <!-- Pre-Trade Checklist -->
+        <div class="checklist">
+          <h3>Pre-Trade Risk Check</h3>
+          <div id="checklistItems">
+            <div class="check-item"><div class="check-icon check-na">—</div> Enter trade parameters to see risk assessment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Mind Vault AI &mdash; Position Size & Risk Calculator v1.0</p>
+    <p style="margin-top:4px;">Works 100% offline. No data is sent anywhere. Your numbers stay on your device.</p>
+    <p style="margin-top:8px;"><a href="https://mindvault-ai.com" target="_blank">mindvault-ai.com</a></p>
+  </footer>
+</div>
+
+<script>
+  let direction = 'LONG';
+
+  function setDirection(dir) {
+    direction = dir;
+    const btnLong = document.getElementById('btnLong');
+    const btnShort = document.getElementById('btnShort');
+
+    btnLong.className = 'direction-btn' + (dir === 'LONG' ? ' active-long' : '');
+    btnShort.className = 'direction-btn' + (dir === 'SHORT' ? ' active-short' : '');
+    calculate();
+  }
+
+  function getCurrencySymbol() {
+    const symbols = { EUR: '€', USD: '$', GBP: '£', CHF: 'Fr', JPY: '¥' };
+    return symbols[document.getElementById('currency').value] || '€';
+  }
+
+  function formatCurrency(value) {
+    const sym = getCurrencySymbol();
+    if (Math.abs(value) >= 1000000) {
+      return sym + (value / 1000000).toFixed(2) + 'M';
+    }
+    if (Math.abs(value) >= 10000) {
+      return sym + value.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    return sym + value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function formatNumber(value) {
+    if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M';
+    if (value >= 1000) return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (value >= 1) return value.toFixed(2);
+    if (value >= 0.001) return value.toFixed(4);
+    return value.toFixed(8);
+  }
+
+  function calculate() {
+    const accountSize = parseFloat(document.getElementById('accountSize').value);
+    const riskPercent = parseFloat(document.getElementById('riskPercent').value);
+    const entryPrice = parseFloat(document.getElementById('entryPrice').value);
+    const stopLoss = parseFloat(document.getElementById('stopLoss').value);
+    const takeProfit = parseFloat(document.getElementById('takeProfit').value);
+
+    // Reset displays if inputs incomplete
+    if (!accountSize || !riskPercent || !entryPrice || !stopLoss) {
+      document.getElementById('positionSize').textContent = '—';
+      document.getElementById('positionValue').textContent = '';
+      document.getElementById('dollarRisk').textContent = '—';
+      document.getElementById('riskPercentDisplay').textContent = '';
+      document.getElementById('dollarReward').textContent = '—';
+      document.getElementById('rewardPercentDisplay').textContent = '';
+      document.getElementById('rrRatio').textContent = '—';
+      document.getElementById('rrQuality').textContent = '';
+      document.getElementById('stopDistance').textContent = '—';
+      document.getElementById('stopDistancePct').textContent = '';
+      document.getElementById('breakEvenWR').textContent = '—';
+      document.getElementById('riskBarFill').style.width = '0%';
+      document.getElementById('riskBarPct').textContent = '0%';
+      resetChecklist();
+      return;
+    }
+
+    // Validate stop loss direction
+    const stopValid = direction === 'LONG' ? stopLoss < entryPrice : stopLoss > entryPrice;
+    if (!stopValid) {
+      document.getElementById('positionSize').textContent = 'Invalid';
+      document.getElementById('positionValue').textContent = direction === 'LONG' ? 'Stop must be below entry for longs' : 'Stop must be above entry for shorts';
+      return;
+    }
+
+    // Core calculations
+    const dollarRiskAmount = accountSize * (riskPercent / 100);
+    const stopDistance = Math.abs(entryPrice - stopLoss);
+    const stopDistancePct = (stopDistance / entryPrice) * 100;
+    const positionSize = dollarRiskAmount / stopDistance;
+    const positionValue = positionSize * entryPrice;
+
+    // Display position size
+    document.getElementById('positionSize').textContent = formatNumber(positionSize);
+    document.getElementById('positionValue').textContent = 'Value: ' + formatCurrency(positionValue);
+
+    // Display dollar risk
+    document.getElementById('dollarRisk').textContent = formatCurrency(dollarRiskAmount);
+    document.getElementById('riskPercentDisplay').textContent = riskPercent.toFixed(1) + '% of account';
+
+    // Display stop distance
+    document.getElementById('stopDistance').textContent = formatNumber(stopDistance);
+    document.getElementById('stopDistancePct').textContent = stopDistancePct.toFixed(2) + '% from entry';
+
+    // Risk bar
+    const riskBarPct = Math.min(riskPercent, 10);
+    document.getElementById('riskBarFill').style.width = (riskBarPct * 10) + '%';
+    document.getElementById('riskBarPct').textContent = riskPercent.toFixed(1) + '%';
+
+    let barColor;
+    if (riskPercent <= 1) barColor = 'var(--green)';
+    else if (riskPercent <= 2) barColor = 'var(--accent)';
+    else if (riskPercent <= 3) barColor = 'var(--yellow)';
+    else barColor = 'var(--red)';
+    document.getElementById('riskBarFill').style.background = barColor;
+
+    // R:R and reward calculations
+    let rrRatio = null;
+    let dollarRewardAmount = null;
+    let rewardPct = null;
+
+    if (takeProfit && !isNaN(takeProfit)) {
+      const tpValid = direction === 'LONG' ? takeProfit > entryPrice : takeProfit < entryPrice;
+      if (tpValid) {
+        const rewardDistance = Math.abs(takeProfit - entryPrice);
+        rrRatio = rewardDistance / stopDistance;
+        dollarRewardAmount = positionSize * rewardDistance;
+        rewardPct = (dollarRewardAmount / accountSize) * 100;
+
+        document.getElementById('dollarReward').textContent = formatCurrency(dollarRewardAmount);
+        document.getElementById('rewardPercentDisplay').textContent = rewardPct.toFixed(1) + '% of account';
+
+        document.getElementById('rrRatio').textContent = '1 : ' + rrRatio.toFixed(2);
+
+        // R:R quality
+        let rrClass, rrText;
+        if (rrRatio >= 3) { rrClass = 'green'; rrText = 'Excellent'; }
+        else if (rrRatio >= 2) { rrClass = 'green'; rrText = 'Good'; }
+        else if (rrRatio >= 1.5) { rrClass = 'yellow'; rrText = 'Acceptable'; }
+        else if (rrRatio >= 1) { rrClass = 'yellow'; rrText = 'Marginal'; }
+        else { rrClass = 'red'; rrText = 'Poor — consider skipping'; }
+
+        document.getElementById('rrRatio').className = 'result-value ' + rrClass;
+        document.getElementById('rrQuality').textContent = rrText;
+
+        // Break-even win rate
+        const bewr = (1 / (1 + rrRatio)) * 100;
+        document.getElementById('breakEvenWR').textContent = bewr.toFixed(1) + '%';
+
+        // Color the reward card
+        document.getElementById('dollarRewardCard').className = 'result-item positive';
+      } else {
+        document.getElementById('dollarReward').textContent = 'Invalid';
+        document.getElementById('rewardPercentDisplay').textContent = direction === 'LONG' ? 'TP must be above entry' : 'TP must be below entry';
+        document.getElementById('rrRatio').textContent = '—';
+        document.getElementById('rrQuality').textContent = '';
+        document.getElementById('breakEvenWR').textContent = '—';
+      }
+    } else {
+      document.getElementById('dollarReward').textContent = '—';
+      document.getElementById('rewardPercentDisplay').textContent = 'Enter take profit';
+      document.getElementById('rrRatio').textContent = '—';
+      document.getElementById('rrRatio').className = 'result-value purple';
+      document.getElementById('rrQuality').textContent = '';
+      document.getElementById('breakEvenWR').textContent = '—';
+      document.getElementById('dollarRewardCard').className = 'result-item';
+    }
+
+    // Formula display
+    const sym = getCurrencySymbol();
+    document.getElementById('formulaDisplay').innerHTML =
+      '<span>' + formatCurrency(positionSize).replace(sym, '') + '</span> = ' +
+      '(<span>' + formatCurrency(accountSize) + '</span> × <span>' + riskPercent.toFixed(1) + '%</span>) ÷ |<span>' +
+      entryPrice + '</span> − <span>' + stopLoss + '</span>|';
+
+    // Checklist
+    updateChecklist(riskPercent, rrRatio, positionValue, accountSize, stopDistancePct);
+  }
+
+  function resetChecklist() {
+    document.getElementById('checklistItems').innerHTML =
+      '<div class="check-item"><div class="check-icon check-na">—</div> Enter trade parameters to see risk assessment</div>';
+  }
+
+  function updateChecklist(riskPct, rr, posVal, accSize, stopPct) {
+    let items = [];
+
+    // Risk per trade check
+    if (riskPct <= 1) {
+      items.push({ status: 'pass', text: 'Risk per trade: ' + riskPct.toFixed(1) + '% — Conservative (recommended)' });
+    } else if (riskPct <= 2) {
+      items.push({ status: 'pass', text: 'Risk per trade: ' + riskPct.toFixed(1) + '% — Standard professional level' });
+    } else if (riskPct <= 3) {
+      items.push({ status: 'warn', text: 'Risk per trade: ' + riskPct.toFixed(1) + '% — Aggressive. Only for proven systems.' });
+    } else {
+      items.push({ status: 'fail', text: 'Risk per trade: ' + riskPct.toFixed(1) + '% — EXCESSIVE. Reduce to 1-2%.' });
+    }
+
+    // R:R check
+    if (rr !== null) {
+      if (rr >= 2) {
+        items.push({ status: 'pass', text: 'Risk:Reward 1:' + rr.toFixed(1) + ' — Favorable. Trade meets minimum threshold.' });
+      } else if (rr >= 1.5) {
+        items.push({ status: 'warn', text: 'Risk:Reward 1:' + rr.toFixed(1) + ' — Marginal. Requires >50% win rate.' });
+      } else {
+        items.push({ status: 'fail', text: 'Risk:Reward 1:' + rr.toFixed(1) + ' — Unfavorable. Consider skipping or adjusting entry.' });
+      }
+    } else {
+      items.push({ status: 'na', text: 'Risk:Reward — Enter take profit to calculate' });
+    }
+
+    // Position value vs account
+    const positionPct = (posVal / accSize) * 100;
+    if (positionPct <= 100) {
+      items.push({ status: 'pass', text: 'Position is ' + positionPct.toFixed(0) + '% of account — No leverage required' });
+    } else if (positionPct <= 300) {
+      items.push({ status: 'warn', text: 'Position is ' + positionPct.toFixed(0) + '% of account — Using ' + (positionPct / 100).toFixed(1) + 'x leverage' });
+    } else {
+      items.push({ status: 'fail', text: 'Position is ' + positionPct.toFixed(0) + '% of account — High leverage (' + (positionPct / 100).toFixed(1) + 'x). Increase caution.' });
+    }
+
+    // Stop distance check
+    if (stopPct < 0.5) {
+      items.push({ status: 'warn', text: 'Stop distance: ' + stopPct.toFixed(2) + '% — Very tight. Risk of noise stop-out.' });
+    } else if (stopPct <= 5) {
+      items.push({ status: 'pass', text: 'Stop distance: ' + stopPct.toFixed(2) + '% — Reasonable for most instruments' });
+    } else if (stopPct <= 15) {
+      items.push({ status: 'warn', text: 'Stop distance: ' + stopPct.toFixed(2) + '% — Wide stop. Ensure R:R justifies it.' });
+    } else {
+      items.push({ status: 'fail', text: 'Stop distance: ' + stopPct.toFixed(2) + '% — Very wide. Verify stop placement.' });
+    }
+
+    // Max consecutive losses at this risk level
+    const losesFor50pct = Math.ceil(Math.log(0.5) / Math.log(1 - riskPct / 100));
+    if (losesFor50pct >= 30) {
+      items.push({ status: 'pass', text: 'Survival: ' + losesFor50pct + ' consecutive losses to lose 50% — Strong durability' });
+    } else if (losesFor50pct >= 15) {
+      items.push({ status: 'warn', text: 'Survival: ' + losesFor50pct + ' consecutive losses to lose 50% — Moderate durability' });
+    } else {
+      items.push({ status: 'fail', text: 'Survival: Only ' + losesFor50pct + ' consecutive losses to lose 50% — HIGH RUIN RISK' });
+    }
+
+    let html = '';
+    items.forEach(function(item) {
+      const iconClass = item.status === 'pass' ? 'check-pass' : item.status === 'fail' ? 'check-fail' : item.status === 'warn' ? 'check-warn' : 'check-na';
+      const iconText = item.status === 'pass' ? '✓' : item.status === 'fail' ? '✕' : item.status === 'warn' ? '!' : '—';
+      html += '<div class="check-item"><div class="check-icon ' + iconClass + '">' + iconText + '</div> ' + item.text + '</div>';
+    });
+
+    document.getElementById('checklistItems').innerHTML = html;
+  }
+
+  function resetAll() {
+    document.getElementById('accountSize').value = '';
+    document.getElementById('riskPercent').value = '';
+    document.getElementById('entryPrice').value = '';
+    document.getElementById('stopLoss').value = '';
+    document.getElementById('takeProfit').value = '';
+    setDirection('LONG');
+    calculate();
+  }
+
+  // Initialize
+  calculate();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+metric,formula,month_1,month_2,month_3,month_4,month_5,month_6
+MRR,sum(all_recurring_revenue),12500,15800,19200,24100,29500,35800
+ARR,MRR * 12,150000,189600,230400,289200,354000,429600
+new_customers,count(new_signups),18,22,27,31,38,44
+churned_customers,count(cancelled),2,3,3,4,5,5
+churn_rate,churned_customers / total_customers_start * 100,3.2,3.8,3.1,3.4,3.6,3.0
+LTV,ARPU / churn_rate_decimal,6510,5526,6774,6176,5833,7000
+CAC,total_sales_marketing_spend / new_customers,850,790,720,680,640,610
+LTV_CAC_ratio,LTV / CAC,7.66,6.99,9.41,9.08,9.11,11.48
+payback_months,CAC / ARPU,4.1,3.8,3.4,3.2,3.0,2.9
+ARPU,MRR / total_customers,208.33,210.67,213.33,215.18,216.91,218.90
+expansion_revenue,upsells + cross_sells,1800,2400,3100,3900,4800,5600
+net_revenue_retention,(MRR_end - new_MRR) / MRR_start * 100,104.2,106.1,107.8,108.5,109.2,110.1
+gross_margin,(revenue - COGS) / revenue * 100,78.5,79.2,80.1,81.3,82.0,82.8
+burn_rate,total_monthly_expenses - total_monthly_revenue,8200,5900,2800,-1200,-4800,-9100
+runway_months,cash_balance / burn_rate,18.3,22.0,38.6,infinite,infinite,infinite
+MRR_growth_rate,(MRR_current - MRR_previous) / MRR_previous * 100,,26.4,21.5,25.5,22.4,21.4
+quick_ratio,(new_MRR + expansion_MRR) / (churned_MRR + contraction_MRR),4.2,3.8,4.5,4.1,4.3,4.8
