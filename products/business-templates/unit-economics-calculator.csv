@@ -1,0 +1,20 @@
+metric,formula,month_1,month_2,month_3,month_4,month_5,month_6
+MRR,sum(active_subscriptions * plan_price),12500,14800,17200,19500,22800,26100
+ARR,MRR * 12,150000,177600,206400,234000,273600,313200
+new_customers,count(new_signups),18,22,25,21,28,32
+churned_customers,count(cancelled_subscriptions),3,4,3,5,4,6
+churn_rate,churned_customers / total_customers_start * 100,2.4,2.9,2.0,3.1,2.3,3.1
+total_active_customers,previous_total + new - churned,125,143,165,181,205,231
+LTV,ARPU / churn_rate,4167,3448,5000,3226,4348,3226
+CAC,total_acquisition_cost / new_customers,850,790,720,880,710,680
+LTV_CAC_ratio,LTV / CAC,4.9,4.4,6.9,3.7,6.1,4.7
+payback_months,CAC / ARPU,8.5,7.8,6.6,8.5,6.5,6.0
+ARPU,MRR / total_active_customers,100,103,104,108,111,113
+expansion_revenue,upsell_revenue + cross_sell_revenue,1200,1650,2100,1800,2400,3200
+contraction_revenue,downgrades + partial_churn,300,450,380,520,410,600
+net_revenue_retention,(MRR_end - new_MRR) / MRR_start * 100,107.2,106.5,108.1,105.4,109.7,108.2
+gross_margin,( revenue - COGS ) / revenue * 100,78.5,79.1,80.2,79.8,81.0,81.5
+burn_rate,total_monthly_expenses - total_revenue,8500,6200,3800,5500,2200,-900
+runway_months,cash_balance / burn_rate,14.1,17.7,26.3,16.4,36.4,profitable
+MoM_growth_rate,(MRR_current - MRR_previous) / MRR_previous * 100,0,18.4,16.2,13.4,16.9,14.5
+quick_ratio,(new_MRR + expansion_MRR) / (churned_MRR + contraction_MRR),3.2,3.0,4.1,2.5,3.8,3.4
