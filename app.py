@@ -179,6 +179,16 @@ def darts501_demo():
     """Darts 501 Luxury Edition — live demo"""
     return send_from_directory(app.root_path, 'darts501-luxury.html')
 
+@app.route('/preview/sellpage')
+def sellpage_preview():
+    """Mind Vault AI sell page preview"""
+    return render_template('mvai-sellpage.html')
+
+@app.route('/preview/risk-calculator')
+def risk_calculator_preview():
+    """Risk calculator tool demo"""
+    return render_template('risk-calculator-demo.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Login pagina voor klanten en admins"""
