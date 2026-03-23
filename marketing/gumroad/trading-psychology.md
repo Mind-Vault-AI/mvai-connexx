@@ -3,7 +3,7 @@
 ## Gumroad Product Setup
 - **Permalink:** trading-psychology
 - **URL:** https://mindvault-ai.gumroad.com/l/trading-psychology
-- **Price:** $14
+- **Price:** $11 (launch price, was $19)
 - **Type:** Digital product (PDF)
 
 ## Title

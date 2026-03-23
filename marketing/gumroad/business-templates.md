@@ -3,7 +3,7 @@
 ## Gumroad Product Setup
 - **Permalink:** business-templates
 - **URL:** https://mindvault-ai.gumroad.com/l/business-templates
-- **Price:** $29 (was $49)
+- **Price:** $24 (launch price, was $49)
 - **Type:** Digital product (ZIP bundle)
 
 ## Title

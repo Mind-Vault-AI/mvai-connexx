@@ -3,7 +3,7 @@
 ## Gumroad Product Setup
 - **Permalink:** risk-management-kit
 - **URL:** https://mindvault-ai.gumroad.com/l/risk-management-kit
-- **Price:** $14
+- **Price:** $9 (launch price)
 - **Type:** Digital product (Excel + Google Sheets)
 
 ## Title

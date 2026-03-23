@@ -3,7 +3,7 @@
 ## Gumroad Product Setup
 - **Permalink:** ai-automation-guide
 - **URL:** https://mindvault-ai.gumroad.com/l/ai-automation-guide
-- **Price:** $19 (was $29)
+- **Price:** $14 (launch price, was $29)
 - **Type:** Digital product (PDF)
 
 ## Title

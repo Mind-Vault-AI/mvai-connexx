@@ -3,7 +3,7 @@
 ## Gumroad Product Setup
 - **Permalink:** market-analysis
 - **URL:** https://mindvault-ai.gumroad.com/l/market-analysis
-- **Price:** $19
+- **Price:** $14 (launch price)
 - **Type:** Digital product (Excel + Notion + PDF)
 
 ## Title

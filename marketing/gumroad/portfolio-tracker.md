@@ -3,7 +3,7 @@
 ## Gumroad Product Setup
 - **Permalink:** portfolio-tracker
 - **URL:** https://mindvault-ai.gumroad.com/l/portfolio-tracker
-- **Price:** $19
+- **Price:** $14 (launch price)
 - **Type:** Digital product (Excel + Google Sheets)
 
 ## Title
