@@ -1,0 +1,9 @@
+region,conflict_type,affected_commodities,impact_level,probability,affected_tickers,trade_direction,risk_premium_pct,duration_estimate,key_trigger,hedge_instrument,notes
+Middle East,Military conflict,Crude Oil;Natural Gas;Gold,Critical,High,"CL,NG,GC,XOM,CVX,HAL",Long Oil + Long Gold,15-25,6-12 months,Iran-Israel escalation,GLD;USO;VIX calls,Strait of Hormuz = 20% global oil flow
+Ukraine-Russia,War + sanctions,Wheat;Natural Gas;Palladium;Uranium,High,Ongoing,"ZW,NG,PA,URA,CCJ",Long Wheat + Long Uranium,10-20,Ongoing,Escalation or peace deal,DBA;UNG,Black Sea grain corridor disrupted
+Taiwan Strait,Military tension,Semiconductors;Rare Earths,Critical,Medium,"TSM,ASML,NVDA,AMD",Short TSM + Long ASML (EU hedge),20-40,3-6 months if escalation,China military exercises,SMH puts;ASML calls,60% global chip production at risk
+Red Sea / Houthi,Shipping disruption,Container rates;Oil;All imports,High,Ongoing,"ZIM,MAERSK,CL",Long shipping + Long oil,5-15,6-12 months,Suez Canal re-routing,BDRY;BOAT,12% global trade through Suez
+China-US Trade,Tariffs + tech war,Chips;Rare Earths;EVs;Solar,High,High,"NVDA,AMD,TSLA,FSLR",Long domestic alternatives,5-10,Multi-year,New tariff rounds,Diversify to EU/Japan suppliers,CHIPS Act + EU semiconductor push
+Africa (Sahel),Coups + instability,Uranium;Gold;Cobalt,Medium,Ongoing,"CCJ,NEM,GLEN",Long uranium + Long gold miners,5-10,Multi-year,Niger uranium supply,URA;GDX,Niger = 5% global uranium supply
+OPEC+ Dynamics,Production cuts/increases,Crude Oil;Gasoline,High,Ongoing,"CL,RB,XOM,CVX,SLB",Direction depends on cut/boost,10-20,Quarterly reviews,OPEC meeting decisions,USO;XLE,Saudi needs $80+ for budget balance
+Arctic Resources,Territorial claims,LNG;Rare Earths;Shipping,Low,Growing,"LNG,TELL,FLNG",Long LNG infrastructure,2-5,Long-term trend,Northern Sea Route opening,LNG ETFs,Climate change opening new routes

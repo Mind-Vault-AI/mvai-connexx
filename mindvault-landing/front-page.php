@@ -204,6 +204,21 @@
       <div class="card-foot"><span class="card-price"><span class="old">$49</span>$24</span><span class="card-btn purple">Get It</span></div>
     </a>
 
+    <!-- FUTURES / COMMODITIES / SECTORS -->
+    <a href="https://mindvault-ai.gumroad.com/l/futures-commodities-kit" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#127760;</span><span class="card-badge badge-tool">Hot</span></div>
+      <div class="card-title">Futures &amp; Commodities Kit</div>
+      <div class="card-desc">Gold, oil, gas, metals, wheat. Tracker + geopolitical risk matrix. War-proof your portfolio.</div>
+      <div class="card-foot"><span class="card-price">$14</span><span class="card-btn gold">Get It</span></div>
+    </a>
+
+    <a href="https://mindvault-ai.gumroad.com/l/semiconductor-watchlist" class="card gumroad-button">
+      <div class="card-top"><span class="card-icon">&#128204;</span><span class="card-badge badge-tool">Hot</span></div>
+      <div class="card-title">Semiconductor Sector Pack</div>
+      <div class="card-desc">ASML, NVDA, TSM, AMD + 7 more. Fundamentals, targets, catalysts. Chip war playbook.</div>
+      <div class="card-foot"><span class="card-price">$11</span><span class="card-btn gold">Get It</span></div>
+    </a>
+
     <!-- SAAS / PLATFORM -->
     <a href="https://connexx.mindvault-ai.com" target="_blank" rel="noopener" class="card">
       <div class="card-top"><span class="card-icon">&#9889;</span><span class="card-badge badge-free">Free Demo</span></div>

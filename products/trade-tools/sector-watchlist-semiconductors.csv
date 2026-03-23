@@ -1,0 +1,11 @@
+ticker,company,sector,market_cap_B,pe_ratio,52w_high,52w_low,current_price,distance_from_high_pct,avg_volume_M,dividend_yield,revenue_growth_yoy,eps_growth_yoy,analyst_rating,target_price,upside_pct,key_catalyst,risk_factor,position_notes
+ASML,ASML Holding NV,Semiconductor Equipment,380,35.2,1050.00,680.00,945.00,-10.0,2.8,0.7,18.5,22.3,Strong Buy,1100.00,16.4,EUV monopoly + AI chip demand,China export restrictions,Core holding - only EUV supplier globally
+NVDA,NVIDIA Corp,AI/GPU,3200,55.8,152.00,75.00,142.00,-6.6,45.2,0.02,122.0,168.0,Strong Buy,165.00,16.2,AI infrastructure dominance,Valuation stretched + competition,AI capex cycle still early
+TSM,Taiwan Semiconductor,Foundry,850,28.5,195.00,120.00,178.00,-8.7,18.5,1.2,35.2,40.1,Strong Buy,210.00,18.0,3nm/2nm demand + AI chips,Taiwan geopolitical risk,Largest foundry - irreplaceable
+AMD,Advanced Micro Devices,CPU/GPU,265,42.3,185.00,120.00,168.00,-9.2,52.1,0.0,14.2,25.8,Buy,195.00,16.1,MI300X AI accelerator gains,Intel recovery + NVDA dominance,Growing AI market share
+AVGO,Broadcom Inc,Networking/Custom,820,32.5,235.00,125.00,215.00,-8.5,8.2,1.3,44.0,28.5,Strong Buy,250.00,16.3,VMware integration + custom AI chips,Debt from VMware acquisition,Custom ASIC for hyperscalers
+KLAC,KLA Corporation,Wafer Inspection,105,28.8,820.00,560.00,755.00,-7.9,1.5,0.8,15.3,18.2,Buy,880.00,16.6,Process control for advanced nodes,Cyclical semiconductor spending,Beneficiary of node shrinks
+LRCX,Lam Research,Etch Equipment,125,25.2,105.00,72.00,96.00,-8.6,2.8,0.9,20.1,25.5,Buy,115.00,19.8,DRAM investment cycle + 3D NAND,China revenue at risk,Leading etch position
+MRVL,Marvell Technology,Custom Silicon,82,65.5,120.00,58.00,98.00,-18.3,12.5,0.3,28.0,45.0,Strong Buy,125.00,27.6,Custom AI silicon for cloud,Still unprofitable on GAAP,Fastest growing custom chip
+INTC,Intel Corporation,CPU/Foundry,115,N/A,35.00,18.00,24.00,-31.4,55.2,0.0,-2.0,N/A,Hold,28.00,16.7,18A process node launch + CHIPS Act,Execution risk + market share loss,Turnaround play - high risk high reward
+AMAT,Applied Materials,Deposition Equipment,165,22.5,230.00,155.00,205.00,-10.9,6.2,0.7,8.5,12.0,Buy,240.00,17.1,Gate-all-around adoption,China restrictions tightening,Leader in deposition tech
