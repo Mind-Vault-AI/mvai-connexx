@@ -1,0 +1,9 @@
+exchange,asset,ticker,quantity,avg_buy_price,current_price,value,cost_basis,pnl,pnl_pct,allocation_pct,asset_type,sector,notes
+Binance,Bitcoin,BTC,0.2500,58000.00,62500.00,15625.00,14500.00,1125.00,7.76,31.25,Crypto,Layer 1,Long-term core holding. DCA monthly.
+Binance,Ethereum,ETH,3.0000,3100.00,3450.00,10350.00,9300.00,1050.00,11.29,20.70,Crypto,Layer 1,Staking enabled. Accumulated during dip in Q4.
+Binance,Solana,SOL,50.0000,120.00,145.00,7250.00,6000.00,1250.00,20.83,14.50,Crypto,Layer 1,High volatility — watch for rebalance trigger.
+Kraken,Chainlink,LINK,200.0000,14.50,17.20,3440.00,2900.00,540.00,18.62,6.88,Crypto,DeFi/Oracle,Strong fundamentals. Hold for CCIP adoption.
+DEGIRO,ASML Holding,ASML,5.0000,680.00,742.00,3710.00,3400.00,310.00,9.12,7.42,Stock,Semiconductor,European semiconductor monopoly. Long-term hold.
+DEGIRO,NVIDIA,NVDA,8.0000,450.00,520.00,4160.00,3600.00,560.00,15.56,8.32,Stock,Semiconductor,AI infrastructure play. Consider trimming above $550.
+DEGIRO,SPDR S&P 500 ETF,SPY,10.0000,468.00,485.00,4850.00,4680.00,170.00,3.63,9.70,ETF,Index,Core index position. DCA monthly.
+Interactive Brokers,Cash Reserve,USD,650.00,1.00,1.00,650.00,650.00,0.00,0.00,1.30,Cash,Reserve,Dry powder for opportunities. Target 5-10% cash.
