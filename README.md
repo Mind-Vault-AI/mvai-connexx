@@ -186,41 +186,25 @@ mvai-connexx/
 - `GET /admin/search` - Zoeken
 - `GET /admin/export/all-csv` - Volledige CSV export
 
-## 🐳 Docker Deployment (Optional)
+## 🚀 Deployment
 
-### Hostinger VPS Deployment (Aanbevolen)
+| Platform         | Status    | URL                                    |
+|------------------|-----------|----------------------------------------|
+| Hostinger VPS    | ✅ Primair | connexx.mindvault-ai.com              |
+| Render           | ✅ Actief  | via render.yaml                        |
+
+**📖 Volledige deployment handleiding: [DEPLOY.md](DEPLOY.md)**
+
+- **Hostinger VPS** — push naar `main` → GitHub Actions (`.github/workflows/deploy-hostinger.yml`) deployt automatisch via SSH.
+- **Render** — push naar `main` → Render deployt automatisch via `render.yaml`.
+- **Benodigde GitHub Secrets:** `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`
+
+## 🐳 Docker (optioneel)
 
 ```bash
 docker build -t mvai-connexx .
 docker run -p 5000:5000 mvai-connexx
 ```
-
-## 🚀 Hostinger VPS Deployment
-
-Voor production deployment op Hostinger VPS, zie de uitgebreide handleiding:
-
-**📖 [HOSTINGER_DEPLOY.md](HOSTINGER_DEPLOY.md)**
-
-### Snelle Samenvatting
-
-1. **Server Setup**: Ubuntu 22.04 LTS met Python, Nginx
-2. **Clone Repository**: `/var/www/mvai-connexx`
-3. **Virtual Environment**: Python venv met dependencies
-4. **Environment Config**: `.env` file met SECRET_KEY, DATABASE_PATH
-5. **Gunicorn Service**: Systemd service voor app
-6. **Nginx Proxy**: Reverse proxy configuratie
-7. **SSL Certificate**: Let's Encrypt voor HTTPS
-8. **Firewall**: UFW configuratie
-
-**Configuratie bestanden:**
-- `gunicorn.conf.py` - Gunicorn worker configuratie
-- `nginx.conf.example` - Nginx reverse proxy voorbeeld
-- `mvai-connexx.service` - Systemd service definitie
-
-**Vereisten:**
-- Hostinger VPS (minimaal KVM 1)
-- Ubuntu 22.04 LTS
-- Domain gekoppeld aan VPS IP
 
 ## 🔐 Security Features
 
