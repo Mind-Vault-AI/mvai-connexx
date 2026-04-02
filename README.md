@@ -298,7 +298,7 @@ pip install --upgrade -r requirements.txt
 ## 🤝 Support
 
 Voor vragen of issues:
-- Email: support@mindvault.ai
+- Email: info@mindvault-ai.com
 - GitHub Issues: https://github.com/Mind-Vault-AI/mvai-connexx/issues
 
 ---
